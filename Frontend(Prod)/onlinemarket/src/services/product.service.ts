@@ -64,9 +64,11 @@ export class ProductService {
     formData.append('name', name);
     if (upName) formData.append('upName', upName);
     if (description) formData.append('description', description);
-    if (imageFile) formData.append('imageFile', imageFile);
-    if(isActive!= undefined) formData.append('isActive', isActive.toString());
-
+    if (imageFile) {
+      formData.append('file', imageFile, imageFile.name);
+    }
+    if (isActive !== undefined) formData.append('isActive', isActive.toString());
+ 
     return this.http.put(`${this.baseUrl}/admin/updateProduct/${name}`, formData);
   }
 

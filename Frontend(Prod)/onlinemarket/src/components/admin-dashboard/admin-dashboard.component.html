@@ -1,5 +1,7 @@
 <main class="main-content">
-  <h2 class="section-title">Admin Functionalities</h2><br /><br />
+  <h2 class="section-title">Admin Functionalities</h2>
+
+
   <div class="admin-buttons">
     <div class="admincolumn">
       <button (click)="openAddProductPopup()">Add Product</button>
@@ -18,7 +20,7 @@
   *ngIf="isUpdateUserPopupVisible"
   (close)="closeUpdateUserPopup()"
   (submit)="handleUserUpdated($event)"/> -->
- 
+
 <app-admin-user-list-popup
   *ngIf="showGetUsersPopup"
   (close)="closeGetUsersPopup()"
@@ -65,7 +67,7 @@
       <input type="file" accept=".xlsx, .xls" (change)="onBulkFileChange($event)" required />
       <label>
         Active Status:
-        <input type="checkbox" [(ngModel)]="bulkProductActive" name="bulkActiveStatus" />
+        <input type="checkbox" [(ngModel)]="bulkProductisactive" name="bulkActiveStatus" />
       </label>
       <div class="button-group">
         <button type="submit">Submit</button>
@@ -79,7 +81,8 @@
   <div class="popup">
     <h3>Update Product</h3>
     <input type="text" [(ngModel)]="product.name" placeholder="Search Product by Product Name" />
-    <button (click)="searchProduct()">Search</button>
+    <button (click)="searchProduct()">Search</button> <button type="button" (click)="closeUpdateProductPopup()">Cancel</button>
+
     <form *ngIf="productFound" (ngSubmit)="updateProduct()" #updateForm="ngForm">
       <img *ngIf="previewImage" [src]="previewImage" alt="Product Image"
         style="max-height: 150px; margin: 10px 0" />
@@ -90,7 +93,7 @@
       <div class="checkbox-container">
         <label>
           Active Status
-          <input type="checkbox" [(ngModel)]="product.active" name="active" />
+          <input type="checkbox" [(ngModel)]="product.isActive" name="activeStatus" />
         </label>
       </div>
       <div class="button-group">
@@ -100,3 +103,4 @@
     </form>
   </div>
 </div>
+

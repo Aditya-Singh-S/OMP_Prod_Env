@@ -3,11 +3,11 @@
   height: 350px;
   background-color: #FFDAB9;
 }
- 
+
 .text-danger {
   color: red;
 }
- 
+
 .section-title {
   background-color: rgb(1, 1, 118);
   color: white;
@@ -16,18 +16,18 @@
   width: fit-content;
   margin-bottom: 20px;
 }
- 
+
 .admin-buttons {
   display: flex;
   justify-content: space-around;
 }
- 
+
 .admincolumn {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
- 
+
 button {
   background-color: #a3358b;
   color: white;
@@ -37,13 +37,13 @@ button {
   font-weight: bold;
   box-shadow: 2px 2px 0 #87cefa;
 }
- 
+
 .admindivider {
   width: 3px;
   background-color: #3333cc;
   margin: 15px;
 }
- 
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -55,7 +55,7 @@ button {
   justify-content: center;
   align-items: center;
 }
- 
+
 .popup {
   background-color: #f2cce9;
   padding: 20px;
@@ -63,7 +63,7 @@ button {
   border-radius: 10px;
   width: 300px;
 }
- 
+
 .popup h3 {
   background-color: #b04188;
   color: white;
@@ -72,7 +72,7 @@ button {
   text-align: center;
   border-radius: 5px 5px 0 0; /* Added rounded top corners */
 }
- 
+
 .popup input[type="text"],
 .popup input[type="file"] {
   width: 100%;
@@ -80,16 +80,16 @@ button {
   margin: 10px 0;
   border: 1px solid lightgray;
 }
- 
+
 .checkbox-container {
   margin: 10px 0;
 }
- 
+
 .popup .button-group {
   display: flex;
   justify-content: space-between;
 }
- 
+
 .popup .button-group button {
   background-color: #a3358b;
   color: white;
@@ -99,11 +99,11 @@ button {
   border: none;
   cursor: pointer;
 }
- 
+
 .button-group {
   margin-top: 10px;
 }
- 
+
 /* Styles for the popup overlay */
 .popup-over {
   position: fixed;
@@ -117,7 +117,7 @@ button {
   align-items: center;
   z-index: 1000; /* Ensure it's on top */
 }
- 
+
 /* Styles for the popup container */
 .popup-container {
   background-color: #fff;
@@ -127,7 +127,7 @@ button {
   width: 80%; /* Adjust as needed */
   max-width: 600px; /* Maximum width */
 }
- 
+
 /* Styles for the heading within the popup container */
 .popup-container h3 {
   background-color: #b04188;
@@ -138,7 +138,7 @@ button {
   border-radius: 8px 8px 0 0; /* Rounded top corners to match container */
   font-size: 1.2em; /* Slightly larger font for heading */
 }
- 
+
 /* Styles for the form within the popup container */
 .user-form {
   display: grid;
@@ -148,7 +148,7 @@ button {
   background-color: #f9f9f9; /* Light background for the form area */
   border-radius: 0 0 8px 8px; /* Rounded bottom corners */
 }
- 
+
 /* Styles for input fields within the form */
 .form-input {
   padding: 10px;
@@ -156,36 +156,36 @@ button {
   border-radius: 4px;
   font-size: 1rem;
 }
- 
+
 /* Style for the upload photo label and input */
 .upload-photo-group {
   margin-bottom: 15px;
 }
- 
+
 .upload-photo-label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
 }
- 
+
 .upload-photo-input {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
- 
+
 /* Style for the admin checkbox group */
 .admin-checkbox-group {
   margin-bottom: 20px;
   display: flex;
   align-items: center;
 }
- 
+
 .admin-checkbox-label {
   margin-left: 5px;
 }
- 
+
 /* Styles for the button group */
 .form-button-group {
   display: flex;
@@ -195,7 +195,7 @@ button {
   background-color: #f9f9f9; /* Match form background */
   border-radius: 0 0 8px 8px; /* Match form border-radius */
 }
- 
+
 /* Styles for the submit button */
 .submit-button.button,
 .cancel-button.button {
@@ -208,12 +208,13 @@ button {
   font-size: 1rem;
   font-weight: bold;
   box-shadow: 2px 2px 0 #87cefa;
+  margin-right: 20px;
 }
- 
+
 .submit-button:hover {
   background-color: #0056b3; /* Blue hover */
 }
- 
+
 .cancel-button:hover {
   background-color: #6c757d; /* Grey hover */
 }
