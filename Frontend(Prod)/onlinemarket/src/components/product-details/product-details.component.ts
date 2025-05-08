@@ -16,7 +16,7 @@ import { SubscriberListComponent } from '../subscriber-list/subscriber-list.comp
   imports: [CommonModule, RouterModule, UserReviewComponent, FormsModule, SubscriberListComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css',
-  providers: [CookieServiceService, UserService]
+  providers: [CookieServiceService, UserService,ProductService]
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
   [x: string]: any;
@@ -158,7 +158,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   fetchUserName(userId: number) {
-    this.userNameSubscription = this.http.get<{ firstName: string }>(`https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/myDetails?userId=${userId}`, { responseType: 'json' }).subscribe(
+    this.userNameSubscription = this.http.get<{ firstName: string }>(`http://localhost:9090/OMP/myDetails?userId=${userId}`, { responseType: 'json' }).subscribe(
       response => {
         this.userName = response?.firstName || 'Unknown User';
         console.log('Fetched username:', this.userName);

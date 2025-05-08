@@ -41,9 +41,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {
     this.profileForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._]{3,15}$/)]],
-      lastName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._]{3,15}$/)]],
-      nickName: ['', [Validators.pattern(/^[a-zA-Z0-9._]{3,15}$/)]],
+      firstName: ['', [Validators.required, Validators.pattern(/^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$/)]],
+      lastName: ['', [Validators.required, Validators.pattern(/^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$/)]],
+      nickName: ['', [Validators.required, Validators.pattern(/^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$/)]],
       email: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.(com|net|org)$/)]],
       contactNumber: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
       postalCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],

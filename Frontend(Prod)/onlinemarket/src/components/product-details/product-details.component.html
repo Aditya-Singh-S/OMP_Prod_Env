@@ -4,13 +4,15 @@
       <div>
         <h3>{{product.name}}</h3>
       </div>
-      <img [src]="'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image/' + product.productid" alt="{{product.name}}"
+      <img [src]="product.imageUrl" alt="{{product.name}}"
         class="product-image">
       <div>
         <p class="product-meta" id="product-meta">
-          {{product.name}}
-          <br>{{product.subscription_count}} subscribes
-          <br>
+          {{product.name}}<br>
+          
+{{product.subscription_count}} subscribes<br>
+          
+
           {{product.avg_rating}} stars
         </p>
       </div>
@@ -62,7 +64,8 @@
             [class.filled]="i < rating"
             class="star"
             >★</span
-          ><br />
+          >
+
         </div>
         <div *ngIf="reviewError === 'Please select a rating.'" class="error-message">Rating is missing</div>
         <input type="text" placeholder="Review Descriptions" [(ngModel)]="reviewDescription" />

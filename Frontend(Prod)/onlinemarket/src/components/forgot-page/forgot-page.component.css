@@ -2,19 +2,19 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 30px; 
+    padding: 30px;
     /* margin-bottom: px; */
     background-color: #FFDAB9;
 }
-
+ 
 .signin h2 {
     background-color: navy;
     color: white;
     padding: 10px;
     text-align: center;
-
-} 
-
+ 
+}
+ 
 input {
     width: 65%;
     padding: 10px;
@@ -22,7 +22,7 @@ input {
     text-align: center;
     border: 2px solid lightblue;
 }
-
+ 
 .submit {
     background-color: purple;
     color: white;
@@ -34,19 +34,19 @@ input {
     margin-top: 10px;
     margin-bottom: 50px;
 }
-
+ 
 .divider {
     width: 3px;
     height: 200px;
     background-color: gray;
     margin: 0 20px;
 }
-
+ 
 .signin {
     display: flex;
     align-items: center;
 }
-
+ 
 .signin-btn {
     background-color: purple;
     color: white;
@@ -55,9 +55,14 @@ input {
     font-size: 16px;
     cursor: pointer;
 }
-
+ 
 .column{
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+ 
+  .error{
+    color: red;
+    font-size: 0.9em;
 }

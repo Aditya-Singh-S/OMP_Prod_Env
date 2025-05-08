@@ -1,7 +1,7 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { IProductDTO } from '../model/class/interface/Products';
+import { IProductDTO, IReview } from '../model/class/interface/Products';
 
 
 interface ProductView {
@@ -129,4 +129,17 @@ export class ProductService {
     return this.http.get<UserDetail[]>(`${this.baseUrl}/viewUsersSubscribedToProduct?productId=${productId}`);
   }
 
+  updateUserReviews(userId: number, reviews: IReview[]): Observable<any> {
+    const url = `${this.baseUrl}/reviews/updateReview`; // Adjust your backend API endpoint
+    return this.http.put(url, reviews); // Send the array of updated reviews in the request body
+  }
+
+  updateReviewStatus(reviewId: number, userId: number | null, isActive: boolean): Observable<any> {
+    const params = new HttpParams()
+      .set('ratingId', reviewId.toString())
+      .set('userId', userId ? userId.toString() : '')
+      .set('reviewActiveStatus', isActive.toString());
+
+    return this.http.put(`${this.baseUrl}/reviews/updateReview`, null, { params }); // Reusing your existing update endpoint
+  }
 }

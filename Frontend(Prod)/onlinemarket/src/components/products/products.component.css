@@ -13,6 +13,7 @@ section{
     border-radius: 10px;
     width: 75%;
     margin-left: 10px;
+    
 }
 
 
@@ -28,10 +29,12 @@ h2{
     justify-content: space-evenly;
     gap: 50px;
     flex-wrap: wrap;
+    
 }
 
 .product {
     margin: 15px 0px;
+    cursor: pointer;
 }
 
 .product img {
@@ -70,4 +73,20 @@ h2{
     width: 20%;
     /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
 }
+
+.no-product{
+    margin-top: 100px;
+    font-size: large;
+}
+
+.products-btn{
+    background-color: rgb(1, 1, 118);
+    /* background-color: purple; */
+    color: white;
+    font-weight: bold;
+    padding: 15px 58px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
 

@@ -7,16 +7,21 @@
       <div *ngFor="let product of productList" class="product" [attr.data-id]="product.productid"
         (click)="viewProductDetails(product.productid)">
         <div class="productimage">
-          <img [src]="'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image/' + product.productid" alt="{{product.name}}">
+          <img [src]="product.imageUrl" alt="{{product.name}}">
         </div>
         <div class="productdescription">
-          {{product.name}}
-          <!-- <br> 200 Subscribers <br> 4 Stars -->
-          <br>{{product.subscription_count}} subscribes
-          <br>
+          {{product.name}}<br>
+          
+{{product.subscription_count}} subscribes<br>
+          
+
           {{product.avg_rating}} stars
 
         </div>
+      </div>
+      <div *ngIf="productList.length === 0">
+        <div class="no-product"> No products are available according to the filters applied.</div>
+
       </div>
     </div>
   </div>

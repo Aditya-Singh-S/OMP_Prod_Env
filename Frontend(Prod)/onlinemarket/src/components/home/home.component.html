@@ -10,7 +10,7 @@
           (click)="products?.productid !== undefined && viewProductDetails(products.productid)"
           >
           <div class="productimage">
-            <img [src]="'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image/'+products?.productid" [alt]="products?.name">
+            <img [src]="products?.imageUrl"[alt]="products?.name">
           </div>
           <div class="productdescription">
             <p>{{ products?.name }}</p>
@@ -18,8 +18,12 @@
           </div>
         </div>
         <div *ngIf="isLoggedIn && userSpecificSubscriptions.length === 0 && !loadingUserSubscriptions">
-          <p class="alerts">You have not subscribed to any products.<br><br><br>Please make sure to check our Products
-          </p><br>
+          <p class="alerts">You have not subscribed to any products.
+
+
+Please make sure to check our Products
+          </p>
+
           <button class="products-btn" [routerLink]="'/products'">View Products</button>
         </div>
         <div *ngIf="isLoggedIn && loadingUserSubscriptions">
@@ -42,7 +46,7 @@
         (click)="products?.productid !== undefined && viewProductDetails(products.productid)"
           >
           <div class="productimage">
-            <img [src]="'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image/'+products?.productid" alt="{{ products.name }}">
+            <img [src]="products.imageUrl" alt="{{ products.name }}">
           </div>
           <div class="productdescription">
             <p>{{ products?.name }}</p>
@@ -58,7 +62,7 @@
         (click)="products?.productid !== undefined && viewProductDetails(products.productid)"
           >
           <div class="productimage">
-            <img [src]="'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image/'+products?.productid" alt="{{ products.productName }}">
+            <img [src]="products?.imageUrl"[alt]="products?.name">
           </div>
           <div class="productdescription">
             <p>{{ products?.productName }}</p>
@@ -66,12 +70,16 @@
           </div>
         </div>
       </div>
-      <div *ngIf="isLoggedIn && loadingUserSubscriptions">
+      <div *ngIf="isLoggedIn && loadingUserRatings">
         <p class="alerts">Loading your ratings...</p>
       </div>
       <div *ngIf="isLoggedIn && userSpecificRatings.length === 0 && !loadingUserRatings">
-        <p class="alerts">You have not rated any products.<br><br><br>Please make sure to check our Products
-        </p><br>
+        <p class="alerts">You have not rated any products.
+
+
+Please make sure to check our Products
+        </p>
+
         <button class="products-btn" [routerLink]="'/products'">View Products</button>
       </div>
     </div>
