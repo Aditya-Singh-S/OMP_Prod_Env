@@ -55,8 +55,7 @@ public class ProductServiceImpl implements ProductService {
     private String bucketName;
     @Value("${aws.s3.keyPrefix}")
     private String s3KeyPrefix;
-    @Value("${file.upload.local.directory}")
-    private String localImageDirectory;  
+ 
 //   
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
@@ -67,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
     	
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
         this.s3Client = S3Client.builder()
-                .region(Region.US_EAST_1) 
+                .region(Region.US_EAST_1) // Replace with your AWS Region if different
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
         this.s3Presigner = S3Presigner.builder()
@@ -104,25 +103,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Products addProduct(String name, String description, String imageFileName, Boolean isActive) throws IOException {
-        Path localFilePath = Paths.get(localImageDirectory, imageFileName);
-        if (!Files.exists(localFilePath)) {
-            throw new IOException("Local image file not found at: " + localFilePath.toString());
-        }
-        // Upload to S3 and get the key (filename)
-        String s3Key = uploadFileToS3(localFilePath, imageFileName); // Use imageFileName directly
-        // Construct the permanent S3 URL
-        String imageUrl = String.format("https://%s.s3.amazonaws.com/%s%s", bucketName, s3KeyPrefix, imageFileName);
+    public Products addProduct(String name, String description, MultipartFile imageFile, Boolean isActive) throws IOException {
+        String s3Key = uploadFileToS3(imageFile);
+        String imageUrl = String.format("https://%s.s3.amazonaws.com/%s%s", bucketName, s3KeyPrefix, s3Key);
         Products product = new Products();
         product.setName(name);
         product.setDescription(description);
-        product.setImageUrl(imageUrl); // Store the permanent S3 URL
+        product.setImageUrl(imageUrl);
         product.setIsActive(isActive);
         return productRepository.save(product);
     }
 
+
     @Override
-    public Products updateProduct(String name, String upName, String description, String imageFileName, Boolean isActive)
+    public Products updateProduct(String name, String upName, String description, MultipartFile imageFile, Boolean isActive)
             throws InvalidInputException, IOException {
         Products product = productRepository.findByName(name)
                 .orElseThrow(() -> new InvalidInputException("Product not found with Name: " + name));
@@ -130,35 +124,28 @@ public class ProductServiceImpl implements ProductService {
             product.setName(upName);
         if (description != null)
             product.setDescription(description);
-        if (imageFileName != null && !imageFileName.trim().isEmpty()) {
-            Path localFilePath = Paths.get(localImageDirectory, imageFileName);
-            if (!Files.exists(localFilePath)) {
-                throw new IOException("Local image file not found at: " + localFilePath.toString());
-            }
-            // Upload to S3 and get the key
-            String s3Key = uploadFileToS3(localFilePath, imageFileName);  // Use imageFileName directly
-            // Construct the permanent S3 URL
-            String imageUrl = String.format("https://%s.s3.amazonaws.com/%s%s", bucketName, s3KeyPrefix, imageFileName);
-            product.setImageUrl(imageUrl); // Store the permanent S3 URL
+        if (imageFile != null && imageFile != null) {
+            String s3Key = uploadFileToS3(imageFile);
+            String imageUrl = String.format("https://%s.s3.amazonaws.com/%s%s", bucketName, s3KeyPrefix, s3Key);
+            product.setImageUrl(imageUrl);
         }
         if (isActive != null)
             product.setIsActive(isActive);
         return productRepository.save(product);
     }
 
-    private String uploadFileToS3(Path localFilePath, String fileName) throws IOException {
-        // Use the original file name as the S3 key
-        String key = s3KeyPrefix + fileName;
-        String mimeType = Files.probeContentType(localFilePath);
+    private String uploadFileToS3(MultipartFile file) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        String key = s3KeyPrefix + originalFilename; // Use originalFilename as the key.
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
-                .contentType(mimeType)
+                .contentType(file.getContentType())
                 .build();
         try {
-            s3Client.putObject(putRequest, RequestBody.fromFile(localFilePath));
-            return key; // Return the key (file name)
-        } catch (Exception e) {
+            s3Client.putObject(putRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+            return originalFilename; // Return the original filename.
+        } catch (S3Exception e) {
             throw new IOException("Could not upload image to S3: " + e.getMessage());
         }
     }
@@ -173,23 +160,24 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public byte[] getProductImageByName(String name) {
         Products product = productRepository.findByName(name).orElseThrow(() -> new RuntimeException("Product not found"));
-        String s3Key = product.getImageUrl().substring(product.getImageUrl().lastIndexOf('/') + 1); // Extract the key
+        String s3Key = product.getImageUrl().substring(product.getImageUrl().lastIndexOf('/') + 1);
         return downloadImageFromS3(s3Key);
     }
 
     private byte[] downloadImageFromS3(String key) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
-                .key(s3KeyPrefix + key) // Reconstruct the full key
+                .key(s3KeyPrefix + key)
                 .build();
         try {
             ResponseBytes<software.amazon.awssdk.services.s3.model.GetObjectResponse> responseBytes = s3Client.getObjectAsBytes(getObjectRequest);
             return responseBytes.asByteArray();
         } catch (S3Exception e) {
             System.err.println("Error downloading image from S3: " + e.getMessage());
-            return new byte[0]; // Or throw an exception
+            return new byte[0];
         }
     }
+
 
     @Override
     public Products addSubscription(Integer userId, Integer productId) {
@@ -294,60 +282,60 @@ public class ProductServiceImpl implements ProductService {
 //        return productDTOs;
 //    }
 
-    @Override
-    public List<ProductUploadDTO> readProductsFromXlsx(MultipartFile file) throws IOException {
-        List<ProductUploadDTO> uploadDTOs = new ArrayList<>();
-        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
-            Sheet sheet = workbook.getSheetAt(0);
-            for (Row row : sheet) {
-                if (row.getRowNum() == 0)
-                    continue;
-                ProductUploadDTO uploadDTO = new ProductUploadDTO();
-                uploadDTO.setName(row.getCell(0).getStringCellValue());
-                uploadDTO.setDescription(row.getCell(1).getStringCellValue());
-                try {
-                    uploadDTO.setLocalImagePath(row.getCell(2).getStringCellValue());
-                } catch (Exception e) {
-                    System.err.println("Error reading local image path from Excel: " + e.getMessage());
-                    uploadDTO.setLocalImagePath(null);
-                }
-                uploadDTOs.add(uploadDTO);
-            }
-        }
-        return uploadDTOs; // Directly return List<ProductUploadDTO>
-    }
+//    @Override
+//    public List<ProductUploadDTO> readProductsFromXlsx(MultipartFile file) throws IOException {
+//        List<ProductUploadDTO> uploadDTOs = new ArrayList<>();
+//        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+//            Sheet sheet = workbook.getSheetAt(0);
+//            for (Row row : sheet) {
+//                if (row.getRowNum() == 0)
+//                    continue;
+//                ProductUploadDTO uploadDTO = new ProductUploadDTO();
+//                uploadDTO.setName(row.getCell(0).getStringCellValue());
+//                uploadDTO.setDescription(row.getCell(1).getStringCellValue());
+//                try {
+//                    uploadDTO.setLocalImagePath(row.getCell(2).getStringCellValue());
+//                } catch (Exception e) {
+//                    System.err.println("Error reading local image path from Excel: " + e.getMessage());
+//                    uploadDTO.setLocalImagePath(null);
+//                }
+//                uploadDTOs.add(uploadDTO);
+//            }
+//        }
+//        return uploadDTOs; // Directly return List<ProductUploadDTO>
+//    }
 
-    @Override
-    public List<Products> saveProducts(List<ProductUploadDTO> uploadDTOs) { // Expect List<ProductUploadDTO>
-        List<Products> allProduct = new ArrayList<>();
-        for (ProductUploadDTO uploadDTO : uploadDTOs) {
-            Products product = new Products();
-            product.setName(uploadDTO.getName());
-            product.setDescription(uploadDTO.getDescription());
-
-            String localImagePath = uploadDTO.getLocalImagePath();
-            String s3ImageUrl = null;
-
-            if (localImagePath != null && !localImagePath.trim().isEmpty()) {
-                Path localFile = Paths.get(localImagePath);
-                if (Files.exists(localFile)) {
-                    try {
-                        String fileName = localFile.getFileName().toString();
-                        String s3Key = uploadFileToS3(localFile, fileName);
-                        s3ImageUrl = String.format("https://%s.s3.amazonaws.com/%s%s", bucketName, s3KeyPrefix, fileName);
-                    } catch (IOException e) {
-                        System.err.println("Error uploading image from " + localImagePath + " to S3: " + e.getMessage());
-                        // Handle the error appropriately
-                    }
-                } else {
-                    System.err.println("Local image file not found at: " + localImagePath);
-                    // Handle the case where the local file doesn't exist
-                }
-            }
-            product.setImageUrl(s3ImageUrl); // Set the S3 URL (or null if upload failed)
-            allProduct.add(product);
-        }
-        productRepository.saveAll(allProduct);
-        return allProduct;
-    }
+//    @Override
+//    public List<Products> saveProducts(List<ProductUploadDTO> uploadDTOs) { // Expect List<ProductUploadDTO>
+//        List<Products> allProduct = new ArrayList<>();
+//        for (ProductUploadDTO uploadDTO : uploadDTOs) {
+//            Products product = new Products();
+//            product.setName(uploadDTO.getName());
+//            product.setDescription(uploadDTO.getDescription());
+//
+//            String localImagePath = uploadDTO.getLocalImagePath();
+//            String s3ImageUrl = null;
+//
+//            if (localImagePath != null && !localImagePath.trim().isEmpty()) {
+//                Path localFile = Paths.get(localImagePath);
+//                if (Files.exists(localFile)) {
+//                    try {
+//                        String fileName = localFile.getFileName().toString();
+//                        String s3Key = uploadFileToS3(localFile, fileName);
+//                        s3ImageUrl = String.format("https://%s.s3.amazonaws.com/%s%s", bucketName, s3KeyPrefix, fileName);
+//                    } catch (IOException e) {
+//                        System.err.println("Error uploading image from " + localImagePath + " to S3: " + e.getMessage());
+//                        // Handle the error appropriately
+//                    }
+//                } else {
+//                    System.err.println("Local image file not found at: " + localImagePath);
+//                    // Handle the case where the local file doesn't exist
+//                }
+//            }
+//            product.setImageUrl(s3ImageUrl); // Set the S3 URL (or null if upload failed)
+//            allProduct.add(product);
+//        }
+//        productRepository.saveAll(allProduct);
+//        return allProduct;
+//    }
 }

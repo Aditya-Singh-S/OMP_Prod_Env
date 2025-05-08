@@ -73,8 +73,8 @@ public class User {
     @Column(name="contactnumber")
     private String contactNumber;
  
-    @Lob
-    private byte[] photo;
+    @Column
+    private String photo;
  
     @Column(name="dateofbirth")
     private String dateOfBirth;

@@ -1,9 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, tap, BehaviorSubject } from 'rxjs';
+import { Observable, tap, BehaviorSubject, of, catchError, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { CookieServiceService } from './cookie-service.service';
-import { IUserDetails, IUserIdResponse, IProductDTO, IRatingDTO } from '../model/class/interface/Products';
+import { IUserDetails, IUserIdResponse, IProductDTO, IRatingDTO, IReview } from '../model/class/interface/Products';
+
+interface User {
+  id: string | number;
+  email: string;
+  isActive: boolean;
+  userEmail : string;
+ 
+}
 
 @Injectable({
   providedIn: 'root'
@@ -183,6 +191,72 @@ export class UserService {
 
   watchUserId(): Observable<number | null> {
     return this.userId$;
+  }
+
+  updateReview(ratingId: number, userId: number | null, rating: number | null, review: string | null, reviewActiveStatus: boolean): Observable<any> {
+    let params = new HttpParams().set('ratingId', ratingId.toString());
+    if (userId !== null) params = params.set('userId', userId.toString());
+    if (rating !== null) params = params.set('rating', rating.toString());
+    if (review !== null) params = params.set('review', review);
+    params = params.set('reviewActiveStatus', reviewActiveStatus.toString());
+ 
+    return this.http.put<any>(`${this.baseUrl}/reviews/updateReview`, {}, { params: params });
+  }
+ 
+  deleteReview(ratingId: number): Observable<any> {
+    return this.updateReview(ratingId, null, null, null, false);
+  }
+ 
+  getUserProductReviews(userId: number): Observable<IReview[]> {
+    // const params = new HttpParams().set('userId', userId.toString());
+    return this.http.get<IReview[]>(`${this.baseUrl}/reviews/all/user/` + userId); // Adjust the endpoint
+  }
+ 
+updateUserSubscriptions(userId: number, productIds: number[]): Observable<any> {
+    const url = `${this.baseUrl}/getProductSubscriptionList`  ; // Adjust the endpoint for updating subscriptions
+    return this.http.put(url, { productIds }); // Send the array of product IDs in the request body
+  }
+ 
+  getUserEmailById(userId: number): Observable<string | null> {
+    return this.http.get(`${this.baseUrl}/getUserEmailById?id=${userId}`, { responseType: 'text' }).pipe(
+      catchError(error => {
+        console.error('Error fetching user email:', error);
+        return of(null);
+      })
+    );
+  }
+ 
+  updateUserActiveStatus(userId: number, isActive: boolean): Observable<any> {
+    return this.getUserEmailById(userId).pipe(
+      switchMap((userEmail: string | null) => {
+        if (userEmail) {
+          const params = new HttpParams()
+            .set('email', userEmail)
+            .set('isActive', isActive.toString()); // Convert boolean to string
+ 
+          return this.http.put(`${this.baseUrl}/admin/updateProfile`, null, { params });
+        } else {
+          console.error('User email not found for user ID:', userId);
+          return of(null); // Or return an error Observable
+        }
+      })
+    );
+  }
+ 
+  getUserById(userId: number): Observable<User | null> {
+    const url = `${this.baseUrl}/users/${userId}`;
+    return this.http.get<User>(url).pipe(
+      catchError(this.handleError<User>(`getUserById id=${userId}`))
+    );
+  }
+ 
+  // Generic error handling method
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(`${operation} failed: ${error.message}`);
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 
 }

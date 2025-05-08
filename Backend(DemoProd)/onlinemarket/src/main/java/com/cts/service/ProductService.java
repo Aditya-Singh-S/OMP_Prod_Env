@@ -55,6 +55,7 @@ import com.cts.dto.ProductViewDTO;
 import com.cts.entity.ProductSubscription;
 import com.cts.entity.Products;
 import com.cts.entity.User;
+import com.cts.exception.InvalidInputException;
 import com.cts.exception.InvalidProductException;
 
 public interface ProductService {
@@ -64,7 +65,7 @@ public interface ProductService {
     ProductViewDTO viewProductById(int id);
 
     // Updated addProduct method to take imageFileName
-    Products addProduct(String name, String description, String imageFileName, Boolean isActive) throws IOException;
+    //Products addProduct(String name, String description, String imageFileName, Boolean isActive) throws IOException;
 
     // Modified to return byte array for image data
     byte[] getProductImage(int id);
@@ -80,7 +81,7 @@ public interface ProductService {
     List<ProductViewDTO> getProductSubscriptionList(int userId);
 
     // Updated updateProduct method to take imageFileName
-    Products updateProduct(String name, String upName, String description, String imageFileName, Boolean isActive) throws InvalidProductException, IOException;
+    //Products updateProduct(String name, String upName, String description, String imageFileName, Boolean isActive) throws InvalidProductException, IOException;
 
     List<ProductViewDTO> findTopSubscribedProduct();
 
@@ -88,11 +89,15 @@ public interface ProductService {
 
     List<User> getUsersSubscribedToProduct(int productId);
 
-    List<ProductUploadDTO> readProductsFromXlsx(MultipartFile file) throws IOException;
+//    List<ProductUploadDTO> readProductsFromXlsx(MultipartFile file) throws IOException;
+//
+//    List<Products> saveProducts(List<ProductUploadDTO> uploadDTOs);
 
-    List<Products> saveProducts(List<ProductUploadDTO> uploadDTOs);
+	Products addProduct(String name, String description, MultipartFile imageFile, Boolean isActive) throws IOException;
+
+	Products updateProduct(String name, String upName, String description, MultipartFile imageFile, Boolean isActive)
+			throws InvalidInputException, IOException;
 }
-
 
 
  

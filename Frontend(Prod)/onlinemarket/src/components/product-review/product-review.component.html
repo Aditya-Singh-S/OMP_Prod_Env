@@ -2,18 +2,28 @@
     <div class="popup">
         <h3>Product Reviews</h3>
         <div *ngIf="reviews && reviews.length > 0; else noReviews">
-            <ul class="review-list">
-                <li *ngFor="let review of reviews" class="review-item">
-                    <img [src]="'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image/'+review.productid" alt="{{ review.productName }}" class="product-image">
-                    <div class="product-info">
-                        <p>{{ review.review }}</p>
-                        <p>Rating: {{ review.rating }} stars</p>
+            <div class="review-item">
+                <div class="reviews-container">
+                    <div *ngFor="let review of reviews" class="single-review">
+                        <div class="product-overview">
+                            <a [href]="getProductLink(review)" target="_blank" style="display: block;">
+                                <img [src]="review.imageUrl" alt="{{ review.productName }}" class="product-image" style="cursor: pointer;">
+                            </a>
+                            <div class="product-info-box">
+                              <p class="product-name">{{ review.productName }}</p>
+                              <p>{{ review.subscribersCount }} Subscribers</p>
+                              <p>{{ review.rating }} stars</p>
+                          </div>
+                        </div>
+                        <div class="review-details">
+                            <p class="product-description">{{ review.description }}</p>
+                            <div class="review-actions">
+                                <span class="bin-icon" (click)="deleteReview(review)" title="Remove Review">🗑️</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="review-actions">
-                        <span class="bin-icon" (click)="inactivateReview(review)" title="Remove Review">🗑️</span>
-                    </div>
-                </li>
-            </ul>
+                </div>
+            </div>
             <div class="button-group">
                 <button class="submit-button" (click)="submitReviews()">Submit</button>
                 <button type="button" (click)="closeReviewPopup()">Close</button>
@@ -26,5 +36,8 @@
         <div *ngIf="updateSuccessMessage" class="success-message">
             {{ updateSuccessMessage }}
         </div>
+        <div *ngIf="errorMessage" class="error-message">
+            {{ errorMessage }}
+        </div>
     </div>
-</div>
+  </div>

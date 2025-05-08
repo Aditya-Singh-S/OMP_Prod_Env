@@ -23,21 +23,37 @@ export class ResetComponent implements OnInit {
 
     ngOnInit() {
         this.resetPasswordForm = this.fb.group({
-            //email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
-            password: ['', [Validators.required, Validators.minLength(6)]],
+            password: [
+                '',
+                [
+                    Validators.required,
+                    Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/)
+                ]
+            ],
             confirmPassword: ['', [Validators.required]],
             captchaResponse: ['']
-        });
+        }, { validator: this.passwordMatchValidator }); 
 
         this.route.queryParams.subscribe(params => {
             if (params['email']) {
                 this.emailFromQuery = params['email'];
-                this.resetPasswordForm.controls['email'].setValue(this.emailFromQuery);
+
             } else {
                 alert('Invalid reset link.');
                 this.resetPasswordForm.disable();
             }
         });
+    }
+
+    passwordMatchValidator(formGroup: FormGroup): void {
+        const password = formGroup.get('password')?.value;
+        const confirmPassword = formGroup.get('confirmPassword')?.value;
+
+        if (password && confirmPassword && password !== confirmPassword) {
+            formGroup.get('confirmPassword')?.setErrors({ mismatch: true });
+        } else {
+            formGroup.get('confirmPassword')?.setErrors(null);
+        }
     }
 
     onCaptchaResolved(captchaResponse: string | null) {
@@ -52,12 +68,7 @@ export class ResetComponent implements OnInit {
         }
 
         if (this.resetPasswordForm.invalid) {
-            alert("Please fill in all required fields.");
-            return;
-        }
-
-        if (this.resetPasswordForm.value.password !== this.resetPasswordForm.value.confirmPassword) {
-            alert('Passwords do not match!');
+            alert("Please fill in all required fields and ensure the password meets the criteria.");
             return;
         }
 
@@ -75,13 +86,13 @@ export class ResetComponent implements OnInit {
 
         this.authService.resetPassword(payload).subscribe({
             next: (response: string) => {
-                alert(response); 
+                alert(response);
                 setTimeout(() => {
                     this.router.navigate(['/signin']);
                 }, 1000);
             },
             error: (error) => {
-                alert('Error resetting password: ' + error.error.text); 
+                alert('Error resetting password: ' + error.error.text);
                 console.error('Error:', error);
             }
         });

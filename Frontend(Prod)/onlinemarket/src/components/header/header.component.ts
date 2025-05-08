@@ -90,4 +90,5 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
     this.userDetails = null;
     console.log('User details cleared in HeaderComponent.');
   }
+  
 }

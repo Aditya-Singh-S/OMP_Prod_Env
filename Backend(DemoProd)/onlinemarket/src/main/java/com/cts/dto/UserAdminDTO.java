@@ -28,7 +28,7 @@ public class UserAdminDTO {
     private String password="Abc@123"; 
 
     @NotBlank(message = "Photo is required")
-    private byte[] photo;
+    private String photo;
 
     @NotBlank(message = "Nickname is required")
     private String nickName;

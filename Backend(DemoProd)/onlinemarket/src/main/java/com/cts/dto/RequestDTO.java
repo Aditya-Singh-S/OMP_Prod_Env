@@ -1,7 +1,5 @@
 package com.cts.dto;
  
-import java.util.Date;
- 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +12,7 @@ public class RequestDTO {
     private String lastName;
     private String email;
     private String password;
-    private byte[] photo;
+    private String photo;
     private String nickName;
     private String addressLine1;
     private String addressLine2;
