@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
  
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -125,6 +127,18 @@ public class UserController {
                 .body(image);
     }
  
+//    @GetMapping("user/image/{userId}")
+//    public ResponseEntity<Resource> getImage(@PathVariable int userId) {
+//    	byte[] imageData = userService.getProductImage(userId);
+//        if (imageData != null && imageData.length > 0) {
+//            return ResponseEntity.ok()
+//                    .contentType(MediaType.IMAGE_JPEG)
+//                    .body(new ByteArrayResource(imageData));
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+    
     // Get User Details by ID API
     @GetMapping("/myDetails")
     public ResponseEntity<ResponseDTO> getUserDetailsById(@RequestParam(required = false) Integer userId) {

@@ -15,7 +15,7 @@ public class ProductMapper {
         		.productid(product.getProductid())
         		.name(product.getName())
         		.description(product.getDescription())
-        		.imageUrl("http://localhost:9090/OMP/product/image/" + product.getProductid())
+        		.imageUrl(product.getImageUrl())
                 .build();
  
     

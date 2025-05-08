@@ -29,20 +29,20 @@ public class UserValidationService {
     public void validate(User user) {
         validateMandatoryFields(user);
         validateAge(user.getDateOfBirth());
-        validatePhotoSize(user.getPhoto());
+//        validatePhotoSize(user.getPhoto());
     }
  
     public void validateOnUpdate(User user) {
         validateMandatoryFieldsOnUpdate(user);
         validateAgeOnUpdate(user.getDateOfBirth());
-        validatePhotoSizeOnUpdate(user.getPhoto());
+//        validatePhotoSizeOnUpdate(user.getPhoto());
         checkPostalCodeAndDateOfBirthOnUpdate(user.getPostalCode(), user.getDateOfBirth());
     }
     
     public void validateAdminAddUser(User user) {
     	validateMandatoryFieldsAdminAddUser(user);
         validateAge(user.getDateOfBirth());
-        validatePhotoSize(user.getPhoto());
+//        validatePhotoSize(user.getPhoto());
     }
  
     private void validateMandatoryFields(User user) {
