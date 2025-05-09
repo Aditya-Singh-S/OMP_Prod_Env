@@ -202,7 +202,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.productFound = false;
     this.previewImage = null;
   }
- 
+
   searchProduct() {
     if (this.product.name && this.product.name.trim() !== '') {
       this.productService.searchProduct(this.product.name.trim())
@@ -348,3 +348,4 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
  
 }
+
