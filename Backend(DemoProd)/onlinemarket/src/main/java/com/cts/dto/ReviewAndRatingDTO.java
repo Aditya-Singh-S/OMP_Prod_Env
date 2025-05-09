@@ -10,11 +10,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewAndRatingDTO {
-  private long ratingId;
+	private long ratingId;
     private int productid;
     private String productName;
     private String imageUrl;
