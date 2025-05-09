@@ -346,6 +346,109 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       alert('Error: Could not update user (ID missing).');
     }
   }
+
+  //add user
+
+  showAddUserPopup:boolean=false;
+  addUser={
+  firstName:'',
+  lastName:'',
+  nickName:'',
+  dob:'',
+  contactNo:'',
+  addressL1:'',
+  addressL2:'',
+  email:'',
+  postalCode:'',
+  imageFile: null as File | null,
+  isAdmin: false
+}
+  addUserForm: any;
+
+  registrationSuccess = false;
+registrationError = false;
+errorMessage = '';
+
+
+openAddUserPopup() {
+  console.log('openAddUserPopup');
+  this.showAddUserPopup = true;
+}
+
+submitUser(): void {
+  console.log("inside submit user");
+  const formData = new FormData();
+  formData.append('firstName', this.addUser.firstName);
+  formData.append('lastName', this.addUser.lastName);
+  formData.append('nickName', this.addUser.nickName);
+  formData.append('dateOfBirth', this.addUser.dob); // Ensure this format matches "yyyy-MM-dd"
+  formData.append('contactNumber', this.addUser.contactNo);
+  formData.append('addressLine1', this.addUser.addressL1);
+  formData.append('addressLine2', this.addUser.addressL2);
+  formData.append('email', this.addUser.email);
+  formData.append('postalCode', this.addUser.postalCode);
+  formData.append('isAdmin', this.addUser.isAdmin ? '1' : '0');
+  if (this.addUser.imageFile) {
+    formData.append('imageFile', this.addUser.imageFile);
+  }
+
+  this.productService.registerUser(formData) // Send FormData
+    .subscribe(
+      response => {
+        alert('User added successfully!');
+        this.resetForm();
+        this.showAddUserPopup = false;
+      },
+      error => {
+        console.error('Error adding user:', error);
+        alert('Error adding user. Please try again.');
+      }
+    );
+}
+
+removeSelectedFile(): void {
+  this.addUser.imageFile = null;
+  // Optionally reset the file input to allow selecting the same file again
+  if (this.addUser.imageFile) {
+    this.addUser.imageFile=null;
+  }
+}
+
+onFileChange(event: any): void {
+  // if (event.target.files && event.target.files.length > 0) {
+  //   this.addUser.uploadPhoto = event.target.files[0];
+  // }
+
+  const file = event.target.files[0];
+  if (file) {
+    this.addUser.imageFile = file;
+  }
+  else {
+    this.addUser.imageFile = null;
+  }
+}
+closeAddUserPopup(): void {
+  this.showAddUserPopup = false;
+  this.resetForm(); // Reset the form when closing
+  // Optionally emit an event to notify the parent component that the popup was closed
+}
+
+resetForm(): void {
+  this.addUser = {
+    firstName: '',
+    lastName: '',
+    nickName: '',
+    dob: '',
+    contactNo: '',
+    addressL1: '',
+    addressL2: '',
+    email: '',
+    postalCode: '',
+    imageFile: null as File | null,
+    isAdmin: false
+  }
  
+}
+
 }
 
