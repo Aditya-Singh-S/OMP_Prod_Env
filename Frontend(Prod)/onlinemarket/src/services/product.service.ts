@@ -144,4 +144,9 @@ export class ProductService {
 
     return this.http.put(`${this.baseUrl}/reviews/updateReview`, null, { params }); // Reusing your existing update endpoint
   }
+
+  registerUser(formData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/register`, formData);
+  }
+
 }

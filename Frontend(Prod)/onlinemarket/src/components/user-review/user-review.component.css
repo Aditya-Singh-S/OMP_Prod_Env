@@ -128,11 +128,13 @@
 .review-item {
   padding: 10px 0;
   border: lightblue;
+
 }
 
 .review-item-content {
   border: 2px solid rgb(125, 212, 241);
   background-color: rgb(202, 237, 248);
+  padding:15px;
 }
 
 .review-item strong {

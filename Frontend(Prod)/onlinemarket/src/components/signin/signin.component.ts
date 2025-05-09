@@ -58,7 +58,7 @@ export class SigninComponent implements OnInit {
 
     this.userService.login(email, password).subscribe({
       next: (response: any) => {
-        alert('User logged in successfully!');
+        //alert('User logged in successfully!');
         console.log('Response:', response);
         this.userEmailId = email;
         this.loginSuccess.emit(); // Emit event on successful login

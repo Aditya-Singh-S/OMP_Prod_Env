@@ -87,24 +87,48 @@ export class UserReviewComponent implements OnInit {
       );
   }
 
+  // fetchUserName(userId: number) {
+  //   this.http
+  //     .get<{ firstName: string }>(`${this.baseUrl}/myDetails?userId=${userId}`, {
+  //       responseType: 'json',
+  //     })
+  //     .subscribe(
+  //       (response) => {
+  //         const review = this.reviews.find((r) => r.userId === userId);
+  //         if (review) {
+  //           review.userName = response?.firstName || 'Unknown User';
+  //         }
+  //       },
+  //       (error) => {
+  //         console.error(`Error fetching user name for userId ${userId}:`, error);
+  //         const review = this.reviews.find((r) => r.userId === userId);
+  //         if (review) {
+  //           review.userName = 'Unknown User';
+  //         }
+  //       }
+  //     );
+  // }
+
   fetchUserName(userId: number) {
     this.http
-      .get<{ firstName: string }>(`${this.baseUrl}/myDetails?userId=${userId}`, {
+      .get<{ firstName: string }>(`http://localhost:9090/OMP/myDetails?userId=${userId}`, {
         responseType: 'json',
       })
       .subscribe(
         (response) => {
-          const review = this.reviews.find((r) => r.userId === userId);
-          if (review) {
-            review.userName = response?.firstName || 'Unknown User';
-          }
+          this.reviews.forEach((review) => {
+            if (review.userId === userId) {
+              review.userName = response?.firstName || 'Unknown User';
+            }
+          });
         },
         (error) => {
           console.error(`Error fetching user name for userId ${userId}:`, error);
-          const review = this.reviews.find((r) => r.userId === userId);
-          if (review) {
-            review.userName = 'Unknown User';
-          }
+          this.reviews.forEach((review) => {
+            if (review.userId === userId) {
+              review.userName = 'Unknown User';
+            }
+          });
         }
       );
   }
