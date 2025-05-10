@@ -109,6 +109,7 @@
 <div class="popup-over" *ngIf="showAddUserPopup">
   <div class="popup-container">
     <h3 class="popup-title">Add User</h3>
+    <br>
     <form class="user-form" (ngSubmit)="submitUser()" #addUserForm="ngForm">
       <div class="form-group">
         <label for="firstName">First Name:</label>
@@ -170,7 +171,7 @@
       <div class="form-group">
         <label for="dob">Date of Birth:</label>
         <input
-          type="text"
+          type="date"
           id="dob"
           name="dob"
           placeholder="YYYY-MM-DD"
@@ -281,6 +282,7 @@
 
       <div class="form-group ">
         <label for="uploadPhoto" class="upload-photo-label">Upload Photo:</label>
+        <div>
         <input 
           type="file"
           id="imageFile"
@@ -292,6 +294,7 @@
           class="upload-photo-input"
           #uploadPhotoInput
         />
+        <span class="remove-photo" (click)="removePhoto()">&#x2715;</span> </div>
         
         <div *ngIf="!addUser?.imageFile && addUserForm.submitted" class="text-danger">
           * Please upload a photo.

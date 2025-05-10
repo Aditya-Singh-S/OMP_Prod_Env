@@ -146,7 +146,7 @@ export class ProductService {
   }
 
   registerUser(formData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, formData);
+    return this.http.post(`${this.baseUrl}/admin/register`, formData);
   }
 
 }

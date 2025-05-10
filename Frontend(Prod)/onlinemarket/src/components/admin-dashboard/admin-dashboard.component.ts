@@ -450,5 +450,16 @@ resetForm(): void {
  
 }
 
+removePhoto() {
+
+  const photoInput = document.getElementById('imageFile') as HTMLInputElement;
+
+  if (photoInput) {
+
+      photoInput.value = '';
+
+  }
+
+}
 }
 
