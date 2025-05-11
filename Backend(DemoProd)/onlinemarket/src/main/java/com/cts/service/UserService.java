@@ -164,8 +164,7 @@ public class UserService {
     ) throws IOException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-        String s3Key = uploadFileToS3(imageFile);
-		String imageUrl = String.format("https://%s.s3.us-east-1.amazonaws.com/%s%s", bucketName, s3KeyPrefix, s3Key);
+        
  
         if (password != null) {
             throw new InvalidInputException("You cannot change the password directly through the update profile. Please use the 'reset password' functionality.");
@@ -175,6 +174,8 @@ public class UserService {
         if (lastName != null) user.setLastName(lastName);
         if (email != null) user.setEmail(email);
         if (imageFile != null && !imageFile.isEmpty()) {
+        	String s3Key = uploadFileToS3(imageFile);
+    		String imageUrl = String.format("https://%s.s3.us-east-1.amazonaws.com/%s%s", bucketName, s3KeyPrefix, s3Key);
             user.setPhoto(imageUrl);
         } else if (imageFile != null && imageFile.isEmpty()) {
             user.setPhoto(null);

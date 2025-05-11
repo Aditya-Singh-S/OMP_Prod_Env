@@ -12,6 +12,7 @@ import com.cts.service.ReviewAndRatingService;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://127.0.0.1:3000")
 @RequestMapping("/OMP/reviews")
 public class ReviewAndRatingController {
 

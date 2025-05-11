@@ -37,7 +37,6 @@ reviewUpdatedOn : Date,
 reviewDeletedOn : Date,
 reviewActiveStatus : boolean,
 subscribersCount?: number;
-imageUrl? : string;
 description? : string;
 }
 

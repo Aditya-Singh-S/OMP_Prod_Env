@@ -17,7 +17,7 @@ public class ReviewAndRatingDTO {
 	private long ratingId;
     private int productid;
     private String productName;
-
+    private String imageUrl;
     private int userId;
     private double rating;
     private String review;
@@ -31,6 +31,7 @@ public class ReviewAndRatingDTO {
         this.productid = review.getProducts().getProductid();
         this.userId = review.getUser().getUserID();
         this.productName = review.getProducts().getName();
+        this.imageUrl = review.getProducts().getImageUrl();
         this.rating = review.getRating();
         this.review = review.getReview();
         this.reviewCreatedOn = review.getReviewCreatedOn();
