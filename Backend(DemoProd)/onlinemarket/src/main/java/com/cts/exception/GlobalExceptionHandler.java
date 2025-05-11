@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
+	
+	
+	//Handles PasswordsMismatchException
+	 @ExceptionHandler(PasswordsMismatchException.class)
+	 public ResponseEntity<String> handlePasswordsMismatchException(PasswordsMismatchException ex) {
+	     return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+	 }
 
 	// Handles InvalidCredentialsException
 	@ExceptionHandler(InvalidCredentialsException.class)
