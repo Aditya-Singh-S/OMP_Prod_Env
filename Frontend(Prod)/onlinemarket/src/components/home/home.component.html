@@ -46,7 +46,7 @@ Please make sure to check our Products
         (click)="products?.productid !== undefined && viewProductDetails(products.productid)"
           >
           <div class="productimage">
-            <img [src]="products.imageUrl" alt="{{ products.name }}">
+            <img [src]="products?.imageUrl"[alt]="products?.name">
           </div>
           <div class="productdescription">
             <p>{{ products?.name }}</p>
@@ -62,7 +62,7 @@ Please make sure to check our Products
         (click)="products?.productid !== undefined && viewProductDetails(products.productid)"
           >
           <div class="productimage">
-            <img [src]="products?.imageUrl"[alt]="products?.name">
+            <img [src]="products?.imageUrl"[alt]="products?.productName">
           </div>
           <div class="productdescription">
             <p>{{ products?.productName }}</p>
