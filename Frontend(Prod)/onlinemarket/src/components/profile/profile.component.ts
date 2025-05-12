@@ -29,6 +29,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   currentPhotoUrl: string | null = null;
   userId: number | null = null;
   userIdSubscription: Subscription | undefined;
+  private hasPhotoBeenRemoved: boolean = false; // Track if the photo has been removed
   @ViewChild(ProductSubscriptionsComponent) productSubscriptionsPopup!: ProductSubscriptionsComponent;
   @ViewChild(ProductReviewComponent) productReviewsPopup!: ProductReviewComponent;
 
@@ -122,6 +123,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.currentPhotoUrl = e.target.result;
+          this.hasPhotoBeenRemoved=false;
           this.cdr.detectChanges(); // Manually trigger change detection for OnPush
         };
         reader.readAsDataURL(file);
@@ -135,12 +137,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
       photoInput.value = '';
       this.photoError = '';
       this.currentPhotoUrl = null;
+      this.hasPhotoBeenRemoved=true;
       this.cdr.detectChanges(); // Manually trigger change detection for OnPush
     }
   }
 
   onSubmit(): void {
     console.log('onSubmit() called'); // Diagnostic log
+    
+    // Check if a photo is required and if it has been removed without a new one being selected
+    if (!this.currentPhotoUrl && this.hasPhotoBeenRemoved) {
+      this.photoError = 'Please select a photo.';
+      return; // Stop the submission
+    } else {
+      this.photoError = ''; // Clear any previous photo error if a photo exists or wasn't removed
+    }
+    
     if (this.profileForm.valid && !this.photoError && this.userId) {
       const formData = new FormData();
       formData.append('firstName', this.profileForm.get('firstName')?.value || '');
