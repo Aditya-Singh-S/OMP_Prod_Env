@@ -111,7 +111,7 @@ export class UserReviewComponent implements OnInit {
 
   fetchUserName(userId: number) {
     this.http
-      .get<{ firstName: string }>(`http://localhost:9090/OMP/myDetails?userId=${userId}`, {
+      .get<{ firstName: string }>(`${this.baseUrl}/myDetails?userId=${userId}`, {
         responseType: 'json',
       })
       .subscribe(

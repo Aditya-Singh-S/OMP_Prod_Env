@@ -88,6 +88,11 @@ export class UserService {
     });
   }
 
+  verifyEmail(email: string): Observable<any> {
+    const params = new HttpParams().set('email', email);
+    return this.http.put(`${this.baseUrl}/verify-email`, null, {params});
+  }
+  
   updateUser(userId: any, formData: FormData): Observable<any> {
     return this.http.put(`${this.baseUrl}/updateUser/${userId}`, formData, {
       headers: {

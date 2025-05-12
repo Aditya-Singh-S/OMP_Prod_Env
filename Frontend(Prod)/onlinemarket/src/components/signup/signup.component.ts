@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
 import { Subject, takeUntil } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
  
 @Component({
 
@@ -38,7 +39,7 @@ export class SignupComponent {
 
   destroy$ = new Subject<void>();
  
-  constructor(private fb: FormBuilder, private userService: UserService, private router: Router) {
+  constructor(private fb: FormBuilder, private userService: UserService, private authService: AuthService, private router: Router) {
 
     this.signUpForm = this.fb.group({
 
@@ -215,50 +216,33 @@ onSubmit(): void {
  
     console.log(Array.from(formData.entries())); // Debugging log
  
-    this.userService.register(formData).subscribe({
-
-      next: (response) => {
-
-        console.log('Registration successful:', response)
-
-        this.router.navigate(['/signin']).then(() => {
-
-          window.location.reload();
-
-        });
-
-        alert('Registration successful! Please check your email for verification.');
-
-      },
-
-      error: (err) => {
-
-        console.error('Registration failed:', err);
-
-        if (err?.error?.message === 'Duplicate email: Email already exists in the database.') {
-
-          this.signUpForm.get('email')?.setErrors({ 'potentialDuplicate': true });
-
-          // Store this email as a potential duplicate for the current session
-
-          if (!this.potentiallyDuplicateEmails.includes(this.signUpForm.get('email')?.value)) {
-
-            this.potentiallyDuplicateEmails.push(this.signUpForm.get('email')?.value);
-
-          }
-
-        } else {
-
-          this.emailError = '* Registration failed. Please try again later.';
-
-        }
-
-      }
- 
+    //Auth to cognito
+    const email = this.signUpForm.get('email')?.value;
+    const password = this.signUpForm.get('password')?.value;
+    localStorage.setItem('userEmail', email);
+    this.authService.signUp(email, password).then(result => {
+      console.log('User registered:', result);
+      alert("Registration Successful! Check for email verification");
+      this.userService.register(formData).subscribe({
+        next: (response) => {
+          console.log('User registered in database:', response)
+        
+          alert('User stored in database successful! Please check your db.');
+        },
+        error: (err) => console.error('User registration in database failed:', err)
+      });
+      this.router.navigate(['/verify-email']);
+    }).catch(err => {
+      console.error("Registration failed:",err);
+      alert('Error:'+ err.message);
     });
 
-  }
+    
+    
 
+ 
+    
+  }
 }
  
 }
