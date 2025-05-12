@@ -18,6 +18,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   public productList: IProductDTO[] = []; // Use your interface here
   private searchResults: Subscription | undefined;
+product: any;
 
   constructor(
     private productService: ProductService,
@@ -28,13 +29,13 @@ export class ProductsComponent implements OnInit, OnDestroy {
     console.log('ProductComponent initialized');
     this.productService.getProductList().subscribe(response => {
       this.productList = response;
-      console.log('Product List:', this.productList); // Inspect the data
+      console.log('Product List:', this.productList);
     });
 
     this.searchResults = this.productService.searchResults$.subscribe(
       (results) => {
         this.productList = results;
-        console.log('Search Results Received: ', this.productList); // Inspect search results too
+        console.log('Search Results Received: ', this.productList);
       }
     );
   }
