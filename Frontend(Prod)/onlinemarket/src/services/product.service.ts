@@ -72,11 +72,11 @@ export class ProductService {
     return this.http.put(`${this.baseUrl}/admin/updateProduct/${name}`, formData);
   }
 
-  uploadMultipleProducts(file: File): Observable<any> {
+  uploadMultipleProducts(file: File,bulkProductisactive : boolean): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file);
-
-    return this.http.post(`${this.baseUrl}/admin/uploadMultipleRecords`, formData);
+    const params = new HttpParams().set('bulkProductisactive', bulkProductisactive);
+    return this.http.post(`${this.baseUrl}/admin/uploadMultipleRecords`, formData,{params});
   }
 
   getProductImageByName(name: string): Observable<Blob> {

@@ -12,16 +12,15 @@
         <div class="productdescription">
           {{product.name}}<br>
           
-{{product.subscription_count}} subscribes<br>
+          {{product.subscription_count}} subscribers<br>
           
 
           {{product.avg_rating}} stars
 
         </div>
       </div>
-      <div *ngIf="productList.length === 0; else noProductsFiltered">
+      <div *ngIf="productList.length === 0 else noProductsFiltered">
         <div class="no-product"> No Products are found!</div>
-
       </div>
     </div>
   </div>
@@ -31,6 +30,7 @@
   <div class="filter-section">
     <app-searchfilter></app-searchfilter>
   </div>
+
   <ng-template #noProductsFiltered>
   <div *ngIf="!productList">
     <p>No products are available according to the filters applied.</p>

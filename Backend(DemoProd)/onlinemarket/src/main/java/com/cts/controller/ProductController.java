@@ -167,5 +167,20 @@ public class ProductController {
 //          return new ResponseEntity<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 //      }
 //  }
+    
+    @PostMapping("/admin/uploadMultipleRecords")
+    public ResponseEntity<List<Products>> uploadMultipleProducts(@RequestParam("file") MultipartFile file, @RequestParam boolean bulkProductisactive) {
+        if (file.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            List<Products> uploadedProducts = productService.addMultipleProducts(file,bulkProductisactive);
+            return new ResponseEntity<>(uploadedProducts, HttpStatus.CREATED);
+        } catch (IOException e) {
+            System.err.println("Error processing Excel file: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

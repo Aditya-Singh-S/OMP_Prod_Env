@@ -6,21 +6,21 @@
         <input id="firstName" formControlName="firstName" class="form-control" />
         <div *ngIf="profileForm.get('firstName')?.errors && profileForm.get('firstName')?.touched" class="text-danger">
           <div *ngIf="profileForm.get('firstName')?.errors?.['required']">* First name is required.</div>
-          <div *ngIf="profileForm.get('firstName')?.errors?.['pattern']">* Enter a valid first name (3-15 characters, letters, dots, or underscores).</div>
+          <div *ngIf="profileForm.get('firstName')?.errors?.['pattern']">* Invalid First Name</div>
         </div>
 
         <label for="lastName">Last Name:</label>
         <input id="lastName" formControlName="lastName" class="form-control" />
         <div *ngIf="profileForm.get('lastName')?.errors && profileForm.get('lastName')?.touched" class="text-danger">
           <div *ngIf="profileForm.get('lastName')?.errors?.['required']">* Last name is required.</div>
-          <div *ngIf="profileForm.get('lastName')?.errors?.['pattern']">* Enter a valid last name (3-15 characters, letters, dots, or underscores).</div>
+          <div *ngIf="profileForm.get('lastName')?.errors?.['pattern']">* Invalid Last Name</div>
         </div>
 
         <label for="nickName">Nickname:</label>
         <input id="nickName" formControlName="nickName" class="form-control" />
         <div *ngIf="profileForm.get('nickName')?.errors && profileForm.get('nickName')?.touched" class="text-danger">
           <div *ngIf="profileForm.get('nickName')?.errors?.['required']">* Nick name is required.</div>
-          <div *ngIf="profileForm.get('nickName')?.errors?.['pattern']">* Enter a valid nickname (3-15 characters, letters, dots, or underscores).</div>
+          <div *ngIf="profileForm.get('nickName')?.errors?.['pattern']">* Invalid Nick Name</div>
         </div>
 
         <label for="dateOfBirth">Date of Birth:</label>
@@ -61,14 +61,13 @@
         </div>
 
         <label for="photo">Upload Photo:</label>
-        
 
         <div class="photo-field">
-          <input id="photo" type="file" (change)="onFileChange($event)" class="form-control" name="photo"/>
+          <input id="photo" type="file" (change)="onFileChange($event)" class="form-control" name="photo" />
           <span class="remove-photo" (click)="removePhoto()">&#x2715;</span>
         </div>
         <div *ngIf="photoError" class="text-danger">
-          {{"* "+photoError }}
+          {{ "* " + photoError }}
         </div>
       </div>
       <div *ngIf="currentPhotoUrl" class="profile-photo">
@@ -86,22 +85,32 @@
 
 
         <button type="submit" [disabled]="profileForm.invalid || photoError" class="btn btn-primary">Save Changes</button>
-        
-
-        
+        <br><br>
+        <div *ngIf="showPopup" class="popup">
+          <div class="popup-content" [ngClass]="{'success': popupType === 'success', 'error': popupType === 'error'}">
+            <div class="popup-header">
+              <h2>{{ popupTitle }}</h2>
+              <span class="close-button" (click)="closePopup()">&times;</span>
+            </div>
+            <div class="popup-body">
+              <p>{{ popupMessage }}</p>
+            </div>
+            <div>
+              <button type="button" (click)="closePopup()">Ok</button>
+            </div>
+          </div>
+        </div>
 
         <button type="button" (click)="openSubscriptions()">View Subscriptions</button>
+        <br><br>
         <app-product-subscriptions></app-product-subscriptions>
-        
 
-        
+
 
         <button type="button" (click)="openReviewPopup()">View Product Review</button>
+        <br><br>
         <app-product-review></app-product-review>
       </div>
     </div>
   </form>
 </div>
-
-
- 

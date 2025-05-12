@@ -186,7 +186,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
  
   submitBulkProducts() {
     if (this.bulkFile) {
-      this.productService.uploadMultipleProducts(this.bulkFile)
+      this.productService.uploadMultipleProducts(this.bulkFile,this.bulkProductisactive)
         .subscribe(response => {
           alert('Multiple products added successfully');
           this.closeAddMultipleProductsPopup();
@@ -195,6 +195,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         });
     }
   }
+  
  
   openUpdateProductPopup() {
     this.showUpdatePopup = true;
@@ -433,6 +434,19 @@ closeAddUserPopup(): void {
   // Optionally emit an event to notify the parent component that the popup was closed
 }
 
+
+removePhoto() {
+
+  const photoInput = document.getElementById('imageFile') as HTMLInputElement;
+
+  if (photoInput) {
+
+      photoInput.value = '';
+
+  }
+
+}
+
 resetForm(): void {
   this.addUser = {
     firstName: '',
@@ -450,16 +464,5 @@ resetForm(): void {
  
 }
 
-removePhoto() {
-
-  const photoInput = document.getElementById('imageFile') as HTMLInputElement;
-
-  if (photoInput) {
-
-      photoInput.value = '';
-
-  }
-
-}
 }
 

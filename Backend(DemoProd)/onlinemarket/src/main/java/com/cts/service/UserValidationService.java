@@ -1,5 +1,4 @@
- 
-package com.cts.service;
+ package com.cts.service;
  
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -93,7 +92,7 @@ public class UserValidationService {
         if (firstName.length() < 3 || firstName.length() > 15) {
             throw new InvalidInputException("Invalid Format of First Name: Length must be between 3 and 15 characters.");
         }
-        if (!firstName.matches("[a-zA-Z._0-9]+")) {
+        if (!firstName.matches("^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$")) {
             throw new InvalidInputException("Invalid Format of First Name: Only alphabetic characters, dots, and underscores are allowed.");
         }
     }
@@ -103,7 +102,7 @@ public class UserValidationService {
             if (firstName.isBlank()) {
                 throw new InvalidInputException("First Name cannot be blank.");
             }
-            if (firstName.length() < 3 || firstName.length() > 15 || !firstName.matches("[a-zA-Z._0-9]+")) {
+            if (firstName.length() < 3 || firstName.length() > 15 || !firstName.matches("^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$")) {
                 throw new InvalidInputException("Invalid Format of First Name: Length must be between 3 and 15 characters, and only alphabetic characters, dots, and underscores are allowed.");
             }
         }
@@ -118,7 +117,7 @@ public class UserValidationService {
         if (lastName.length() < 3 || lastName.length() > 15) {
             throw new InvalidInputException("Invalid Format of Last Name: Length must be between 3 and 15 characters.");
         }
-        if (!lastName.matches("[a-zA-Z._0-9]+")) {
+        if (!lastName.matches("^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$")) {
             throw new InvalidInputException("Invalid Format of Last Name: Only alphabetic characters, dots, and underscores are allowed.");
         }
     }
@@ -128,7 +127,7 @@ public class UserValidationService {
             if (lastName.isBlank()) {
                 throw new InvalidInputException("Last Name cannot be blank.");
             }
-            if (lastName.length() < 3 || lastName.length() > 15 || !lastName.matches("[a-zA-Z._0-9]+")) {
+            if (lastName.length() < 3 || lastName.length() > 15 || !lastName.matches("^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$")) {
                 throw new InvalidInputException("Invalid Format of Last Name: Length must be between 3 and 15 characters, and only alphabetic characters, dots, and underscores are allowed.");
             }
         }
@@ -140,7 +139,7 @@ public class UserValidationService {
         if (nickName == null || nickName.isBlank()) {
             throw new InvalidInputException("Nick Name cannot be blank.");
         }
-        if (nickName.length() < 3 || !nickName.matches("[a-zA-Z]+")) {
+        if (nickName.length() < 3 || !nickName.matches("^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$")) {
             throw new InvalidInputException("Invalid Format of Nick Name: Length must be at least 3 characters and contain only alphabetic characters.");
         }
     }
@@ -150,7 +149,7 @@ public class UserValidationService {
             if (nickName.isBlank()) {
                 throw new InvalidInputException("Nick Name cannot be blank.");
             }
-            if (nickName.length() < 3 || !nickName.matches("[a-zA-Z]+")) {
+            if (nickName.length() < 3 || !nickName.matches("^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$")) {
                 throw new InvalidInputException("Invalid Format of Nick Name: Length must be at least 3 characters and contain only alphabetic characters.");
             }
         }
@@ -209,7 +208,7 @@ public class UserValidationService {
             if (contactNumber.isBlank()) {
                 throw new InvalidInputException("Contact Number cannot be blank.");
             }
-            if (contactNumber.length() != 10 || !contactNumber.matches("[1-9][0-9]{9}")) {
+            if (contactNumber.length() != 10 || !contactNumber.matches("[6-9][0-9]{9}")) {
                 throw new InvalidInputException("Wrong format of contact number: Must be 10 digits and start with 1-9.");
             }
         }
@@ -221,13 +220,13 @@ public class UserValidationService {
         if (password == null || password.isBlank()) {
             throw new InvalidInputException("Password cannot be blank.");
         }
-        String valid_password = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?\":{}|<>]{6,}$";
+        String valid_password = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$";
         if (password.contains(" ") || password.contains("/")) {
             throw new InvalidInputException("Password must not contain spaces or slashes (/).");
         }
  
         if (!password.matches(valid_password)) {
-            throw new InvalidInputException("Password must contain at least one numeric digit, one lowercase letter, one uppercase letter, one special character, and be at least 6 characters long.");
+            throw new InvalidInputException("Password must contain at least one numeric digit, one lowercase letter, one uppercase letter, and be at least 6 characters long.");
         }
     }
  
