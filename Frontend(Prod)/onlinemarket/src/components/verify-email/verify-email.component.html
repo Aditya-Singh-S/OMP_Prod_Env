@@ -1,0 +1,12 @@
+<div class="container">
+    <div *ngIf="infoMessage" class="info-msg">
+        <p>{{infoMessage}}</p>
+    </div>
+    <div *ngIf="isVerified" class="success-msg">
+        <p>Verification Successful! You can now sign in.</p>
+        <button id="submit" (click)="goToSignIn()">SignIn</button>
+    </div>
+    <div *ngIf="errorMessage" class="error-msg">
+        <p>{{errorMessage}}</p>
+    </div>
+</div>
