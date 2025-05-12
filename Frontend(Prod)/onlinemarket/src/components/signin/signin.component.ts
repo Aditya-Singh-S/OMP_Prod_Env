@@ -9,6 +9,7 @@ import { ISigninResponse, IUserIdResponse } from '../../model/class/interface/Pr
 import { CookieServiceService } from '../../services/cookie-service.service';
 import { UserService } from '../../services/user.service';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-signin',
@@ -24,7 +25,7 @@ export class SigninComponent implements OnInit {
   userEmailId: string = '';
   @Output() loginSuccess = new EventEmitter<void>();
 
-  constructor(private fb: FormBuilder, private userService: UserService, private cookieService: CookieServiceService, private router: Router) {}
+  constructor(private fb: FormBuilder, private userService: UserService, private authService: AuthService, private cookieService: CookieServiceService, private router: Router) {}
 
   ngOnInit() {
     this.signInForm = this.fb.group({
@@ -56,34 +57,19 @@ export class SigninComponent implements OnInit {
     console.log("Email:", email);
     console.log("Password:", password);
 
-    this.userService.login(email, password).subscribe({
-      next: (response: any) => {
-        //alert('User logged in successfully!');
-        console.log('Response:', response);
-        this.userEmailId = email;
-        this.loginSuccess.emit(); // Emit event on successful login
-        this.userService.handleLoginSuccess(this.userEmailId);
-        this.router.navigate(['/home']);
-      },
-      error: (error) => {
-        let errorMessage = error.error?.message || 'An unexpected error occurred';
 
-        if (error.status === 0) {
-          alert('Error: Unable to reach the server. Please check your network connection.');
-        } else if (error.status === 401) {
-          alert('Error: Invalid credentials');
-        } else if (error.status === 403) {
-          alert('Error: Email not verified');
-        } else if (error.status === 404) {
-          alert('Error: User not found');
-        } else if (error.status === 500) {
-          alert('Error: Internal server error. Please try again later.');
-        } else {
-          alert('Error: ' + errorMessage);
-        }
+    this.authService.signIn(email, password).then(result => {
+      console.log("User signed in:", result);
+      alert("Login successful!");
 
-        console.error('Error:', error);
-      }
+      this.userEmailId = email;
+      this.loginSuccess.emit(); // Emit event on successful login
+      this.userService.handleLoginSuccess(this.userEmailId);
+
+      this.router.navigate(['/home'])
+    }).catch(err => {
+      console.error('Login failed: ', err);
+      alert("Error: "+ err.message);
     });
   }
 }
