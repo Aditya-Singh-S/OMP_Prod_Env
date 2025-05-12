@@ -20,7 +20,7 @@
         </div>
       </div>
       <div *ngIf="productList.length === 0; else noProductsFiltered">
-        <div class="no-product"> No products are available according to the filters applied.</div>
+        <div class="no-product"> No Products are found!</div>
 
       </div>
     </div>
@@ -33,7 +33,7 @@
   </div>
   <ng-template #noProductsFiltered>
   <div *ngIf="!productList">
-    <p>No Products are found</p>
+    <p>No products are available according to the filters applied.</p>
   </div>
 </ng-template>
 </section>
