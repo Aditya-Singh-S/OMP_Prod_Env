@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,8 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+
 
 @RestController
 @CrossOrigin(origins = "http://127.0.0.1:3000")
@@ -56,6 +59,13 @@ public class ProductController {
         Products newProduct = productService.addProduct(name, description, file, isActive);
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
+    
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex) {
+        String name = ex.getParameterName();
+        return new ResponseEntity<>("Validation Error: '" + name + "' field is required.", HttpStatus.BAD_REQUEST);
+    }
+
 
     @GetMapping("/viewAllProducts")
     public ResponseEntity<List<ProductViewDTO>> viewAllProducts() {
