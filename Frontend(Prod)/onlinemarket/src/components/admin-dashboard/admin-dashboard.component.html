@@ -40,12 +40,36 @@
       <div *ngIf="duplicateProductNameError" class="text-danger">
         Product name already exists. Please use a different name.
       </div>
-      <input type="text" placeholder="Description" [(ngModel)]="productDescription" name="description" required />
-      <input type="file" id="fileInput" (change)="onFileSelected($event)" accept="image/*" />
+
+      <input 
+       type="text"
+       placeholder="Description"
+       [(ngModel)]="productDescription"
+       name="description"
+       required
+       minlength="100"
+       #desc="ngModel" 
+      />
+
+      <div *ngIf="desc.invalid && desc.touched" class="text-danger">
+      <div *ngIf="desc.errors?.['required']">Description is required.</div>
+        <div *ngIf="desc.errors?.['minlength']">
+           Description must be at least 100 characters. ({{ productDescription.length || 0 }}/100)
+        </div>
+      </div>
+
+
+      <input type="file" id="fileInput" (change)="onFileSelected($event)" accept=".jpeg,.jpg,.png" />
+      <div *ngIf="invalidFileTypeError" class="text-danger">
+        Invalid file type. Only JPEG, JPG, and PNG files are allowed.
+      </div>      
       <div *ngIf="selectedImageFile" class="file-info">
         {{ selectedImageFile.name }}
         <span class="remove-icon" (click)="removeImage()">❌</span>
       </div>
+      <div *ngIf="imageRequiredError" class="text-danger">
+        Product image is required. Please upload an image.
+      </div>      
       <div *ngIf="imagePreview">
         <img [src]="imagePreview" alt="Preview" style="max-height: 150px;" />
       </div>
@@ -54,7 +78,7 @@
         <input type="checkbox" [(ngModel)]="isActive" name="activeStatus" />
       </label>
       <div class="button-group">
-        <button type="submit" [disabled]="duplicateProductNameError">Submit</button> <button type="button" (click)="closeAddProductPopup()">Cancel</button>
+        <button type="submit" [disabled]="duplicateProductNameError || desc.invalid">Submit</button> <button type="button" (click)="closeAddProductPopup()">Cancel</button>
       </div>
     </form>
   </div>
@@ -65,12 +89,18 @@
     <h3>Add Multiple Products</h3>
     <form (ngSubmit)="submitBulkProducts()">
       <input type="file" accept=".xlsx, .xls" (change)="onBulkFileChange($event)" required />
+      <div *ngIf="invalidBulkFileTypeError" class="text-danger">
+        Invalid file type. Only XLS, XLSX files are allowed.
+      </div>
+      <div *ngIf="fileRequiredError" class="text-danger">
+        File is required. Please upload a File.
+      </div>  
       <label>
         Active Status:
         <input type="checkbox" [(ngModel)]="bulkProductisactive" name="bulkActiveStatus" />
       </label>
       <div class="button-group">
-        <button type="submit">Submit</button>
+        <button type="submit" [disabled]="invalidBulkFileTypeError || fileRequiredError">Submit</button>
         <button type="button" (click)="closeAddMultipleProductsPopup()">Cancel</button>
       </div>
     </form>
@@ -81,7 +111,9 @@
   <div class="popup">
     <h3>Update Product</h3>
     <input type="text" [(ngModel)]="product.name" placeholder="Search Product by Product Name" />
-    <button (click)="searchProduct()">Search</button> <button type="button" (click)="closeUpdateProductPopup()">Cancel</button>
+    <div class="button-group1">
+      <button (click)="searchProduct()">Search</button> <button type="button" (click)="closeUpdateProductPopup()">Cancel</button>
+    </div>
 
     <form *ngIf="productFound" (ngSubmit)="updateProduct()" #updateForm="ngForm">
       <img *ngIf="previewImage" [src]="previewImage" alt="Product Image"

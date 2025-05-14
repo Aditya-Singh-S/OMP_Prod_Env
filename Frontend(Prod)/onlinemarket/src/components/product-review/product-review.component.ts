@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { forkJoin, Subscription, tap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { IProductDTO, IRatingDTO } from '../../model/class/interface/Products';
 
@@ -59,47 +59,73 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
     }
 
     loadUserReviews(): void {
-      if (this.userId) {
-          this.userService.getProductRatingList(this.userId).subscribe({
-              next: (data) => {
-                  console.log('Raw review data:', data); // Keep this for debugging
-                  this.reviews = data.map(review => ({
-                      isActive: review.reviewActiveStatus,
-                      ratingId: review.ratingId,
-                      productid: review.productid,
-                      productName: review.productName,
-                      userId: review.userId,
-                      rating: review.rating,
-                      review: review.review,
-                      reviewCreatedOn: review.reviewCreatedOn,
-                      reviewUpdatedOn: review.reviewUpdatedOn,
-                      reviewDeletedOn: review.reviewDeletedOn,
-                      reviewActiveStatus: review.reviewActiveStatus,
-                      imageUrl: review.imageUrl, // Should now be available in 'data'
-                      description: review.description, // Should now be available in 'data'
-                      subscribersCount: review.subscribersCount, // If your backend provides this
+        if (this.userId) {
+            forkJoin([
+                this.userService.getProductRatingList(this.userId),
+                this.userService.getProductSubscriptionList(this.userId)
+            ]).pipe(
+                tap(([reviewData, subscriptionData]) => {
+                    console.log('Raw review data:', reviewData);
+                    console.log('Raw subscription data:', subscriptionData);
 
-                  } as ReviewViewModel));
-                //  console.log('User Reviews:', this.reviews);
-                console.log(this.reviews)
-              },
-              error: (error) => {
-                  console.error('Error loading reviews:', error);
-                  this.errorMessage = 'Error Loading reviews';
-                  setTimeout(() => this.errorMessage = null, 3000);
-              }
+                    const reviewMap = new Map<number, ReviewViewModel>();
 
+                    // Process review data
+                    reviewData.forEach(review => {
+                        reviewMap.set(review.productid, {
+                            isActive: review.reviewActiveStatus,
+                            ratingId: review.ratingId,
+                            productid: review.productid,
+                            productName: review.productName,
+                            userId: review.userId,
+                            rating: review.rating,
+                            review: review.review,
+                            reviewCreatedOn: review.reviewCreatedOn,
+                            reviewUpdatedOn: review.reviewUpdatedOn,
+                            reviewDeletedOn: review.reviewDeletedOn,
+                            reviewActiveStatus: review.reviewActiveStatus,
+                            imageUrl: review.imageUrl,
+                            description: review.description,
+                            subscribersCount: 0 
+                        } as ReviewViewModel);
+                    });
 
+                    subscriptionData.forEach(product => {
+                        const existingReview = reviewMap.get(product.productid);
+                        if (existingReview) {
+                            existingReview.imageUrl = product.imageUrl;
+                            existingReview.subscribersCount = product.subscription_count;
+                            if (product.avg_rating !== undefined) {
+                                existingReview.rating = product.avg_rating;
+                            }
+                        } else {
+                            reviewMap.set(product.productid, {
+                                imageUrl: product.imageUrl,
+                                description: product.description,
+                                subscribersCount: product.subscription_count
+                            } as ReviewViewModel);
+                        }
+                    });
 
-          });
-      }
-  }
+                    this.reviews = Array.from(reviewMap.values());
+                    console.log('Merged User Reviews:', this.reviews);
+                })
+            ).subscribe({
+                error: (error) => {
+                    console.error('Error loading reviews and subscriptions:', error);
+                    this.errorMessage = 'Error Loading reviews and product information.';
+                    setTimeout(() => this.errorMessage = null, 3000);
+                }
+            });
+        }
+    }
+  
 
     inactivateReview(review: ReviewViewModel): void {
         review.isActive = false;
     }
     markForDeletion(review: ReviewViewModel): void {
-        review.isActive = false; // Visually indicate it's marked for deletion
+        review.isActive = false; 
     }
 
     deleteReview(reviewToDelete: ReviewViewModel): void {
@@ -114,7 +140,7 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
                 next: (response) => {
                     console.log('Review marked for removal successfully:', response);
                     this.updateSuccessMessage = `Review for ${reviewToDelete.productName} removed.`;
-                    this.loadUserReviews(); // Reload reviews to reflect the update
+                    this.loadUserReviews();
                     setTimeout(() => this.updateSuccessMessage = null, 3000);
                 },
                 error: (error) => {

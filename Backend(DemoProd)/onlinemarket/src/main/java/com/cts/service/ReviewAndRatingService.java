@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
 @Service
 public class ReviewAndRatingService {
 
+	@Autowired
+	SNSService snsService;
+	
     @Autowired
     private ReviewAndRatingRepository reviewRepository;
 
@@ -48,8 +51,11 @@ public class ReviewAndRatingService {
         newReview.setReview(review);
 //        newReview.setReviewActiveStatus(reviewActiveStatus);
         newReview.setReviewCreatedOn(Timestamp.from(Instant.now()));
-
-        return reviewRepository.save(newReview);
+        
+        reviewRepository.save(newReview);
+        snsService.notifyReviewCreated(user.getEmail(), product.getName(), rating, review);
+        
+        return newReview;
     }
 
     // Update Review
@@ -78,7 +84,12 @@ public class ReviewAndRatingService {
         }
 
         existingReview.setReviewUpdateOn(Timestamp.from(Instant.now()));
-        return reviewRepository.save(existingReview);
+        
+        reviewRepository.save(existingReview);
+        
+        snsService.notifyReviewDeleted(existingReview.getUser().getEmail(),existingReview.getProducts().getName(),rating,review);
+        
+        return existingReview;
     }
 
     public List<ReviewAndRatingDTO> getAllReviews() {
@@ -112,7 +123,14 @@ public class ReviewAndRatingService {
                       .collect(Collectors.toList());
     }
 
-	public List<ReviewAndRatingDTO> getReviewsByProductId(int productid) {
+public List<ReviewAndRatingDTO> getReviewsByProductId(int productid) {
+		
+		if(productid<=0)
+		{
+			throw new InvalidProductException("Please enter valid product Id");
+		}
+		Products product = productRepository.findById(productid)
+                .orElseThrow(() -> new InvalidProductException("Product not found with ID: " + productid));
 
 		List<ReviewsAndRatings> reviews = reviewRepository.findByProductsProductidOrderByRatingDesc(productid);
 		return reviews.stream().map(ReviewAndRatingDTO::new).collect(Collectors.toList());
