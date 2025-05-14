@@ -17,8 +17,13 @@ import { IProductDTO } from '../../model/class/interface/Products'; // Import yo
 export class ProductsComponent implements OnInit, OnDestroy {
 
   public productList: IProductDTO[] = []; // Use your interface here
-  private searchResults: Subscription | undefined;
-product: any;
+  // private searchResults: Subscription | undefined;
+  private searchResultsSubscription: Subscription | undefined;
+  private invalidSearchSubscription: Subscription | undefined;
+  product: any;
+
+  showNoResultsMessage: boolean = false;
+  noResultsMessage: string = '';
 
   constructor(
     private productService: ProductService,
@@ -32,17 +37,33 @@ product: any;
       console.log('Product List:', this.productList);
     });
 
-    this.searchResults = this.productService.searchResults$.subscribe(
+    this.searchResultsSubscription = this.productService.searchResults$.subscribe(
       (results) => {
         this.productList = results;
+        this.showNoResultsMessage = results.length === 0;
+        this.noResultsMessage = results.length === 0 ? 'No products available according to the search filter.' : '';
         console.log('Search Results Received: ', this.productList);
       }
     );
+
+    this.invalidSearchSubscription = this.productService.invalidSearch$.subscribe(() => {
+      this.productList = [];
+      this.showNoResultsMessage = true;
+      this.noResultsMessage = 'Invalid search input. Please try again.';
+    });
+
   }
 
   ngOnDestroy(): void {
-    if (this.searchResults) {
-      this.searchResults.unsubscribe();
+    // if (this.searchResults) {
+    //   this.searchResults.unsubscribe();
+    // }
+
+    if (this.searchResultsSubscription) {
+      this.searchResultsSubscription.unsubscribe();
+    }
+    if (this.invalidSearchSubscription) {
+      this.invalidSearchSubscription.unsubscribe();
     }
   }
   viewProductDetails(productId: number) {

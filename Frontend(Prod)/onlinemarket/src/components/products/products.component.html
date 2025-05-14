@@ -19,8 +19,11 @@
 
         </div>
       </div>
-      <div *ngIf="productList.length === 0 else noProductsFiltered">
-        <div class="no-product"> No Products are found!</div>
+      <div *ngIf="showNoResultsMessage">
+        <div class="no-product"> {{noResultsMessage}}</div>
+      </div>
+      <div *ngIf="productList.length === 0 && !showNoResultsMessage">
+        <div class="no-product">No Products are found!</div>
       </div>
     </div>
   </div>
@@ -30,10 +33,4 @@
   <div class="filter-section">
     <app-searchfilter></app-searchfilter>
   </div>
-
-  <ng-template #noProductsFiltered>
-  <div *ngIf="!productList">
-    <p>No products are available according to the filters applied.</p>
-  </div>
-</ng-template>
 </section>

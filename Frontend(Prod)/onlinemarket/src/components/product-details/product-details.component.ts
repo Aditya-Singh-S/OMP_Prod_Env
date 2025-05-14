@@ -158,7 +158,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   fetchUserName(userId: number) {
-    this.userNameSubscription = this.http.get<{ firstName: string }>(`http://localhost:9090/OMP/myDetails?userId=${userId}`, { responseType: 'json' }).subscribe(
+    this.userNameSubscription = this.http.get<{ firstName: string }>(`https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/myDetails?userId=${userId}`, { responseType: 'json' }).subscribe(
       response => {
         this.userName = response?.firstName || 'Unknown User';
         console.log('Fetched username:', this.userName);
@@ -240,6 +240,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
           this.reviewDescription = "";
           this.rating = 0;
           this.closeReviewPopup(); // Close review popup on success
+          window.location.reload();
         },
         error: (error) => {
           console.error('Error adding review:', error);

@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -139,6 +141,29 @@ public class UserAdminController {
 	        return ResponseEntity.badRequest().body(null);
 	    }
 	}
+	
+	@ExceptionHandler(MissingServletRequestParameterException.class)
+	 public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex) {
+	     String paramName = ex.getParameterName();
+	     String message;
+
+	     switch (paramName) {
+	         case "email":
+	             message = "Validation Error: 'email' field is required.";
+	             break;
+	         case "subscriptionId":
+	             message = "Validation Error: 'subscriptionId' field is required.";
+	             break;
+	         case "optInStatus":
+	             message = "Validation Error: 'optInStatus' field is required.";
+	             break;
+	         default:
+	             message = "Validation Error: '" + paramName + "' field is required.";
+	     }
+
+	     return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	 }
+
  
 	
     @PutMapping("/admin/updateReviewByEmail")

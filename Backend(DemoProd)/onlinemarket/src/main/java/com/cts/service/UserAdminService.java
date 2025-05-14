@@ -42,7 +42,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserAdminService {
-
+	
+	@Autowired
+	SNSService snsService;
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -104,8 +107,10 @@ public class UserAdminService {
 			user.setPassword(null);
 		}
 		userValidationService.validateAdminAddUser(user);
-
-		return userRepository.save(user);
+		User savedUser = userRepository.save(user);
+		snsService.userEmailVerify(user.getEmail());
+		
+		return savedUser;
 	}
 
 	// No changes are required in the other methods; they can remain as is.

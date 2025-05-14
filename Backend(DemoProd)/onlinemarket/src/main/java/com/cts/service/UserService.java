@@ -45,6 +45,8 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 @Service
 public class UserService {
  
+	@Autowired
+	private SNSService snsService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -213,7 +215,12 @@ public class UserService {
         userValidationService.validate(user);
         user.setPassword(util.hashPassword(user.getPassword()));
         User savedUser = userRepository.save(user);
-        return userMapper.toDTO(savedUser);
+        
+        ResponseDTO responseDTO = userMapper.toDTO(savedUser);
+        //SNS Service call
+        snsService.subscribeUser(user.getEmail());
+        
+        return responseDTO;
     }
  
    //Retrieve all users.
