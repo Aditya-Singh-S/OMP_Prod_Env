@@ -70,11 +70,14 @@ export class SearchfilterComponent implements OnInit {
           },
           (error) => {
             console.error('Error during search:', error);
+            this.productService.setSearchResults([]); // Clear results on error
           }
         );
       }
     } else {
       console.log('Form is invalid. Please check the validation errors.');
+      this.productService.setSearchResults([]); // Clear any previous search results
+      this.productService.signalInvalidSearch(); // Signal that the search was invalid
     }
   }
 

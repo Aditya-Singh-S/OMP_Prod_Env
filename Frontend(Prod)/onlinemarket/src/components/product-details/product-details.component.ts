@@ -240,6 +240,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
           this.reviewDescription = "";
           this.rating = 0;
           this.closeReviewPopup(); // Close review popup on success
+          window.location.reload();
         },
         error: (error) => {
           console.error('Error adding review:', error);
