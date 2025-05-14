@@ -185,7 +185,7 @@
   border: 1px solid lightblue;
 }
 
-.close-btn{
+.close-btn,.submit-btn{
   background-color: purple;
   color: white;
   padding: 10px;

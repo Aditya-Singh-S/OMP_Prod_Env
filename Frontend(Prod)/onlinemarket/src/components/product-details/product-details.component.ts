@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { UserReviewComponent } from "../user-review/user-review.component";
 import { FormsModule } from '@angular/forms';
@@ -16,7 +16,7 @@ import { SubscriberListComponent } from '../subscriber-list/subscriber-list.comp
   imports: [CommonModule, RouterModule, UserReviewComponent, FormsModule, SubscriberListComponent],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.css',
-  providers: [CookieServiceService, UserService,ProductService]
+  providers: [CookieServiceService, UserService, ProductService]
 })
 export class ProductDetailsComponent implements OnInit, OnDestroy {
   [x: string]: any;
@@ -30,7 +30,8 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   public loggedIn: boolean = false;
   userId: number | null = null;
   public product: any;
-  isSubscribed: boolean = false; // Track subscription status for the current product
+  isSubscribed: boolean = false; // Current state of the checkbox
+  initialSubscriptionStatus: boolean | null = null; // Store the initially loaded subscription status
   userSubscription$: Subscription | undefined;
   userSpecificSubscriptions: IProductDTO[] = [];
   isSubscribing: boolean = false; // To prevent multiple submissions
@@ -73,20 +74,22 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       const productId = params.get('id');
       if (productId) {
         const productIdNumber = parseInt(productId, 10);
-        this.isSubscribed = false; // Reset subscription state when loading a new product
+        this.isSubscribed = false; // Reset checkbox state when loading a new product
+        this.initialSubscriptionStatus = null; // Reset initial status
         this.loadProductDetails(productIdNumber);
       } else {
         this.product = null;
-        this.isSubscribed = false; // Reset even if no product ID
+        this.isSubscribed = false;
+        this.initialSubscriptionStatus = null;
       }
     });
     this.userSubscription$ = this.userService.userId$.subscribe(() => {
-      this.loadUserSubscriptionsAndCheckStatus();
+      // No need to call loadUserSubscriptionsAndCheckStatus here anymore,
+      // as it's called after product details are loaded.
     });
 
-    // Subscribe to the isAdmin$ observable from the UserService
     this.isAdmin$ = this.userService.isAdmin$.subscribe(() => {
-      // No need to assign to a local isAdmin property if you only use it in the template with async pipe
+      // ...
     });
   }
 
@@ -106,7 +109,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     this.http.get(`https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/viewProductDetails/${productId}`).subscribe(
       (product: any) => {
         this.product = product;
-        this.loadUserSubscriptionsAndCheckStatus(); // Load subscriptions after product details
+        this.loadUserSubscriptionsAndCheckStatus(); // Load subscriptions AFTER product details are loaded
       },
       error => {
         this.product = null;
@@ -115,22 +118,25 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   loadUserSubscriptionsAndCheckStatus(): void {
-    if (this.loggedIn && this.userId) {
+    if (this.loggedIn && this.userId && this.product?.productid) {
       this.userService.getProductSubscriptionList(this.userId).pipe(take(1)).subscribe({
         next: (subscriptions) => {
           this.userSpecificSubscriptions = subscriptions;
           console.log('User Subscriptions:', this.userSpecificSubscriptions);
           this.checkSubscriptionStatus();
+          this.initialSubscriptionStatus = this.isSubscribed; // Store the initial status
         },
         error: (error) => {
           console.error('Error loading user subscriptions in product details:', error);
           this.userSpecificSubscriptions = [];
-          this.checkSubscriptionStatus();
+          this.isSubscribed = false;
+          this.initialSubscriptionStatus = false;
         }
       });
     } else {
       this.userSpecificSubscriptions = [];
-      this.checkSubscriptionStatus();
+      this.isSubscribed = false;
+      this.initialSubscriptionStatus = false;
     }
   }
 
@@ -172,8 +178,11 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
 
   openSubscribePopup() {
     this.showSubscribePopup = true;
-    if (this.loggedIn && this.userId && !this.userName) {
-      this.fetchUserName(this.userId);
+    if (this.loggedIn && this.userId) {
+      this.loadUserSubscriptionsAndCheckStatus(); // Ensure latest subscription status and set initial status
+      if (!this.userName) {
+        this.fetchUserName(this.userId);
+      }
     }
   }
 
@@ -253,8 +262,13 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleSubscription(): void {
-    if (!this.loggedIn || !this.userId || !this.product?.productid || this.isSubscribing) {
+  submitSubscription(): void {
+    if (!this.loggedIn || !this.userId || !this.product?.productid || this.isSubscribing || this.initialSubscriptionStatus === null || this.isSubscribed === this.initialSubscriptionStatus) {
+      if (this.initialSubscriptionStatus !== null && this.isSubscribed === this.initialSubscriptionStatus) {
+        console.log('Subscription state not changed, no API call needed.');
+      } else if (this.initialSubscriptionStatus === null) {
+        console.log('Initial subscription status not loaded yet.');
+      }
       return;
     }
     this.isSubscribing = true;
@@ -263,23 +277,28 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
     const userId = this.userId;
 
     const subscriptionCall = this.isSubscribed
-      ? this.userService.addSubscription(userId, productId) // If checked, we are now subscribing
-      : this.userService.removeSubscription(userId, productId); // If unchecked, we are unsubscribing
+      ? this.userService.addSubscription(userId, productId)
+      : this.userService.removeSubscription(userId, productId);
 
-    subscriptionCall.subscribe({
+    subscriptionCall.pipe(take(1)).subscribe({
       next: (response) => {
         const message = this.isSubscribed ? 'Product Subscribed Successfully' : 'Product Unsubscribed Successfully';
         alert(message);
-        this.loadUserSubscriptionsAndCheckStatus(); // Refresh the subscription list
+        this.loadUserSubscriptionsAndCheckStatus(); // Refresh the subscription list and reset initial status
+        this.initialSubscriptionStatus = this.isSubscribed;
         this.isSubscribing = false;
       },
       error: (error) => {
-        console.error('Error toggling subscription:', error);
+        console.error('Error updating subscription:', error);
         alert(`Error: ${this.isSubscribed ? 'Subscribing' : 'Unsubscribing'} failed.`);
-        // Revert the checkbox state on error
-        this.isSubscribed = !this.isSubscribed;
+        // Revert the checkbox state on error and reset flags
+        this.isSubscribed = this.initialSubscriptionStatus !== null ? this.initialSubscriptionStatus : this.isSubscribed;
         this.isSubscribing = false;
       }
     });
+  }
+
+  toggleSubscription(): void {
+    // No need for a separate flag anymore, the comparison is done against initial state in submit
   }
 }
