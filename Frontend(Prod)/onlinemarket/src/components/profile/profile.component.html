@@ -1,4 +1,8 @@
 <div class="profilepage">
+  <div class="profilename">
+    <br>
+    <h2 class="section-title" style="width: 550px; text-align: center;margin-left: 20px;">Profile</h2>
+  </div>
   <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile">
     <div class="row">
       <div class="column">
@@ -82,9 +86,18 @@
           <div *ngIf="profileForm.get('email')?.errors?.['required']">* Email is required.</div>
           <div *ngIf="profileForm.get('email')?.errors?.['pattern']">* Enter a valid email address.</div>
         </div>
+        <br>
+        <button type="button" (click)="openSubscriptions()">View Product Subscriptions</button>
+        <br>
+        <app-product-subscriptions></app-product-subscriptions>
 
 
-        <button type="submit" [disabled]="profileForm.invalid || photoError" class="btn btn-primary">Save Changes</button>
+        <br>
+        <button type="button" (click)="openReviewPopup()">View Product Reviews</button>
+        <br>
+        <app-product-review></app-product-review>
+
+        <button type="submit" [disabled]="profileForm.invalid || photoError" class="btn btn-primary">Submit</button>
         <br><br>
         <div *ngIf="showPopup" class="popup">
           <div class="popup-content" [ngClass]="{'success': popupType === 'success', 'error': popupType === 'error'}">
@@ -95,21 +108,9 @@
             <div class="popup-body">
               <p>{{ popupMessage }}</p>
             </div>
-            <div>
-              <button type="button" (click)="closePopup()">Ok</button>
-            </div>
           </div>
         </div>
 
-        <button type="button" (click)="openSubscriptions()">View Subscriptions</button>
-        <br><br>
-        <app-product-subscriptions></app-product-subscriptions>
-
-
-
-        <button type="button" (click)="openReviewPopup()">View Product Review</button>
-        <br><br>
-        <app-product-review></app-product-review>
       </div>
     </div>
   </form>

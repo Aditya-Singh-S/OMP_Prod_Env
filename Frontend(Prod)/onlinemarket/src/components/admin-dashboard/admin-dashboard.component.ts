@@ -40,11 +40,17 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   imagePreview: string | null = null;
   showAddProductPopup: boolean = false;
   duplicateProductNameError: boolean = false; // For duplicate name validation
+  imageRequiredError: boolean = false;
+  invalidFileTypeError: boolean = false;
+
+
  
   // Bulk Upload
   showAddMultipleProductsPopup: boolean = false;
   bulkProductisactive: boolean = false;
   bulkFile: File | null = null;
+  invalidBulkFileTypeError:boolean = false;
+  fileRequiredError: boolean = false;
  
   // Update Product
   showUpdatePopup: boolean = false;
@@ -130,11 +136,19 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
  
   onFileSelected(event: any) {
     const file = event.target.files[0];
-    if (file) {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (file ){
+      if(allowedTypes.includes(file.type)) {
       this.selectedImageFile = file;
+      this.imageRequiredError = false;
+      this.invalidFileTypeError = false;
       const reader = new FileReader();
       reader.onload = e => this.imagePreview = reader.result as string;
       reader.readAsDataURL(file);
+      }
+      else{
+        this.invalidFileTypeError = true;
+      }
     }
   }
  
@@ -144,6 +158,13 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
  
   submitProduct() {
+    
+  this.imageRequiredError = !this.selectedImageFile;
+  this.invalidFileTypeError=this.invalidFileTypeError;
+
+  if (this.imageRequiredError || this.duplicateProductNameError || this.productDescription.length < 100 || this.invalidFileTypeError) {
+   return; // prevent submission
+  }
     if (this.selectedImageFile && !this.duplicateProductNameError) {
       this.productService.addProduct(this.productName, this.productDescription, this.selectedImageFile, this.isActive)
         .subscribe(response => {
@@ -182,9 +203,29 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
  
   onBulkFileChange(event: any) {
     this.bulkFile = event.target.files[0];
+    const allowedTypes = [
+      'application/vnd.ms-excel', // for .xls
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // for .xlsx
+    ];
+    if(this.bulkFile)
+    {
+      if(allowedTypes.includes(this.bulkFile.type))
+      {
+        this.fileRequiredError=false;
+        this.invalidBulkFileTypeError=false;
+      }
+      else{
+        this.invalidBulkFileTypeError=true;
+      }
+    }
   }
  
   submitBulkProducts() {
+    this.fileRequiredError = !this.bulkFile;
+    this.invalidBulkFileTypeError=this.invalidBulkFileTypeError;
+    if(this.fileRequiredError || this.invalidBulkFileTypeError){
+      return;
+    }
     if (this.bulkFile) {
       this.productService.uploadMultipleProducts(this.bulkFile,this.bulkProductisactive)
         .subscribe(response => {
@@ -192,6 +233,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           this.closeAddMultipleProductsPopup();
         }, error => {
           console.error('Error uploading multiple products:', error);
+          alert('Error adding multiple product. Please try again.');
         });
     }
   }
@@ -242,6 +284,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   onUpdateFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
+      //this.selectedImageFile = file;
+      //this.imagePreview = URL.createObjectURL(file);
+      //this.imageRequiredError = false;
       const reader = new FileReader();
       reader.onload = () => {
         this.previewImage = reader.result;
