@@ -111,10 +111,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Products addProduct(String name, String description, MultipartFile imageFile, Boolean isActive) throws IOException {
     	
-        final int MAX_NAME_LENGTH = 255;
-        //final List<String> SUPPORTED_FILE_TYPES = Arrays.asList("jpg", "jpeg", "png", "gif");
- 
-        // Validation checks
+    	final int MAX_NAME_LENGTH = 255;
+
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Validation Error: 'name' field is required.");
         }
@@ -124,7 +122,13 @@ public class ProductServiceImpl implements ProductService {
         if (isActive == null) {
             throw new IllegalArgumentException("Validation Error: 'isActive' field is required.");
         }
-        
+        if (imageFile == null || imageFile.isEmpty()) {
+            throw new IllegalArgumentException("validation Error: 'imageFile' field is required.");
+        }
+        String contentType = imageFile.getContentType();
+        if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType) && !"image/jpg".equals(contentType)) {
+        throw new IllegalArgumentException("Validation Error: Only JPEG, JPG and PNG image files are allowed.");
+        }
         
         String sanitizedProductName = name.replaceAll("\\s+", "_"); 
         String fileExtension = getFileExtension(imageFile.getContentType()); 

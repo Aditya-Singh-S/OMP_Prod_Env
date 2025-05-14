@@ -270,11 +270,9 @@ public class UserService {
     public String verifyEmail(String email)
     {
         User user = userRepository.findByEmail(email);
-        if (user == null)
-        {
-            return "User not found!";
+        if (user == null) {
+            throw new UserNotFoundException("User not found with email: " + email);
         }
- 
         user.setEmailVerification(true);
         user.setActive(true);
         userRepository.save(user);
