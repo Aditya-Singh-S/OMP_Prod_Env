@@ -53,6 +53,11 @@ button {
   box-shadow: 2px 2px 0 #87cefa;
 }
 
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
+
+
 .admindivider {
   width: 3px;
   background-color: #3333cc;
@@ -102,7 +107,12 @@ button {
 
 .popup .button-group {
   display: flex;
-  justify-content: space-between;
+  justify-content:space-between;
+}
+
+.popup .button-group1 {
+  display: flex;
+  justify-content:space-around;
 }
 
 .popup .button-group button {
@@ -117,6 +127,12 @@ button {
 
 .button-group {
   margin-top: 10px;
+  justify-content:flex-start;
+}
+
+.button-group1 {
+  margin-top: 10px;
+  justify-content:flex-start;
 }
 
 /* Styles for the popup overlay */
