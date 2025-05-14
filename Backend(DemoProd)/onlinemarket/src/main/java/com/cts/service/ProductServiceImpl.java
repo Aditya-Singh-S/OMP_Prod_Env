@@ -28,6 +28,7 @@ import com.cts.entity.User;
 import com.cts.repository.ProductRepository;
 import com.cts.repository.ProductViewRepository;
 import com.cts.repository.UserRepository;
+import com.cts.enums.UserRole;
 
 import jakarta.annotation.PostConstruct;
 
@@ -47,7 +48,9 @@ import java.time.Duration;
 
 @Service
 public class ProductServiceImpl implements ProductService {
-
+	
+	@Autowired
+	SNSService snsService;
     @Autowired
     ProductRepository productRepository;
     @Autowired
@@ -134,7 +137,10 @@ public class ProductServiceImpl implements ProductService {
         product.setImageUrl(imageUrl);
         product.setIsActive(isActive);
         
-        return productRepository.save(product);
+        productRepository.save(product);
+        snsService.notifyOnAddProduct();
+        
+        return product;
     }
 
 
@@ -163,7 +169,19 @@ public class ProductServiceImpl implements ProductService {
         if (isActive != null) {
             product.setIsActive(isActive);
         }
-        return productRepository.save(product);
+        
+        
+        List<String> userEmails = getSubscriptionList(product.getProductid()).stream()
+        		.filter(subscription -> subscription.getUser().getUserRole()== UserRole.USER)
+        		.map(subscription -> subscription.getUser().getEmail())
+        		.collect(Collectors.toList());
+        
+        productRepository.save(product);
+        
+        snsService.notifyAdminOnUpdateProduct();
+        snsService.notifyUserOnUpdateProduct(userEmails);
+        
+        return product;
     }
 
 
@@ -235,7 +253,11 @@ public class ProductServiceImpl implements ProductService {
         subscription.setUser(user);
         subscription.setProducts(product);
         product.getProductSubscriptionList().add(subscription);
-        return productRepository.save(product);
+        
+        productRepository.save(product);
+        snsService.notifyOnSubscribing(user.getEmail(), user.getNickName(), product.getName());
+        
+        return product;
     }
 
     @Override
@@ -253,7 +275,10 @@ public class ProductServiceImpl implements ProductService {
         }
         existingSubscription.get().setOptIn(false);
         existingSubscription.get().setUpdatedOn(LocalDateTime.now());
+        
         productRepository.save(product);
+        snsService.notifyOnUnSubscribing(user.getEmail(), user.getNickName(), product.getName());
+        
         return product;
     }
 
