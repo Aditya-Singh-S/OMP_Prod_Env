@@ -250,21 +250,24 @@ public class UserService {
     }
     
  // Method to reset password
-    public String resetPassword(ResetPasswordDTO dto) {
-        User user = userRepository.findByEmail(dto.getEmail());
+    public void resetPassword(String email, String newPassword, String confirmPassword)
+    {
+        User user = userRepository.findByEmail(email);
+
         if (user == null) {
             throw new UserNotFoundException("User not found!");
         }
 
-        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+        if (!newPassword.equals(confirmPassword)) {
             throw new PasswordsMismatchException("Password does not match!");
         }
 
-        user.setPassword(PasswordUtil.hashPassword(dto.getNewPassword()));
+        user.setPassword(PasswordUtil.hashPassword(newPassword));
+        
         userRepository.save(user);
-
-        return "Password updated successfully!";
-    }
+        
+        snsService.notifyonresetPassword(email);
+    }   
  
     // Verify Email and Activate User
     public String verifyEmail(String email)
@@ -286,7 +289,7 @@ public class UserService {
         if (user == null) {
             return "User not found";
         }
-        return "http://127.0.0.1:3000/reset-page?email=" + email;
+        return "http://online-marketplace-bucket.s3-website-us-east-1.amazonaws.com/reset-page/reset-page?email=" + email;
     }
 }
  
