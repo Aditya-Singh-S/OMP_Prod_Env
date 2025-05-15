@@ -25,6 +25,11 @@ export class SigninComponent implements OnInit {
   userEmailId: string = '';
   @Output() loginSuccess = new EventEmitter<void>();
 
+   // New properties for the popup
+   showPopup: boolean = false;
+   popupTitle: string = '';
+   popupMessage: string = '';
+
   constructor(private fb: FormBuilder, private userService: UserService, private authService: AuthService, private cookieService: CookieServiceService, private router: Router) {}
 
   ngOnInit() {
@@ -58,18 +63,26 @@ export class SigninComponent implements OnInit {
     console.log("Password:", password);
 
 
-    this.authService.signIn(email, password).then(result => {
+
+    this.authService.signIn(email, password).then((result: any) => {
       console.log("User signed in:", result);
-      alert("Login successful!");
+      //alert("Login successful!");
 
       this.userEmailId = email;
       this.loginSuccess.emit(); // Emit event on successful login
       this.userService.handleLoginSuccess(this.userEmailId);
 
       this.router.navigate(['/home'])
-    }).catch(err => {
+    }).catch((err: { message: string; }) => {
       console.error('Login failed: ', err);
-      alert("Error: "+ err.message);
+        this.popupTitle = 'Error';
+        this.popupMessage = 'Failed to sign in. Try again.';
+        this.showPopup = true;
+      //alert("Error: "+ err.message);
     });
+  }
+
+  closePopup() {
+    this.showPopup = false;
   }
 }

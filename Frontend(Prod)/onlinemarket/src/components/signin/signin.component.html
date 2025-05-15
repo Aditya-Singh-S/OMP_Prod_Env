@@ -30,4 +30,17 @@
   <div class="signup">
     <button class="signup-btn" [routerLink]="'/signup'">Sign Up</button>
   </div>
+
+  <div *ngIf="showPopup" class="popup">
+    <div class="popup-content">
+          <div class="popup-header">
+          <h2>{{ popupTitle }}</h2>
+          <span class="close-button" (click)="closePopup()">&times;</span>
+          </div>
+          <div class="popup-body">
+          <p>{{ popupMessage }}</p>
+          </div>
+    </div>
+    </div>
+
 </div>
