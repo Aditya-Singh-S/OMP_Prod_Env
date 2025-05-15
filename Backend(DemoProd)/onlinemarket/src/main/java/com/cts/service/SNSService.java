@@ -24,5 +24,7 @@ public interface SNSService {
     void notifyOnSubscribing(String email, String nickName, String productName);
     
     void notifyOnUnSubscribing(String email, String nickName, String productName);
+    
+    void notifyonresetPassword(String email);
 
 }

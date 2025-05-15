@@ -156,7 +156,7 @@
           pattern="^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$"
           required
         />
-        <div *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)" class="text-danger">
+        <div *ngIf="firstName.invalid && (firstName.dirty || firstName.touched || addUserForm.submitted)" class="text-danger">
           <div *ngIf="firstName.errors?.['required']">* First name is required.</div>
           <div *ngIf="firstName.errors?.['pattern']">* Enter a valid first name (3-15 letters, dots, or underscores).</div>
         </div>
@@ -175,7 +175,7 @@
           pattern="^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$"
           required
         />
-        <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" class="text-danger">
+        <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched || addUserForm.submitted)" class="text-danger">
           <div *ngIf="lastName.errors?.['required']">* Last name is required.</div>
           <div *ngIf="lastName.errors?.['pattern']">* Enter a valid last name (3-15 letters, dots, or underscores).</div>
         </div>
@@ -194,7 +194,7 @@
           pattern="^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$"
           required
         />
-        <div *ngIf="nickName.invalid && (nickName.dirty || nickName.touched)" class="text-danger">
+        <div *ngIf="nickName.invalid && (nickName.dirty || nickName.touched || addUserForm.submitted)" class="text-danger">
           <div *ngIf="nickName.errors?.['required']">* Nickname is required.</div>
           <div *ngIf="nickName.errors?.['pattern']">* Enter a valid nickname (3-15 letters, numbers, dots, or underscores).</div>
         </div>
@@ -212,9 +212,9 @@
           class="form-input"
           required
         />
-        <div *ngIf="dob.invalid && (dob.dirty || dob.touched)" class="text-danger">
+        <div *ngIf="dob.invalid && (dob.dirty || dob.touched || addUserForm.submitted)" class="text-danger">
           <div *ngIf="dob.errors?.['required']">* Date of Birth is required.</div>
-          </div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -230,7 +230,7 @@
           pattern="^[6-9]\d{9}$"
           required
         />
-        <div *ngIf="contactNo.invalid && (contactNo.dirty || contactNo.touched)" class="text-danger">
+        <div *ngIf="contactNo.invalid && (contactNo.dirty || contactNo.touched || addUserForm.submitted)" class="text-danger">
           <div *ngIf="contactNo.errors?.['required']">* Phone number is required.</div>
           <div *ngIf="contactNo.errors?.['pattern']">* Enter a valid 10-digit phone number.</div>
         </div>
@@ -249,7 +249,7 @@
           minlength="10"
           required
         />
-        <div *ngIf="addressLine1.invalid && (addressLine1.dirty || addressLine1.touched)" class="text-danger">
+        <div *ngIf="addressLine1.invalid && (addressLine1.dirty || addressLine1.touched || addUserForm.submitted)" class="text-danger">
           <div *ngIf="addressLine1.errors?.['required']">* Address Line 1 is required.</div>
           <div *ngIf="addressLine1.errors?.['minlength']">* Minimum length for Address Line 1 is 10 characters.</div>
         </div>
@@ -268,7 +268,7 @@
           minlength="10"
           required
         />
-        <div *ngIf="addressLine2.invalid && (addressLine2.dirty || addressLine2.touched)" class="text-danger">
+        <div *ngIf="addressLine2.invalid && (addressLine2.dirty || addressLine2.touched || addUserForm.submitted)" class="text-danger">
           <div *ngIf="addressLine2.errors?.['required']">* Address Line 2 is required.</div>
           <div *ngIf="addressLine2.errors?.['minlength']">* Minimum length for Address Line 2 is 10 characters.</div>
         </div>
@@ -287,7 +287,7 @@
           pattern="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.(com|net|org)$"
           required
         />
-        <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-danger">
+        <div *ngIf="email.invalid && (email.dirty || email.touched || addUserForm.submitted)" class="text-danger">
           <div *ngIf="email.errors?.['required']">* Email is required.</div>
           <div *ngIf="email.errors?.['pattern']">* Enter a valid email address.</div>
         </div>
@@ -306,7 +306,7 @@
           pattern="^[0-9]{6}$"
           required
         />
-        <div *ngIf="postalCode.invalid && (postalCode.dirty || postalCode.touched)" class="text-danger">
+        <div *ngIf="postalCode.invalid && (postalCode.dirty || postalCode.touched || addUserForm.submitted) && addUserForm.submitted" class="text-danger">
           <div *ngIf="postalCode.errors?.['required']">* Postal code is required.</div>
           <div *ngIf="postalCode.errors?.['pattern']">* Enter a valid 6-digit postal code.</div>
         </div>
@@ -315,10 +315,9 @@
       <div class="form-group ">
         <label for="uploadPhoto" class="upload-photo-label">Upload Photo:</label>
         <div>
-        <input 
+        <input
           type="file"
           id="imageFile"
-          [(ngModel)]="addUser.imageFile"
           name="imageFile"
           (change)="onFileChange($event)"
           accept="image/*"
@@ -327,7 +326,7 @@
           #uploadPhotoInput
         />
         <span class="remove-photo" (click)="removePhoto()">&#x2715;</span> </div>
-        
+
         <div *ngIf="!addUser?.imageFile && addUserForm.submitted" class="text-danger">
           * Please upload a photo.
         </div>
@@ -335,13 +334,13 @@
 
       <div class="form-group admin-checkbox-group">
         <label class="admin-checkbox-label">
-          isAdmin: 
+          isAdmin:
           <input type="checkbox" [(ngModel)]="addUser.isAdmin" name="isAdmin" />
         </label>
       </div>
 
       <div class="form-button-group">
-        <button type="submit" class="submit-button" [disabled]="addUserForm.invalid">Submit</button>
+        <button type="submit" class="submit-button">Submit</button>
         <button type="button" class="cancel-button" (click)="closeAddUserPopup()">
           Cancel
         </button>
@@ -572,4 +571,3 @@
 
     </div>
 </div>
-

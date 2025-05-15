@@ -142,30 +142,6 @@ public class UserAdminController {
 	    }
 	}
 	
-	@ExceptionHandler(MissingServletRequestParameterException.class)
-	 public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex) {
-	     String paramName = ex.getParameterName();
-	     String message;
-
-	     switch (paramName) {
-	         case "email":
-	             message = "Validation Error: 'email' field is required.";
-	             break;
-	         case "subscriptionId":
-	             message = "Validation Error: 'subscriptionId' field is required.";
-	             break;
-	         case "optInStatus":
-	             message = "Validation Error: 'optInStatus' field is required.";
-	             break;
-	         default:
-	             message = "Validation Error: '" + paramName + "' field is required.";
-	     }
-
-	     return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-	 }
-
- 
-	
     @PutMapping("/admin/updateReviewByEmail")
     public ResponseEntity<ReviewsAndRatings> updateReviewByEmail(
         @RequestParam String email,

@@ -156,34 +156,12 @@ public class ProductController {
         List<User> subscribedUsers = productService.getUsersSubscribedToProduct(productId);
         return new ResponseEntity<>(subscribedUsers, subscribedUsers.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK);
     }
-//    @PostMapping("/admin/uploadMultipleRecords")
-//  public ResponseEntity<?> uploadProducts(@RequestParam("file") MultipartFile file) {
-//      if (file.isEmpty()) {
-//          return new ResponseEntity<>("Please upload an Excel file!", HttpStatus.BAD_REQUEST);
-//      }
-//
-//      String contentType = file.getContentType();
-//      if (contentType == null || (!contentType.equals("application/vnd.ms-excel") && !contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))) {
-//          return new ResponseEntity<>("Please upload a valid Excel file (.xls or .xlsx)!", HttpStatus.BAD_REQUEST);
-//      }
-//
-//      try {
-//          List<ProductUploadDTO> productUploadDTOs = productService.readProductsFromXlsx(file); // Get ProductUploadDTOs
-//          List<Products> savedProducts = productService.saveProducts(productUploadDTOs);   // Pass ProductUploadDTOs
-//          return new ResponseEntity<>(savedProducts, HttpStatus.CREATED);
-//      } catch (IOException e) {
-//          return new ResponseEntity<>("Error processing the Excel file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//      } catch (Exception e) {
-//          return new ResponseEntity<>("An unexpected error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//      }
-//  }
-    
-    @PostMapping("/admin/uploadMultipleRecords")
+//   @PostMapping("/admin/uploadMultipleRecords")
     public ResponseEntity<List<Products>> uploadMultipleProducts(@RequestParam("file") MultipartFile file, @RequestParam boolean bulkProductisactive) {
         if (file.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
+ 
         try {
             List<Products> uploadedProducts = productService.addMultipleProducts(file,bulkProductisactive);
             return new ResponseEntity<>(uploadedProducts, HttpStatus.CREATED);
@@ -192,5 +170,7 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+
 
 }

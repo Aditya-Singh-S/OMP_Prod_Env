@@ -132,25 +132,25 @@ export class SignupComponent {
   }
  
  
-  onFileChange(event: any) {
+  // onFileChange(event: any) {
 
-    const file = event.target.files[0];
+  //   const file = event.target.files[0];
 
-    if (file) {
+  //   if (file) {
 
-      if (file.size < 10240 || file.size > 20480) {
+  //     if (file.size < 10240 || file.size > 20480) {
 
-        this.photoError = 'Photo must be between 10KB and 20KB.';
+  //       this.photoError = 'Photo must be between 10KB and 20KB.';
 
-      } else {
+  //     } else {
 
-        this.photoError = '';
+  //       this.photoError = '';
 
-      }
+  //     }
 
-    }
+  //   }
 
-  }
+  // }
  
   removePhoto() {
 
@@ -167,64 +167,62 @@ export class SignupComponent {
 }
  
 onSubmit(): void {
-
-  if (this.signUpForm.valid && !this.photoError) {
-
-    const formData = new FormData();
-
-    formData.append('firstName', this.signUpForm.get('firstName')?.value || '');
-
-    formData.append('lastName', this.signUpForm.get('lastName')?.value || '');
-
-    formData.append('email', this.signUpForm.get('email')?.value || '');
-
-    formData.append('password', this.signUpForm.get('password')?.value || '');
-
-    formData.append('nickName', this.signUpForm.get('nickName')?.value || '');
-
-    formData.append('addressLine1', this.signUpForm.get('addressLine1')?.value || '');
-
-    formData.append('addressLine2', this.signUpForm.get('addressLine2')?.value || '');
-
-    formData.append('postalCode', this.signUpForm.get('postalCode')?.value || '');
-
-    formData.append('contactNumber', this.signUpForm.get('contactNo')?.value || ''); 
-
-    formData.append('dateOfBirth', this.signUpForm.get('dob')?.value || '');
-
-    const photoInput = (document.getElementById('photo') as HTMLInputElement);
-
-    if (photoInput?.files?.length) {
-
-      formData.append('imageFile', photoInput.files[0]);
-
-    }else{
-      this.photoError = 'Photo is required.';
-    }
+  this.signUpForm.markAllAsTouched();
  
-    console.log(Array.from(formData.entries())); 
-
-    const email = this.signUpForm.get('email')?.value;
-    const password = this.signUpForm.get('password')?.value;
-    localStorage.setItem('userEmail', email);
-    this.authService.signUp(email, password).then(result => {
-      console.log('User registered:', result);
-      alert("Registration Successful! Check for email verification");
-      this.userService.register(formData).subscribe({
-        next: (response) => {
-          console.log('User registered in database:', response)
-          alert('User stored in database successful! Please check your db.');
-        },
-        error: (err) => console.error('User registration in database failed:', err)
-      });
-      this.router.navigate(['/verify-email']);
-    }).catch(err => {
-      console.error("Registration failed:",err);
-      alert('Error:'+ err.message);
-    });
-    
+  let isPhotoValid = true;
+  const photoInput = (document.getElementById('photo') as HTMLInputElement);
+  if (!photoInput?.files?.length) {
+    this.photoError = 'Photo is required.';
+    isPhotoValid = false;
+  } else if (photoInput.files[0].size < 10240 || photoInput.files[0].size > 20480) {
+    this.photoError = 'Photo must be between 10KB and 20KB.';
+    isPhotoValid = false;
+  } else {
+    this.photoError = '';
   }
+ 
+  if (this.signUpForm.invalid || !isPhotoValid) {
+    return;
+  }
+ 
+  const formData = new FormData();
+  formData.append('firstName', this.signUpForm.get('firstName')?.value || '');
+  formData.append('lastName', this.signUpForm.get('lastName')?.value || '');
+  formData.append('email', this.signUpForm.get('email')?.value || '');
+  formData.append('password', this.signUpForm.get('password')?.value || '');
+  formData.append('nickName', this.signUpForm.get('nickName')?.value || '');
+  formData.append('addressLine1', this.signUpForm.get('addressLine1')?.value || '');
+  formData.append('addressLine2', this.signUpForm.get('addressLine2')?.value || '');
+  formData.append('postalCode', this.signUpForm.get('postalCode')?.value || '');
+  formData.append('contactNumber', this.signUpForm.get('contactNo')?.value || '');
+  formData.append('dateOfBirth', this.signUpForm.get('dob')?.value || '');
+ 
+  if (photoInput?.files?.length) {
+    formData.append('imageFile', photoInput.files[0]);
+  }
+ 
+  console.log(Array.from(formData.entries()));
+ 
+  const email = this.signUpForm.get('email')?.value;
+  const password = this.signUpForm.get('password')?.value;
+  localStorage.setItem('userEmail', email);
+  this.authService.signUp(email, password).then(result => {
+    console.log('User registered:', result);
+    alert("Registration Successful! Check for email verification");
+    this.userService.register(formData).subscribe({
+      next: (response) => {
+        console.log('User registered in database:', response)
+        alert('User stored in database successful! Please check your db.');
+      },
+      error: (err) => console.error('User registration in database failed:', err)
+    });
+    this.router.navigate(['/verify-email']);
+  }).catch(err => {
+    console.error("Registration failed:",err);
+    alert('Error:'+ err.message);
+  });
 }
+ 
 closePopup() {
   this.showPopup = false;
 }

@@ -1,29 +1,37 @@
 
 
 <div class="container">
-    <div class="reset-password">
-    <h2>Reset Password</h2>
-     
-            <p class="email-display" *ngIf="email"> {{ email }} </p>
-     
-            <form (ngSubmit)="resetPassword()">
-    <div class="row">
-    <div class="column">
-    <h1></h1>
-     
-    <!-- <input type="text" [(ngModel)]="verificationCode" name="code" placeholder="VerificationkkCode" required /> -->
-    <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="New Password" required />
-    <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="Confirm password" required />
-    </div>
-    </div>
-     
-                <re-captcha (resolved)="onCaptchaResolved($event)"
-                siteKey="6LdmHScrAAAAAAMItNO866dLsCXKqISmXB1fJbHs"></re-captcha>
-     
-                <button type="submit" class="submit"> Reset Password </button>
-    </form>
-    </div>
-    </div>
+        <div class="reset-password">
+          <h2>Reset Password</h2>
+      
+          <p class="email-display" *ngIf="email"> {{ email }} </p>
+      
+          <form [formGroup]="resetForm" (ngSubmit)="resetPassword()">
+            <div class="row">
+              <div class="column">
+                <h1></h1>
+      
+                <input type="password" formControlName="newPassword" placeholder="New Password" required />
+                <div *ngIf="resetForm.get('newPassword')?.invalid && resetForm.get('newPassword')?.touched" class="error">
+                  <div *ngIf="resetForm.get('newPassword')?.errors?.['required']">New password is required.</div>
+                  <div *ngIf="resetForm.get('newPassword')?.errors?.['minlength']">New password must be at least 6 characters.</div>
+                </div>
+      
+                <input type="password" formControlName="confirmPassword" placeholder="Confirm password" required />
+                <div *ngIf="resetForm.get('confirmPassword')?.invalid && resetForm.get('confirmPassword')?.touched" class="error">
+                  <div *ngIf="resetForm.get('confirmPassword')?.errors?.['required']">Confirm password is required.</div>
+                  <div *ngIf="resetForm.errors?.['notSame'] && (resetForm.get('confirmPassword')?.touched || resetForm.get('newPassword')?.touched)" class="error">Passwords do not match.</div>
+                </div>
+              </div>
+            </div>
+      
+            <re-captcha (resolved)="onCaptchaResolved($event)"
+                        siteKey="6Lf_uRMrAAAAAMXgbKvXDk9Mmwza9GaZY3bvoRFG"></re-captcha>
+      
+            <button type="submit" class="submit" [disabled]="resetForm.invalid"> Reset Password </button>
+          </form>
+        </div>
+      </div>
      
  
 

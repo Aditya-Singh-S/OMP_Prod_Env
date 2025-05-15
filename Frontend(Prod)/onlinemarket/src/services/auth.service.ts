@@ -66,7 +66,9 @@ export class AuthService {
 
     //private loginUrl = 'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/login';
     private generateResetLinkUrl = 'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/generate-reset-link';
-    private apiUrl = 'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/reset-password';
+    private reset = 'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/reset-password';
+    
+
 
     private loggedInSource = new BehaviorSubject<boolean>(false);
     loggedIn$ = this.loggedInSource.asObservable();
@@ -82,7 +84,12 @@ export class AuthService {
         return this.http.post(this.generateResetLinkUrl, {}, { params, responseType: 'text' });
     }
 
-    resetPassword(payload: any): Observable<string> { 
-        return this.http.post(this.apiUrl, payload, { responseType: 'text' }); 
+    resetPassword(email: string, newPassword: string, confirmPassword: string): Observable<string> { 
+        const params = new HttpParams()
+          .set('email', email)
+          .set('newPassword', newPassword)
+          .set('confirmPassword', confirmPassword);
+
+        return this.http.post<string>(this.reset, null, { params, responseType: 'text' as 'json' });
     }
 }
