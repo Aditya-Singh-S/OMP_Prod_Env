@@ -32,8 +32,8 @@ export class ResetComponent implements OnInit {
 
 
     poolData = {
-        UserPoolId: environment.ClientId,
-      ClientId: environment.ClientId
+        UserPoolId: environment.UserPoolId,
+        ClientId: environment.ClientId
       };
       
     constructor(private route: ActivatedRoute, private router : Router) {}
