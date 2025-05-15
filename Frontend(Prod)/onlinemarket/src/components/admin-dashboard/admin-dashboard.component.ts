@@ -447,7 +447,7 @@ submitUser(): void {
       },
       error => {
         console.error('Error adding user:', error);
-        alert('Error adding user. Please try again.');
+        //alert('Error adding user. Please try again.');
       }
     );
 }
