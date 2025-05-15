@@ -37,9 +37,11 @@ export class SearchfilterComponent implements OnInit {
   }
 
   onSubmit() {
+    console.log('onSubmit called'); // Debug log
+
     if (this.searchForm.valid) {
       const filters = this.searchForm.value;
-      console.log(filters);
+      console.log('Form values:', filters); // Debug log
 
       let results$: Observable<ProductView[]> | undefined;
 
@@ -58,14 +60,14 @@ export class SearchfilterComponent implements OnInit {
       } else if (filters.productName && filters.rating && filters.count) {
         results$ = this.productService.searchProductByNameSubsRating(filters.productName, filters.rating, filters.count);
       } else {
-        results$ = this.productService.getProductList();
+        results$ = this.productService.getProductList(); // When no filters are provided
       }
 
-
       if (results$) {
+        console.log('Search observable created'); // Debug log
         results$?.subscribe(
           (results) => {
-            console.log('Filtered Results:', results);
+            console.log('Filtered Results Emitted:', results); // Debug log
             this.productService.setSearchResults(results);
           },
           (error) => {
@@ -75,7 +77,7 @@ export class SearchfilterComponent implements OnInit {
         );
       }
     } else {
-      console.log('Form is invalid. Please check the validation errors.');
+      console.log('Form is invalid.'); // Debug log
       this.productService.setSearchResults([]); // Clear any previous search results
       this.productService.signalInvalidSearch(); // Signal that the search was invalid
     }
