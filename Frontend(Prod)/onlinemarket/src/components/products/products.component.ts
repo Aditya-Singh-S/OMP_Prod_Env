@@ -16,13 +16,14 @@ import { IProductDTO } from '../../model/class/interface/Products'; // Import yo
 })
 export class ProductsComponent implements OnInit, OnDestroy {
 
-  public productList: IProductDTO[] = []; // Use your interface here
-  // private searchResults: Subscription | undefined;
+  public productList: IProductDTO[] = []; // The original full product list
+  public filteredList: IProductDTO[] = []; // The list after applying filters
+  public isFilterActive: boolean = false; // Flag to track if a filter is active
+
   private searchResultsSubscription: Subscription | undefined;
   private invalidSearchSubscription: Subscription | undefined;
-  product: any;
 
-  showNoResultsMessage: boolean = false;
+  showInvalidSearchMessage: boolean = false;
   noResultsMessage: string = '';
 
   constructor(
@@ -32,33 +33,27 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('ProductComponent initialized');
-    this.productService.getProductList().subscribe(response => {
-      this.productList = response;
-      console.log('Product List:', this.productList);
-    });
+    this.loadProducts();
 
     this.searchResultsSubscription = this.productService.searchResults$.subscribe(
       (results) => {
-        this.productList = results;
-        this.showNoResultsMessage = results.length === 0;
+        this.filteredList = results;
+        this.isFilterActive = true; // A search has been performed, so a filter is active
+        this.showInvalidSearchMessage = false;
         this.noResultsMessage = results.length === 0 ? 'No products available according to the search filter.' : '';
-        console.log('Search Results Received: ', this.productList);
+        console.log('Search Results Received: ', this.filteredList);
       }
     );
 
     this.invalidSearchSubscription = this.productService.invalidSearch$.subscribe(() => {
-      this.productList = [];
-      this.showNoResultsMessage = true;
+      this.filteredList = [];
+      this.isFilterActive = true; // Treat invalid search as a filter attempt
+      this.showInvalidSearchMessage = true;
       this.noResultsMessage = 'Invalid search input. Please try again.';
     });
-
   }
 
   ngOnDestroy(): void {
-    // if (this.searchResults) {
-    //   this.searchResults.unsubscribe();
-    // }
-
     if (this.searchResultsSubscription) {
       this.searchResultsSubscription.unsubscribe();
     }
@@ -66,7 +61,26 @@ export class ProductsComponent implements OnInit, OnDestroy {
       this.invalidSearchSubscription.unsubscribe();
     }
   }
+
+  loadProducts() {
+    this.productService.getProductList().subscribe(response => {
+      this.productList = response;
+      this.filteredList = [...response]; // Initially, filtered list is the same as the product list
+      this.isFilterActive = false; // No filter active on initial load
+      this.showInvalidSearchMessage = false;
+      console.log('Product List:', this.productList);
+    },
+    (error) => {
+      console.error('Error loading products:', error);
+      this.productList = [];
+      this.filteredList = [];
+      this.isFilterActive = false; // Ensure isFilterActive is false on error too
+    });
+  
+  }
+
   viewProductDetails(productId: number) {
     this.router.navigate(['/product-details', productId]);
   }
+
 }
