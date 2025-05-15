@@ -8,7 +8,7 @@ import { AdminUserListPopupComponent } from '../admin-user-list-popup/admin-user
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-// import { UpdateUserPopupComponent } from '../admin-update-user-popup/admin-update-user-popup.component';
+import { AdminUpdateUserPopupComponent } from '../admin-update-user-popup/admin-update-user-popup.component';
  
 interface IUserDetails {
   userID: string | number;
@@ -26,7 +26,7 @@ interface IUserDetails {
  
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [FormsModule, CommonModule, HttpClientModule, AdminUserListPopupComponent],
+  imports: [FormsModule, CommonModule, HttpClientModule, AdminUserListPopupComponent, AdminUpdateUserPopupComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
   providers: [ProductService, UserService]
@@ -411,7 +411,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 }
   addUserForm: any;
 
-  registrationSuccess = false;
+  password:string='';
+registrationSuccess = false;
 registrationError = false;
 errorMessage = '';
 
@@ -434,6 +435,8 @@ submitUser(): void {
   formData.append('email', this.addUser.email);
   formData.append('postalCode', this.addUser.postalCode);
   formData.append('isAdmin', this.addUser.isAdmin ? '1' : '0');
+  this.password=this.addUser.firstName+this.addUser.dob;
+  console.log(this.password);
   if (this.addUser.imageFile) {
     formData.append('imageFile', this.addUser.imageFile);
   }
@@ -447,7 +450,7 @@ submitUser(): void {
       },
       error => {
         console.error('Error adding user:', error);
-        alert('Error adding user. Please try again.');
+        //alert('Error adding user. Please try again.');
       }
     );
 }

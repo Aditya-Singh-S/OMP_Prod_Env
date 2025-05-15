@@ -16,10 +16,10 @@
     </div>
   </div>
 </main>
-<!-- <app-admin-update-user-popup
+<app-admin-update-user-popup
   *ngIf="isUpdateUserPopupVisible"
   (close)="closeUpdateUserPopup()"
-  (submit)="handleUserUpdated($event)"/> -->
+  (submit)="handleUserUpdated($event)"/>
 
 <app-admin-user-list-popup
   *ngIf="showGetUsersPopup"
@@ -138,7 +138,7 @@
 
 <!-- Add user -->
 
-<div class="popup-over" *ngIf="showAddUserPopup">
+<!-- <div class="popup-over" *ngIf="showAddUserPopup">
   <div class="popup-container">
     <h3 class="popup-title">Add User</h3>
     <br>
@@ -350,10 +350,226 @@
 
     <div *ngIf="addUserForm.invalid && addUserForm.submitted" class="text-danger mt-2">
       Please fill all the required details in the form.
-    </div>
+    </div> -->
 
     <!-- <div *ngIf="registrationSuccess" class="success-message">Registration Successful!</div>
     <div *ngIf="registrationError" class="error-message">Registration Failed: {{ errorMessage }}</div> -->
-  </div>
+  <!-- </div>
+</div> -->
+
+<div class="popup-over" *ngIf="showAddUserPopup">
+  <div class="popup-container">
+    <h3 class="popup-title">Add User</h3>
+    <br>
+    <form class="user-form" (ngSubmit)="submitUser()" #addUserForm="ngForm">
+      <div class="form-group">
+        <label for="firstName">First Name:</label>
+        <input
+          type="text"
+          id="firstName"
+          name="firstName"
+          placeholder="Enter first name"
+          [(ngModel)]="addUser.firstName"
+          #firstName="ngModel"
+          class="form-input"
+          pattern="^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$"
+          required
+        />
+        <div *ngIf="firstName.invalid && (firstName.dirty || firstName.touched || addUserForm.submitted)" class="text-danger">
+          <div *ngIf="firstName.errors?.['required']">* First name is required.</div>
+          <div *ngIf="firstName.errors?.['pattern']">* Enter a valid first name (3-15 letters, dots, or underscores).</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Last Name:</label>
+        <input
+          type="text"
+          id="lastName"
+          name="lastName"
+          placeholder="Enter last name"
+          [(ngModel)]="addUser.lastName"
+          #lastName="ngModel"
+          class="form-input"
+          pattern="^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$"
+          required
+        />
+        <div *ngIf="lastName.invalid && (lastName.dirty || lastName.touched || addUserForm.submitted)" class="text-danger">
+          <div *ngIf="lastName.errors?.['required']">* Last name is required.</div>
+          <div *ngIf="lastName.errors?.['pattern']">* Enter a valid last name (3-15 letters, dots, or underscores).</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="nickName">Nickname:</label>
+        <input
+          type="text"
+          id="nickName"
+          name="nickName"
+          placeholder="Enter nick name"
+          [(ngModel)]="addUser.nickName"
+          #nickName="ngModel"
+          class="form-input"
+          pattern="^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$"
+          required
+        />
+        <div *ngIf="nickName.invalid && (nickName.dirty || nickName.touched || addUserForm.submitted)" class="text-danger">
+          <div *ngIf="nickName.errors?.['required']">* Nickname is required.</div>
+          <div *ngIf="nickName.errors?.['pattern']">* Enter a valid nickname (3-15 letters, numbers, dots, or underscores).</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="dob">Date of Birth:</label>
+        <input
+          type="date"
+          id="dob"
+          name="dob"
+          placeholder="YYYY-MM-DD"
+          [(ngModel)]="addUser.dob"
+          #dob="ngModel"
+          class="form-input"
+          required
+        />
+        <div *ngIf="dob.invalid && (dob.dirty || dob.touched || addUserForm.submitted)" class="text-danger">
+          <div *ngIf="dob.errors?.['required']">* Date of Birth is required.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contactNo">Phone:</label>
+        <input
+          type="text"
+          id="contactNo"
+          name="contactNo"
+          placeholder="Enter contact number"
+          [(ngModel)]="addUser.contactNo"
+          #contactNo="ngModel"
+          class="form-input"
+          pattern="^[6-9]\d{9}$"
+          required
+        />
+        <div *ngIf="contactNo.invalid && (contactNo.dirty || contactNo.touched || addUserForm.submitted)" class="text-danger">
+          <div *ngIf="contactNo.errors?.['required']">* Phone number is required.</div>
+          <div *ngIf="contactNo.errors?.['pattern']">* Enter a valid 10-digit phone number.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="addressLine1">Address Line 1:</label>
+        <input
+          type="text"
+          id="addressLine1"
+          name="addressLine1"
+          placeholder="Enter address line 1"
+          [(ngModel)]="addUser.addressL1"
+          #addressLine1="ngModel"
+          class="form-input"
+          minlength="10"
+          required
+        />
+        <div *ngIf="addressLine1.invalid && (addressLine1.dirty || addressLine1.touched || addUserForm.submitted)" class="text-danger">
+          <div *ngIf="addressLine1.errors?.['required']">* Address Line 1 is required.</div>
+          <div *ngIf="addressLine1.errors?.['minlength']">* Minimum length for Address Line 1 is 10 characters.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="addressLine2">Address Line 2:</label>
+        <input
+          type="text"
+          id="addressLine2"
+          name="addressL2"
+          placeholder="Enter address line 2"
+          [(ngModel)]="addUser.addressL2"
+          #addressLine2="ngModel"
+          class="form-input"
+          minlength="10"
+          required
+        />
+        <div *ngIf="addressLine2.invalid && (addressLine2.dirty || addressLine2.touched || addUserForm.submitted)" class="text-danger">
+          <div *ngIf="addressLine2.errors?.['required']">* Address Line 2 is required.</div>
+          <div *ngIf="addressLine2.errors?.['minlength']">* Minimum length for Address Line 2 is 10 characters.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input
+          type="text"
+          id="email"
+          name="email"
+          placeholder="Enter email"
+          [(ngModel)]="addUser.email"
+          #email="ngModel"
+          class="form-input"
+          pattern="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.(com|net|org)$"
+          required
+        />
+        <div *ngIf="email.invalid && (email.dirty || email.touched || addUserForm.submitted)" class="text-danger">
+          <div *ngIf="email.errors?.['required']">* Email is required.</div>
+          <div *ngIf="email.errors?.['pattern']">* Enter a valid email address.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="postalCode">Postal Code:</label>
+        <input
+          type="text"
+          id="postalCode"
+          name="postalCode"
+          placeholder="Enter your postal code"
+          [(ngModel)]="addUser.postalCode"
+          #postalCode="ngModel"
+          class="form-input"
+          pattern="^[0-9]{6}$"
+          required
+        />
+        <div *ngIf="postalCode.invalid && (postalCode.dirty || postalCode.touched || addUserForm.submitted) && addUserForm.submitted" class="text-danger">
+          <div *ngIf="postalCode.errors?.['required']">* Postal code is required.</div>
+          <div *ngIf="postalCode.errors?.['pattern']">* Enter a valid 6-digit postal code.</div>
+        </div>
+      </div>
+
+      <div class="form-group ">
+        <label for="uploadPhoto" class="upload-photo-label">Upload Photo:</label>
+        <div>
+        <input
+          type="file"
+          id="imageFile"
+          name="imageFile"
+          (change)="onFileChange($event)"
+          accept="image/*"
+          required
+          class="upload-photo-input"
+          #uploadPhotoInput
+        />
+        <span class="remove-photo" (click)="removePhoto()">&#x2715;</span> </div>
+
+        <div *ngIf="!addUser?.imageFile && addUserForm.submitted" class="text-danger">
+          * Please upload a photo.
+        </div>
+      </div>
+
+      <div class="form-group admin-checkbox-group">
+        <label class="admin-checkbox-label">
+          isAdmin:
+          <input type="checkbox" [(ngModel)]="addUser.isAdmin" name="isAdmin" />
+        </label>
+      </div>
+
+      <div class="form-button-group">
+        <button type="submit" class="submit-button">Submit</button>
+        <button type="button" class="cancel-button" (click)="closeAddUserPopup()">
+          Cancel
+        </button>
+      </div>
+    </form>
+
+    <!-- <div *ngIf="addUserForm.invalid && addUserForm.submitted" class="text-danger mt-2" style="text-align: center;">
+      * Please fill all the required details in the form.
+    </div> -->
+
+    </div>
 </div>
 
