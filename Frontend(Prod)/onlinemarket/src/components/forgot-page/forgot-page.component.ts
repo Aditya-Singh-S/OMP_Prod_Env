@@ -5,6 +5,7 @@ import { RecaptchaModule } from 'ng-recaptcha-2';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import { environment } from '../../environment/environment';
  
 @Component({
   selector: 'app-forgot-page',
@@ -23,8 +24,8 @@ export class ForgotPageComponent implements OnInit {
     email: string = '';
   
     userPool = new CognitoUserPool({
-      UserPoolId: 'us-east-1_AxB7iszWL',
-      ClientId: '417s4cdtb16h13q86gd9en55jb'
+      UserPoolId: environment.UserPoolId,
+    ClientId: environment.ClientId
     });
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }

@@ -4,6 +4,7 @@ import { CognitoUserPool, CognitoUser } from 'amazon-cognito-identity-js';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../environment/environment';
 
 @Component({
   selector: 'app-verify-email',
@@ -38,8 +39,8 @@ export class VerifyEmailComponent implements OnInit {
 
   verifyEmail(email:string, code: string) : void {
     const poolData = {
-      UserPoolId: 'us-east-1_AxB7iszWL',
-      ClientId: '417s4cdtb16h13q86gd9en55jb'
+      UserPoolId: environment.UserPoolId,
+      ClientId: environment.ClientId
     };
 
     const userPool = new CognitoUserPool(poolData);
