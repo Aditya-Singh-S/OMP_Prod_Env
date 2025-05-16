@@ -6,9 +6,9 @@
                 <div class="reviews-container">
                     <div *ngFor="let review of reviews" class="single-review">
                         <div class="product-overview">
-                            <a [href]="getProductLink(review)" target="_blank" style="display: block;">
-                                <img [src]="review.imageUrl" alt="{{ review.productName }}" class="product-image" style="cursor: pointer;">
-                            </a>
+                            <a [routerLink]="['/product-details', review.productid]" style="display: block; cursor: pointer;">
+                                <img [src]="review.imageUrl" alt="{{ review.productName }}" class="product-image">
+                              </a>
                             <div class="product-info-box">
                               <p class="product-name">{{ review.productName }}</p>
                               <p>{{ review.subscribersCount }} Subscribers</p>

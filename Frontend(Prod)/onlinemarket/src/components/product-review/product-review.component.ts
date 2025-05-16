@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -38,6 +38,7 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
     showReviewPopup: boolean = false;
     updateSuccessMessage: string | null = null;
     errorMessage: string | null = null;
+    @Output() reviewDeleted = new EventEmitter<number>();
 
     constructor(private userService: UserService, private router: Router) { }
 
@@ -60,62 +61,38 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
 
     loadUserReviews(): void {
         if (this.userId) {
-            forkJoin([
-                this.userService.getProductRatingList(this.userId),
-                this.userService.getProductSubscriptionList(this.userId)
-            ]).pipe(
-                tap(([reviewData, subscriptionData]) => {
-                    console.log('Raw review data:', reviewData);
-                    console.log('Raw subscription data:', subscriptionData);
-
-                    const reviewMap = new Map<number, ReviewViewModel>();
-
-                    // Process review data
-                    reviewData.forEach(review => {
-                        reviewMap.set(review.productid, {
-                            isActive: review.reviewActiveStatus,
-                            ratingId: review.ratingId,
-                            productid: review.productid,
-                            productName: review.productName,
-                            userId: review.userId,
-                            rating: review.rating,
-                            review: review.review,
-                            reviewCreatedOn: review.reviewCreatedOn,
-                            reviewUpdatedOn: review.reviewUpdatedOn,
-                            reviewDeletedOn: review.reviewDeletedOn,
-                            reviewActiveStatus: review.reviewActiveStatus,
-                            imageUrl: review.imageUrl,
-                            description: review.description,
-                            subscribersCount: 0 
-                        } as ReviewViewModel);
-                    });
-
-                    subscriptionData.forEach(product => {
-                        const existingReview = reviewMap.get(product.productid);
-                        if (existingReview) {
-                            existingReview.imageUrl = product.imageUrl;
-                            existingReview.subscribersCount = product.subscription_count;
-                            if (product.avg_rating !== undefined) {
-                                existingReview.rating = product.avg_rating;
-                            }
-                        } else {
-                            reviewMap.set(product.productid, {
-                                imageUrl: product.imageUrl,
-                                description: product.description,
-                                subscribersCount: product.subscription_count
-                            } as ReviewViewModel);
-                        }
-                    });
-
-                    this.reviews = Array.from(reviewMap.values());
-                    console.log('Merged User Reviews:', this.reviews);
-                })
-            ).subscribe({
+            console.log('loadUserReviews() called with userId:', this.userId);
+            this.userService.getProductRatingList(this.userId).subscribe({
+                next: (data) => {
+                    console.log('Raw review data:', data);
+                    this.reviews = data.map(review => ({
+                        isActive: review.reviewActiveStatus,
+                        ratingId: review.ratingId,
+                        productid: review.productid,
+                        productName: review.productName,
+                        userId: review.userId,
+                        rating: review.rating,
+                        review: review.review,
+                        reviewCreatedOn: review.reviewCreatedOn,
+                        reviewUpdatedOn: review.reviewUpdatedOn,
+                        reviewDeletedOn: review.reviewDeletedOn,
+                        reviewActiveStatus: review.reviewActiveStatus,
+                        imageUrl: review.imageUrl,
+                        description: review.description,
+                        subscribersCount: review.subscribersCount,
+ 
+                    } as ReviewViewModel));
+                    this.reviews = this.reviews.filter(review => review.reviewActiveStatus); // Filter out inactive reviews
+                    console.log(this.reviews)
+                },
                 error: (error) => {
-                    console.error('Error loading reviews and subscriptions:', error);
-                    this.errorMessage = 'Error Loading reviews and product information.';
+                    console.error('Error loading reviews:', error);
+                    this.errorMessage = 'Error Loading reviews';
                     setTimeout(() => this.errorMessage = null, 3000);
                 }
+ 
+ 
+ 
             });
         }
     }
@@ -133,7 +110,7 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
             this.userService.updateReview(
                 reviewToDelete.ratingId,
                 null,
-                null,
+                reviewToDelete.rating,
                 null,
                 false
             ).subscribe({
@@ -141,6 +118,7 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
                     console.log('Review marked for removal successfully:', response);
                     this.updateSuccessMessage = `Review for ${reviewToDelete.productName} removed.`;
                     this.loadUserReviews();
+                    this.reviewDeleted.emit(reviewToDelete.ratingId); 
                     setTimeout(() => this.updateSuccessMessage = null, 3000);
                 },
                 error: (error) => {
@@ -158,9 +136,6 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
         this.updateSuccessMessage = 'Reviews Updated Successfully';
         setTimeout(() => this.updateSuccessMessage = null, 3000);
     }
-    getProductLink(review: ReviewViewModel): string {
-      return `http://127.0.0.1:3000/product-details/${review.productid}`;
-  }
 
     openReviewPopup(): void {
         this.showReviewPopup = true;

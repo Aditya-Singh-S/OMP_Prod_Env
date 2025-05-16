@@ -73,6 +73,7 @@
      
        
       <div class="photo-field">
+
       <input id="photo" type="file" class="form-control" />
       <div *ngIf="signUpForm.get('photo')?.errors && signUpForm.get('photo')?.touched" class="text-danger">
           <div *ngIf="signUpForm.get('photo')?.errors?.['required']">* Postal code is required.</div>
@@ -83,6 +84,7 @@
      
               {{"* "+photoError }}
       </div>
+
       </div>
        
           <!-- Column 3 -->
@@ -101,7 +103,7 @@
       <input id="password" type="password" formControlName="password" class="form-control" />
       <div *ngIf="signUpForm.get('password')?.errors && signUpForm.get('password')?.touched" class="text-danger">
       <div *ngIf="signUpForm.get('password')?.errors?.['required']">* Password is required.</div>
-      <div *ngIf="signUpForm.get('password')?.errors?.['pattern']">* Password must include at least one uppercase letter, one lowercase letter, and one number (min 6 characters).</div>
+      <div *ngIf="signUpForm.get('password')?.errors?.['pattern']">* Password must include at least one uppercase letter, one lowercase letter, and one number</div>
       </div>
        
        
@@ -123,4 +125,4 @@
       </div>
       </form>
        
-     
+

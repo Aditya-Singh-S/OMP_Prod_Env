@@ -34,7 +34,7 @@ export class SignupComponent {
   photoError: string = '';
 
   emailError: string = '';
-
+  isFileSelected: boolean = false;
   potentiallyDuplicateEmails: string[] = [];
 
   destroy$ = new Subject<void>();
@@ -57,7 +57,7 @@ export class SignupComponent {
 
       contactNo: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
 
-      password: ['',[Validators.required,Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/)]],
+      password: ['',[Validators.required,Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/)]],
 
       confirmPassword: ['', [Validators.required]],
 
@@ -151,6 +151,22 @@ export class SignupComponent {
   //   }
 
   // }
+
+
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.isFileSelected = true; 
+      if (file.size < 10240 || file.size > 20480) {
+        this.photoError = 'Photo must be between 10KB and 20KB.';
+      } else {
+        this.photoError = '';
+      }
+    } else {
+      this.isFileSelected = false; 
+    }
+  }
+
  
   removePhoto() {
 
@@ -183,6 +199,7 @@ onSubmit(): void {
  
   if (this.signUpForm.invalid || !isPhotoValid) {
     return;
+
   }
  
   const formData = new FormData();
@@ -201,6 +218,7 @@ onSubmit(): void {
     formData.append('imageFile', photoInput.files[0]);
   }
  
+
   console.log(Array.from(formData.entries()));
  
   const email = this.signUpForm.get('email')?.value;

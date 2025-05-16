@@ -36,7 +36,11 @@
         [(ngModel)]="productName"
         name="productName"
         required
-        (input)="onProductNameInput($event)" />
+        (input)="onProductNameInput($event)" 
+        #name="ngModel"/>
+        <div *ngIf="name.invalid && name.touched" class="text-danger">
+          <div *ngIf="name.errors?.['required']">Product name is required.</div>
+        </div>
       <div *ngIf="duplicateProductNameError" class="text-danger">
         Product name already exists. Please use a different name.
       </div>
@@ -83,6 +87,17 @@
     </form>
   </div>
 </div>
+
+<div *ngIf="productAdded" class="popupSuccess">
+  <div class="popup-contents">
+        <div class="popup-header"> 
+        <h2>{{popupTitle}}</h2>
+        <span class="close-button" (click)="closeAddPopup()">&times;</span> </div>
+        <div class="popup-body">
+        <p>{{ popupMessage }}</p>
+        </div>
+  </div>
+  </div>
 
 <div class="popup-overlay" *ngIf="showAddMultipleProductsPopup">
   <div class="popup">
@@ -135,6 +150,17 @@
     </form>
   </div>
 </div>
+
+<div *ngIf="productUpdated" class="popupSuccess">
+  <div class="popup-contents">
+    <div class="popup-header">
+      <h2>{{popupTitle}}</h2>
+        <span class="close-button" (click)="closeUpdatePopup()">&times;</span> </div>
+        <div class="popup-body">
+        <p>{{ popupMessage }}</p>
+        </div>
+  </div>
+  </div>
 
 <!-- Add user -->
 
@@ -571,3 +597,14 @@
 
     </div>
 </div>
+
+<div *ngIf="userAdded" class="popupSuccess">
+  <div class="popup-contents">
+    <div class="popup-header">
+      <h2>{{popupTitle}}</h2>
+        <span class="close-button" (click)="closeUserAddedPopup()">&times;</span> </div>
+        <div class="popup-body">
+        <p>{{ popupMessage }}</p>
+        </div>
+  </div>
+  </div>

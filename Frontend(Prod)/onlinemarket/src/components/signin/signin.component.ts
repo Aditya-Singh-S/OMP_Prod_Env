@@ -29,6 +29,7 @@ export class SigninComponent implements OnInit {
    showPopup: boolean = false;
    popupTitle: string = '';
    popupMessage: string = '';
+   verifyError:boolean=false;
 
   constructor(private fb: FormBuilder, private userService: UserService, private authService: AuthService, private cookieService: CookieServiceService, private router: Router) {}
 
@@ -54,7 +55,10 @@ export class SigninComponent implements OnInit {
     const { email, password } = this.signInForm.value;
 
     if (!this.signInForm.value.captchaResponse) {
-      alert("Please verify that you are not a robot.");
+      //alert("Please verify that you are not a robot.");
+      this.verifyError=true;
+      this.popupTitle="Error";
+      this.popupMessage="Please verify that you are not a robot.";
       return;
     }
 
@@ -84,5 +88,9 @@ export class SigninComponent implements OnInit {
 
   closePopup() {
     this.showPopup = false;
+  }
+
+  closeVerifyPopup(){
+    this.verifyError=false;
   }
 }
