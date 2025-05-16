@@ -14,7 +14,7 @@
           <input type="password" formControlName="password" placeholder="Password" required>
           <div *ngIf="signInForm.get('password')?.invalid && signInForm.get('password')?.touched" class="error">
             <div *ngIf="signInForm.get('password')?.errors?.['required']">Password is required.</div>
-            <div *ngIf="signInForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters.</div>
+            <div *ngIf="signInForm.get('password')?.errors?.['minlength']">Enter correct password</div>
           </div>
         </div>
       </div>

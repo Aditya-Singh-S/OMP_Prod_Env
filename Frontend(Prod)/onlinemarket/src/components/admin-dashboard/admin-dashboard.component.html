@@ -36,7 +36,11 @@
         [(ngModel)]="productName"
         name="productName"
         required
-        (input)="onProductNameInput($event)" />
+        (input)="onProductNameInput($event)" 
+        #name="ngModel"/>
+        <div *ngIf="name.invalid && name.touched" class="text-danger">
+          <div *ngIf="name.errors?.['required']">Product name is required.</div>
+        </div>
       <div *ngIf="duplicateProductNameError" class="text-danger">
         Product name already exists. Please use a different name.
       </div>
