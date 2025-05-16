@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.cts.repository.UserRepository;
 
@@ -115,6 +116,7 @@ public class SNSServiceImpl implements SNSService {
 		 
 		        snsClient.publish(publishRequest);
 		}
+	
 	
 	public void userEmailVerify(String email)
 	{
@@ -313,15 +315,18 @@ public class SNSServiceImpl implements SNSService {
 		
 		snsClient.publish(request);
 	}
-	
+
+
+	@Override
 	public void notifyonresetPassword(String email) {
-	    String message = "Hi User!, Your password has been reset successfully.";
+		// TODO Auto-generated method stub
+		String message = "Hi User!, Your password has been reset successfully.";
 
 	    Map<String,MessageAttributeValue> attributes=Map.of
 				("recipient",MessageAttributeValue.builder()
 			  .dataType("String")
 			  .stringValue(email).build());
-
+	    		
 	    PublishRequest publishRequest = PublishRequest.builder()
 	            .message(message)
 	            .subject("Password Reset Successful") 
@@ -332,8 +337,8 @@ public class SNSServiceImpl implements SNSService {
 
 
 	    snsClient.publish(publishRequest);
+		
 	}
-
 		
 	}
 

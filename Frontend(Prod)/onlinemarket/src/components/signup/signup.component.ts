@@ -152,6 +152,7 @@ export class SignupComponent {
 
   // }
 
+
   onFileChange(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -198,6 +199,7 @@ onSubmit(): void {
  
   if (this.signUpForm.invalid || !isPhotoValid) {
     return;
+
   }
  
   const formData = new FormData();
@@ -216,6 +218,7 @@ onSubmit(): void {
     formData.append('imageFile', photoInput.files[0]);
   }
  
+
   console.log(Array.from(formData.entries()));
  
   const email = this.signUpForm.get('email')?.value;

@@ -1,0 +1,151 @@
+<div class="popup-overlay" >
+    <div class="popup-content">
+        <div class="search-section">
+            <h2>Update User</h2>
+            <div class="search-container">
+                <label for="searchEmail">Search user email:</label><br>
+                <input type="email" id="searchEmail" name="searchEmail" [(ngModel)]="searchEmail">
+                <button class="search-button" (click)="searchUserByEmail()">Search</button>
+            </div>
+            <div *ngIf="userNotFoundMessage" class="user-not-found">{{ userNotFoundMessage }}</div>
+        </div>
+ 
+        <div *ngIf="foundUser" class="user-details-section">
+            <h3>User Details</h3>
+            <p>User ID: {{ foundUser.userID }}</p>
+            <p>Email: {{ foundUser.email }}</p>
+            <div class="form-group">
+                <label for="isActive">Active Status:</label>
+                <input
+                type="checkbox"
+                id="isActive"
+                [(ngModel)]="foundUser.isActive"
+                (ngModelChange)="updateUserActiveStatusNgModel()"
+                />                
+            </div>
+            <div class="action-buttons">
+                <button (click)="showProfileSection = true; showSubscriptionsSection = false; showReviewsSection = false">View Profile</button>
+                <button (click)="showProfileSection = false; showSubscriptionsSection = true; showReviewsSection = false">View Product Subscriptions</button>
+                <button (click)="showProfileSection = false; showSubscriptionsSection = false; showReviewsSection = true">View Product Reviews</button>
+                <button class="submit-button" (click)="submitMainForm()">Submit</button>
+            </div>
+ 
+            <div *ngIf="showProfileSection" class="profile-section">
+                <h3>Profile</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" [(ngModel)]="foundUser.firstName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" [(ngModel)]="foundUser.lastName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="dob">Date of Birth:</label>
+                        <input type="date" id="dob" [(ngModel)]="foundUser.dateOfBirth" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="text" id="phone" [(ngModel)]="foundUser.contactNumber" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="address1">Address Line 1:</label>
+                        <input type="text" id="address1" [(ngModel)]="foundUser.addressLine1" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="address2">Address Line 2:</label>
+                        <input type="text" id="address2" [(ngModel)]="foundUser.addressLine2" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="postalCode">Postal Code:</label>
+                        <input type="text" id="postalCode" [(ngModel)]="foundUser.postalCode" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" [(ngModel)]="foundUser.email" class="form-control" readonly>
+                    </div>
+                </div>
+                </div>
+ 
+                <div *ngIf="showSubscriptionsSection" class="subscriptions-section">
+                    <h3>Product Subscriptions</h3>
+                    <div *ngIf="subscriptions && subscriptions.length > 0; else noSubscriptions">
+                        <ul class="subscription-list">
+                            <li *ngFor="let subscription of subscriptions" class="subscription-item">
+                                <img [src]="'http://localhost:9090/OMP/product/image/'+subscription.productid" alt="{{ subscription.name }}" class="product-image">
+                                <div class="product-info">
+                                    <p>{{ subscription.name }}</p>
+                                    <p>Subscribers: {{ subscription.subscription_count }}</p>
+                                    <p>Rating: {{ subscription.avg_rating }} stars</p>
+                                </div>
+                                <div class="subscription-actions">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+ 
+                                            [(ngModel)]="subscription.isSelectedToRemove"
+                                        />
+                                        <!-- [checked]="true" -->
+                                    </label>
+                                </div>
+                                <div class="subscription-indicator">
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="button-group">
+                            <button class="submit-button" (click)="removeSelectedSubscriptions()">Submit</button>
+                            <!-- <button type="button" (click)="closeSubscriptionPopup()">Close</button> -->
+                        </div>
+                    </div>
+                    <ng-template #noSubscriptions>
+                        <p>You are not currently subscribed to any products.</p>
+                        <button type="button" (click)="closeSubscriptionPopup()">Close</button>
+                    </ng-template>
+                    <div *ngIf="updateSuccessMessage" class="success-message">
+                        {{ updateSuccessMessage }}
+                    </div>
+                    <!-- <button class="submit-changes-button" (click)="submitSubscriptionChanges()">Submit Changes</button> -->
+                </div>
+ 
+            <div *ngIf="showReviewsSection" class="reviews-section">
+                <h3>Product Reviews</h3>
+ 
+                <div *ngFor="let review of userReviews" class="review-container">
+ 
+                    <div class="product-info-header">
+                        <img [src]="'http://localhost:9090/OMP/product/image/'+review.productid" alt="{{ review.productName }}" class="product-image-small">
+                        <div class="product-details-small">
+                            <div class="product-name-small">{{ review.productName }}</div>
+                            </div>
+                    </div>
+ 
+ 
+                    <div class="user-review-box">
+                        <div class="review-header">
+                            <div class="review-rating">{{ review.rating }} Stars</div>
+                            </div>
+                        <div class="review-text">
+                            {{ review.review }}
+                        </div>
+                        <div class="review-status">
+                            Status: <span [style.color]="review.reviewActiveStatus ? 'green' : 'red'">
+                                {{ review.reviewActiveStatus ? 'Active' : 'Inactive' }}
+                            </span>
+                            <button (click)="toggleReviewStatus(review)" class="status-toggle-button">
+                                {{ review.reviewActiveStatus ? 'Mark Inactive' : 'Mark Active' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+ 
+                <button class="section-submit-button" (click)="submitReviewChanges()">Save Review Changes</button>
+            </div>
+ 
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        </div>
+ 
+        <button class="close-button" (click)="closePopup()">&times;</button>
+    </div>
+</div>
+ 

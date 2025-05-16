@@ -1,4 +1,4 @@
-<form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="sign-up-form">
+<form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="sign-up-form" ng>
       <div class="row">
       <!-- Column 1 -->
       <div class="column">
@@ -73,12 +73,18 @@
      
        
       <div class="photo-field">
-            <input id="photo" type="file" (change)="onFileChange($event)" class="form-control" />
-            <span class="remove-photo" (click)="removePhoto()">&#x2715;</span>
-          </div>
-          <div *ngIf="photoError" class="text-danger">
-            {{ "* " + photoError }}
-          </div>
+
+      <input id="photo" type="file" class="form-control" />
+      <div *ngIf="signUpForm.get('photo')?.errors && signUpForm.get('photo')?.touched" class="text-danger">
+          <div *ngIf="signUpForm.get('photo')?.errors?.['required']">* Postal code is required.</div>
+      </div>
+      <span class="remove-photo" (click)="removePhoto()">&#x2715;</span>
+      </div>
+      <div *ngIf="photoError" class="text-danger">
+     
+              {{"* "+photoError }}
+      </div>
+
       </div>
        
           <!-- Column 3 -->
@@ -119,4 +125,4 @@
       </div>
       </form>
        
-     
+

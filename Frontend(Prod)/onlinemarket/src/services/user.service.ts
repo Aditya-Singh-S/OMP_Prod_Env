@@ -264,4 +264,11 @@ updateUserSubscriptions(userId: number, productIds: number[]): Observable<any> {
     };
   }
 
+  updateSubscriptionStatus(userId: number | null, productId: number, enabled: boolean): Observable<any> {
+    const params = new HttpParams()
+      .set('userId', userId ? userId.toString() : '')
+      .set('productId', productId.toString())
+      .set('enabled', enabled.toString());
+    return this.http.put(`${this.baseUrl}/removeSubscription`, null, { params });
+  }
 }
