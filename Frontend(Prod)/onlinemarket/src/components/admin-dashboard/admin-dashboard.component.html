@@ -84,6 +84,17 @@
   </div>
 </div>
 
+<div *ngIf="productAdded" class="popupSuccess">
+  <div class="popup-contents">
+        <div class="popup-header"> 
+        <h2>{{popupTitle}}</h2>
+        <span class="close-button" (click)="closeAddPopup()">&times;</span> </div>
+        <div class="popup-body">
+        <p>{{ popupMessage }}</p>
+        </div>
+  </div>
+  </div>
+
 <div class="popup-overlay" *ngIf="showAddMultipleProductsPopup">
   <div class="popup">
     <h3>Add Multiple Products</h3>
@@ -135,6 +146,17 @@
     </form>
   </div>
 </div>
+
+<div *ngIf="productUpdated" class="popupSuccess">
+  <div class="popup-contents">
+    <div class="popup-header">
+      <h2>{{popupTitle}}</h2>
+        <span class="close-button" (click)="closeUpdatePopup()">&times;</span> </div>
+        <div class="popup-body">
+        <p>{{ popupMessage }}</p>
+        </div>
+  </div>
+  </div>
 
 <!-- Add user -->
 
@@ -353,3 +375,14 @@
 
     </div>
 </div>
+
+<div *ngIf="userAdded" class="popupSuccess">
+  <div class="popup-contents">
+    <div class="popup-header">
+      <h2>{{popupTitle}}</h2>
+        <span class="close-button" (click)="closeUserAddedPopup()">&times;</span> </div>
+        <div class="popup-body">
+        <p>{{ popupMessage }}</p>
+        </div>
+  </div>
+  </div>
