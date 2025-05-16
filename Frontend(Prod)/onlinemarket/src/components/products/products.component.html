@@ -1,29 +1,26 @@
-<!-- <app-searchfilter></app-searchfilter>  -->
-
 <section class="all-products">
   <div class="all-product-list">
     <h2>All Products</h2>
     <div class="all-product-container" id="product-list">
-      <div *ngFor="let product of productList" class="product" [attr.data-id]="product.productid"
+      <div *ngIf="productList.length === 0 && !isFilterActive && !showInvalidSearchMessage">
+        <div class="no-product">No Products are found!</div>
+      </div>
+      <div *ngIf="isFilterActive && filteredList.length === 0 && !showInvalidSearchMessage">
+        <div class="no-product">{{ noResultsMessage }}</div>
+      </div>
+      <div *ngIf="showInvalidSearchMessage">
+        <div class="no-product">{{ noResultsMessage }}</div>
+      </div>
+      <div *ngFor="let product of (isFilterActive ? filteredList : productList)" class="product" [attr.data-id]="product.productid"
         (click)="viewProductDetails(product.productid)">
         <div class="productimage">
           <img [src]="product.imageUrl" alt="{{product.name}}">
         </div>
         <div class="productdescription">
           {{product.name}}<br>
-          
           {{product.subscription_count}} subscribers<br>
-          
-
           {{product.avg_rating}} stars
-
         </div>
-      </div>
-      <div *ngIf="showNoResultsMessage">
-        <div class="no-product"> {{noResultsMessage}}</div>
-      </div>
-      <div *ngIf="productList.length === 0 && !showNoResultsMessage">
-        <div class="no-product">No Products are found!</div>
       </div>
     </div>
   </div>

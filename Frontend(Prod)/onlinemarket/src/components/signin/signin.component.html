@@ -14,7 +14,7 @@
           <input type="password" formControlName="password" placeholder="Password" required>
           <div *ngIf="signInForm.get('password')?.invalid && signInForm.get('password')?.touched" class="error">
             <div *ngIf="signInForm.get('password')?.errors?.['required']">Password is required.</div>
-            <div *ngIf="signInForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters.</div>
+            <div *ngIf="signInForm.get('password')?.errors?.['minlength']">Enter correct password</div>
           </div>
         </div>
       </div>
@@ -30,4 +30,28 @@
   <div class="signup">
     <button class="signup-btn" [routerLink]="'/signup'">Sign Up</button>
   </div>
+
+  <div *ngIf="showPopup" class="popup">
+    <div class="popup-content">
+          <div class="popup-header">
+          <h2>{{ popupTitle }}</h2>
+          <span class="close-button" (click)="closePopup()">&times;</span>
+          </div>
+          <div class="popup-body">
+          <p>{{ popupMessage }}</p>
+          </div>
+    </div>
+    </div>
+
+    <div *ngIf="verifyError" class="popup">
+      <div class="popup-content">
+            <div class="popup-header">
+            <h2>{{ popupTitle }}</h2>
+            <span class="close-button" (click)="closeVerifyPopup()">&times;</span>
+            </div>
+            <div class="popup-body">
+            <p>{{ popupMessage }}</p>
+            </div>
+      </div>
+      </div>
 </div>

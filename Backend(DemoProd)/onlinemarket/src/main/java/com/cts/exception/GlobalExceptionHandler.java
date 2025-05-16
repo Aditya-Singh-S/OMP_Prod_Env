@@ -108,6 +108,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 	
+	@ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex) {
+        String parameterName = ex.getParameterName();
+        String message = String.format("Required parameter '%s' is missing", parameterName);
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
