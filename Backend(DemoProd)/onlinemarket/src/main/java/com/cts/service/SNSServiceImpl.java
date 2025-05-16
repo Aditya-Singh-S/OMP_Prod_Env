@@ -72,6 +72,50 @@ public class SNSServiceImpl implements SNSService {
 		
 	}
 	
+	// Scrum-80 : Email to admin and users when admin update user preferences
+		// and this method sends email to the admin
+		@Override
+		public void notifyAdminOnUnSubscription(String productName,String userEmail) {
+			Map<String, MessageAttributeValue> attributes = Map.of(
+		            "recipient", MessageAttributeValue.builder()
+		                .dataType("String")
+		                .stringValue("ADMIN").build());
+		
+			String subject = "Product Subscription Removed!";
+			String message = "Hey Admin, you have removed Subscription of the product " + productName + " for " + userEmail;
+	 
+	        PublishRequest publishRequest = PublishRequest.builder()
+	        		.messageAttributes(attributes)
+	        		.topicArn(TOPIC_ARN)
+	                .subject(subject)
+	                .message(message)
+	                .build();
+	 
+	        snsClient.publish(publishRequest);
+		}
+		
+		// Scrum-80 : Email to admin and users when admin update user preferences
+		// and this method sends email to the user
+		@Override
+		public void notifyUserOnUnSubscription(String nickName,String productName,String userEmail) {
+			Map<String, MessageAttributeValue> attributes = Map.of(
+		             "recipient", MessageAttributeValue.builder()
+		                 .dataType("String")
+		                 .stringValue(userEmail).build());
+		 
+		  String subject = "Product Subscription Removed!";
+		  String message = "Hey " + nickName +", Admin have removed your Subscription for the product " + productName;
+		 
+		        PublishRequest publishRequest = PublishRequest.builder()
+		          .messageAttributes(attributes)
+		          .topicArn(TOPIC_ARN)
+		                .subject(subject)
+		                .message(message)
+		                .build();
+		 
+		        snsClient.publish(publishRequest);
+		}
+	
 	public void userEmailVerify(String email)
 	{
 		String message = "Hey Please reset your passowrd using the below link  http://online-marketplace-bucket.s3-website-us-east-1.amazonaws.com/forgot-page";
@@ -269,6 +313,27 @@ public class SNSServiceImpl implements SNSService {
 		
 		snsClient.publish(request);
 	}
+	
+	public void notifyonresetPassword(String email) {
+	    String message = "Hi User!, Your password has been reset successfully.";
+
+	    Map<String,MessageAttributeValue> attributes=Map.of
+				("recipient",MessageAttributeValue.builder()
+			  .dataType("String")
+			  .stringValue(email).build());
+
+	    PublishRequest publishRequest = PublishRequest.builder()
+	            .message(message)
+	            .subject("Password Reset Successful") 
+	            .topicArn(TOPIC_ARN)
+	            .messageAttributes(attributes)
+	            .build();
+
+
+
+	    snsClient.publish(publishRequest);
+	}
+
 		
 	}
 

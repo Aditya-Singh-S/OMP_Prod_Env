@@ -96,6 +96,9 @@ public class ProductServiceImpl implements ProductService {
                         dto.setName(product.getName());
                         dto.setDescription(product.getDescription());
                         dto.setImageUrl(product.getImageUrl());
+                        dto.setSubscription_count(this.getSubscriptionList(product.getProductid()).size());
+                        dto.setAvg_rating(productViewRepo.getReferenceById(product.getProductid()).getAvg_rating());
+                       
                         return dto;
                     })
                     .collect(Collectors.toList());
