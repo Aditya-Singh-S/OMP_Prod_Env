@@ -92,7 +92,7 @@
         <div class="subscribe-status-container">
           <div class="status-text">Subscribe Status</div>
           <label class="checkbox-label">
-            <input type="checkbox" [(ngModel)]="isSubscribed" (change)="toggleSubscription()" />
+            <input type="checkbox" [(ngModel)]="isSubscribed" />
             <span class="checkmark"></span>
           </label>
         </div>
@@ -102,3 +102,15 @@
     </div>
   </div>
 </div>
+
+<div *ngIf="showAlertPopup" class="alert-popup">
+  <div class="alert-popup-content">
+        <div class="alert-popup-header">
+        <h2>{{ popupTitle }}</h2>
+        <span class="alert-close-button" (click)="closeAlertPopup()">&times;</span>
+        </div>
+        <div class="alert-popup-body">
+        <p>{{ popupMessage }}</p>
+        </div>
+  </div>
+  </div>

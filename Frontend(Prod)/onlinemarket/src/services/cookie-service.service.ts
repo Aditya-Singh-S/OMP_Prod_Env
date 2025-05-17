@@ -28,7 +28,7 @@ export class CookieServiceService implements OnInit, OnDestroy {
     this.stopCookieExpirationCheck();
   }
 
-  setCookie(cookieValue: string, expirationMinutes: number = 20): void {
+  setCookie(cookieValue: string, expirationMinutes: number = 60): void {
     const expires = new Date(Date.now() + expirationMinutes * 60 * 1000);
     this.cookieService.set(this.cookieName, cookieValue.toString(), expires, '/');
   }
@@ -49,6 +49,7 @@ export class CookieServiceService implements OnInit, OnDestroy {
 
   clearLogoutData(): void {
     localStorage.removeItem(this.userDataKey);
+    localStorage.removeItem('authToken');
     console.log('User data cleared from local storage.');
     this.logoutSubject.next();
   }
