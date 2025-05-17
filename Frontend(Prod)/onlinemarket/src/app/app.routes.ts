@@ -11,6 +11,7 @@ import { AdminDashboardComponent } from '../components/admin-dashboard/admin-das
 import { ForgotPageComponent } from '../components/forgot-page/forgot-page.component';
 import { ResetComponent } from '../components/reset/reset.component';
 import { VerifyEmailComponent } from '../components/verify-email/verify-email.component';
+import { adminGuard } from '../guard/admin.guard';
 
 export const routes: Routes = [
     {
@@ -28,7 +29,8 @@ export const routes: Routes = [
     },
     {
         path : 'admin',
-        component : AdminDashboardComponent
+        component : AdminDashboardComponent,
+        canActivate : [adminGuard]
     },
     {
         path : 'help',
