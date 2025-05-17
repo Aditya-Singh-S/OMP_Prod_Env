@@ -198,18 +198,16 @@ export class UserService {
     return this.userId$;
   }
 
-  updateReview(ratingId: number, userId: number | null, rating: number | null, review: string | null, reviewActiveStatus: boolean): Observable<any> {
+  updateReview(ratingId: number, userId: number | null, reviewActiveStatus: boolean): Observable<any> {
     let params = new HttpParams().set('ratingId', ratingId.toString());
     if (userId !== null) params = params.set('userId', userId.toString());
-    if (rating !== null) params = params.set('rating', rating.toString());
-    if (review !== null) params = params.set('review', review);
     params = params.set('reviewActiveStatus', reviewActiveStatus.toString());
  
     return this.http.put<any>(`${this.baseUrl}/reviews/updateReview`, {}, { params: params });
   }
  
   deleteReview(ratingId: number): Observable<any> {
-    return this.updateReview(ratingId, null, null, null, false);
+    return this.updateReview(ratingId, null, false);
   }
  
   getUserProductReviews(userId: number): Observable<IReview[]> {

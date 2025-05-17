@@ -64,37 +64,24 @@ public class ReviewAndRatingService {
     }
 
     // Update Review
-    public ReviewsAndRatings updateReview(Long ratingId, Integer userId,Double rating, String review,Boolean reviewActiveStatus) {
-       
-    	
+    public ReviewsAndRatings updateReview(Long ratingId, Integer userId,Boolean reviewActiveStatus) {
+        
     	ReviewsAndRatings existingReview = reviewRepository.findById(ratingId)
                 .orElseThrow(() -> new InvalidInputException("Rating not found with ID: " + ratingId));
-
+ 
         if (userId != null) {
-            User user =userRepository.findById(userId)
+        	User user =userRepository.findById(userId)
                     .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-            existingReview.setUser(user); // Only update if userId is provided
+            existingReview.setUser(user);
         }
-
-        if (rating != null) {
-            existingReview.setRating(rating);
-        }
-
-        if (review != null) {
-            existingReview.setReview(review);
-        }
-
+ 
         if (reviewActiveStatus != null) {
             existingReview.setReviewActiveStatus(reviewActiveStatus);
         }
-
+ 
         existingReview.setReviewUpdateOn(Timestamp.from(Instant.now()));
-        
-        reviewRepository.save(existingReview);
-        
-        snsService.notifyReviewDeleted(existingReview.getUser().getEmail(),existingReview.getProducts().getName(),rating,review);
-        
-        return existingReview;
+        snsService.notifyReviewDeleted(existingReview.getUser().getEmail(),existingReview.getProducts().getName());
+        return reviewRepository.save(existingReview);
     }
 
     public List<ReviewAndRatingDTO> getAllReviews() {
