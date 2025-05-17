@@ -230,36 +230,31 @@ public class SNSServiceImpl implements SNSService {
 
 
 	@Override
-	public void notifyReviewDeleted(String userEmail, String productName, double rating, String review) {
+	public void notifyReviewDeleted(String userEmail, String productName) {
 		
 		Map<String, MessageAttributeValue> attributes = Map.of(
 	            "recipient", MessageAttributeValue.builder()
 	                .dataType("String")
 	                .stringValue(userEmail).build());
 		
-		String subject = "Review Updated";
+		String subject = "Review Deleted";
         String message = String.format("""
                 Hello %s,
-
-                Your review for the product: %s has been successfully updated.
-
-                Deleted review details:
-                Rating: %.1f stars
-                Review: %s
-
-                If you did not initiate this action, please contact our support team.
-                """, userEmail, productName, rating, review);
-
+ 
+                Your review for the product: %s has been successfully deleted.
+                
+                If you did not initiate this deletion, please contact our support team.
+                """, userEmail, productName);
+ 
         PublishRequest publishRequest = PublishRequest.builder()
                 .topicArn(TOPIC_ARN)
                 .subject(subject)
                 .message(message)
                 .messageAttributes(attributes)
                 .build();
-
+ 
         snsClient.publish(publishRequest);
     }
-
 
 	@Override
 	public void notifyOnSubscribing(String email, String nickName, String productName) {

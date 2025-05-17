@@ -25,6 +25,7 @@ public class ReviewAndRatingDTO {
     private Timestamp reviewUpdateOn;
     private Timestamp reviewDeletedOn;
     private boolean reviewActiveStatus;
+    private int subscribersCount;
  
     public ReviewAndRatingDTO(ReviewsAndRatings review) {
         this.ratingId = review.getRatingId();
@@ -38,7 +39,8 @@ public class ReviewAndRatingDTO {
         this.reviewUpdateOn = review.getReviewUpdateOn();
         //this.reviewDeletedOn = review.getReviewDeletedOn();
         this.reviewActiveStatus = review.isReviewActiveStatus();
-    }
+        this.subscribersCount=review.getUser().getProductSubscriptionList().size();
+        }
  
     
 }
