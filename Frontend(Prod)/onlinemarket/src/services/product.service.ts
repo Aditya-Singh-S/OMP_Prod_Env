@@ -28,20 +28,21 @@ interface UserDetail {
 })
 export class ProductService {
 
-  private baseUrl = 'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP'; // Update with your backend URL
+  private baseUrl = 'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP';
   http: HttpClient;
 
-  private searchResultsSource = new BehaviorSubject<any[]>([]);
+  private searchResultsSource = new Subject<any[]>();
   searchResults$ = this.searchResultsSource.asObservable();
   private invalidSearchSubject = new Subject<void>(); // New Subject for invalid searches
   public invalidSearch$ = this.invalidSearchSubject.asObservable();
-
+  
   token :any = localStorage.getItem('authToken');
   // console.log("Token = ", token);
     authHeaders = new HttpHeaders({
     Authorization: `Basic ${this.token}`
   });
 
+  
   constructor(http: HttpClient) {
     this.http = http;
   }
@@ -101,7 +102,7 @@ export class ProductService {
   signalInvalidSearch() {
     this.invalidSearchSubject.next();
   }
- 
+
   setSearchResults(results: any[]) {
     this.searchResultsSource.next(results);
   }
@@ -157,7 +158,7 @@ export class ProductService {
       .set('userId', userId ? userId.toString() : '')
       .set('reviewActiveStatus', isActive.toString());
 
-      return this.http.put(`${this.baseUrl}/reviews/updateReview`, null, { headers : this.authHeaders,params : params }); // Reusing your existing update endpoint
+    return this.http.put(`${this.baseUrl}/reviews/updateReview`, null, { headers : this.authHeaders,params : params }); // Reusing your existing update endpoint
   }
 
   registerUser(formData: any): Observable<any> {
