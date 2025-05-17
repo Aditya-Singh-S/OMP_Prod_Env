@@ -328,27 +328,9 @@ export class ResetComponent implements OnInit {
 
   poolData = {
 
-<<<<<<< HEAD
-    onCaptchaResolved($event: string|null) {
-        throw new Error('Method not implemented.');
-    }
-
-    newPassword = '';
-    confirmPassword = '';
-    //verificationCode = '';
-
-
-    poolData = {
-        UserPoolId: environment.UserPoolId,
-        ClientId: environment.ClientId
-      };
-      
-    constructor(private route: ActivatedRoute, private router : Router) {}
-=======
     UserPoolId: environment.UserPoolId,
       ClientId: environment.ClientId
   };
->>>>>>> ea01cb4069d13f8bd3a61cba115d0abbf304f192
 
   constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private authService: AuthService) { }
 

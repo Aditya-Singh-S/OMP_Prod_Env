@@ -110,8 +110,6 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
             this.userService.updateReview(
                 reviewToDelete.ratingId,
                 null,
-                reviewToDelete.rating,
-                null,
                 false
             ).subscribe({
                 next: (response) => {

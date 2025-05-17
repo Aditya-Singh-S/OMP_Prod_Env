@@ -19,7 +19,7 @@ public interface SNSService {
 	
 	void notifyReviewCreated(String userEmail, String productName, double rating, String review);
 	
-    void notifyReviewDeleted(String userEmail, String productName, double rating, String review);
+    void notifyReviewDeleted(String userEmail, String productName);
     
     void notifyOnSubscribing(String email, String nickName, String productName);
     
