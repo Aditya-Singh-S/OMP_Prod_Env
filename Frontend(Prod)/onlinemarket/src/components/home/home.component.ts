@@ -79,7 +79,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           });
         },
         error: (error) => {
-          alert('Cannot load Your Subscribed Products');
+          // alert('Cannot load Your Subscribed Products');
           console.error(error);
         },
         complete: () => {
@@ -98,7 +98,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.TopSubscribedProductList = products;
       },
       error: (error) => {
-        alert('Cannot load Top Subscribed Products');
+        // alert('Cannot load Top Subscribed Products');
       },
       complete: () => {
         console.log('Successfully loaded Top Subscribed Products', this.TopSubscribedProductList);
@@ -112,7 +112,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.TopRatedProductsList = products;
       },
       error: (error) => {
-        alert('Cannot load Top Rated Products');
+        // alert('Cannot load Top Rated Products');
       },
       complete: () => {
         console.log('Successfully loaded Top Rated Products', this.TopRatedProductsList);
@@ -131,7 +131,7 @@ loadUserSpecificRatings(): void {
         console.log('User Ratings:', this.userSpecificRatings);
       },
       error: (error) => {
-        alert('Cannot load Your Rated Products');
+        // alert('Cannot load Your Rated Products');
         console.error(error);
       },
       complete: () => {
