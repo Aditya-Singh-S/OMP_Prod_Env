@@ -28,13 +28,19 @@ interface UserDetail {
 })
 export class ProductService {
 
-  private baseUrl = 'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP'; // Update with your backend URL
+  private baseUrl = 'http://localhost:9090/OMP'; // Update with your backend URL
   http: HttpClient;
 
-  private searchResultsSource = new BehaviorSubject<any[]>([]);
+  private searchResultsSource = new Subject<any[]>();
   searchResults$ = this.searchResultsSource.asObservable();
   private invalidSearchSubject = new Subject<void>(); // New Subject for invalid searches
   public invalidSearch$ = this.invalidSearchSubject.asObservable();
+  
+  token :any = localStorage.getItem('authToken');
+  // console.log("Token = ", token);
+    authHeaders = new HttpHeaders({
+    Authorization: `Basic ${this.token}`
+  });
 
   constructor(http: HttpClient) {
     this.http = http;
@@ -61,7 +67,7 @@ export class ProductService {
     formData.append('imageFile', imageFile);
     formData.append('isActive',isActive.toString());
 
-    return this.http.post(`${this.baseUrl}/admin/addProduct`, formData);
+    return this.http.post(`${this.baseUrl}/admin/addProduct`, formData, {headers:this.authHeaders});
   }
 
   updateProduct(name: string, upName: string, description: string, imageFile?: File, isActive?: boolean): Observable<any> {
@@ -74,18 +80,18 @@ export class ProductService {
     }
     if (isActive !== undefined) formData.append('isActive', isActive.toString());
  
-    return this.http.put(`${this.baseUrl}/admin/updateProduct/${name}`, formData);
+    return this.http.put(`${this.baseUrl}/admin/updateProduct/${name}`, formData, {headers : this.authHeaders});
   }
 
   uploadMultipleProducts(file: File,bulkProductisactive : boolean): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file);
     const params = new HttpParams().set('bulkProductisactive', bulkProductisactive);
-    return this.http.post(`${this.baseUrl}/admin/uploadMultipleRecords`, formData,{params});
+    return this.http.post(`${this.baseUrl}/admin/uploadMultipleRecords`, formData,{headers : this.authHeaders, params :params});
   }
 
   getProductImageByName(name: string): Observable<Blob> {
-    return this.http.get(`${this.baseUrl}/product/imageByName/${name}`, { responseType: 'blob' });
+    return this.http.get(`${this.baseUrl}/product/imageByName/${name}`,{headers : this.authHeaders, responseType: 'blob'});
   }
 
 
@@ -95,13 +101,13 @@ export class ProductService {
   signalInvalidSearch() {
     this.invalidSearchSubject.next();
   }
- 
+
   setSearchResults(results: any[]) {
     this.searchResultsSource.next(results);
   }
  
   searchProduct(productName: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/searchProductByName`, { params: { productName } });
+    return this.http.get(`${this.baseUrl}/searchProductByName`, { headers: this.authHeaders,params: { productName } });
   }
 
 
@@ -137,12 +143,12 @@ export class ProductService {
   }
  
   getProductSubscriptionList(productId: number): Observable<UserDetail[]> {
-    return this.http.get<UserDetail[]>(`${this.baseUrl}/viewUsersSubscribedToProduct?productId=${productId}`);
+    return this.http.get<UserDetail[]>(`${this.baseUrl}/viewUsersSubscribedToProduct?productId=${productId}`,{ headers: this.authHeaders});
   }
 
   updateUserReviews(userId: number, reviews: IReview[]): Observable<any> {
     const url = `${this.baseUrl}/reviews/updateReview`; // Adjust your backend API endpoint
-    return this.http.put(url, reviews); // Send the array of updated reviews in the request body
+    return this.http.put(url,reviews,{ headers : this.authHeaders}); // Send the array of updated reviews in the request body
   }
 
   updateReviewStatus(reviewId: number, userId: number | null, isActive: boolean): Observable<any> {
@@ -151,11 +157,11 @@ export class ProductService {
       .set('userId', userId ? userId.toString() : '')
       .set('reviewActiveStatus', isActive.toString());
 
-    return this.http.put(`${this.baseUrl}/reviews/updateReview`, null, { params }); // Reusing your existing update endpoint
+    return this.http.put(`${this.baseUrl}/reviews/updateReview`, null, { headers : this.authHeaders,params : params }); // Reusing your existing update endpoint
   }
 
   registerUser(formData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/admin/register`, formData);
+    return this.http.post(`${this.baseUrl}/admin/register`, formData, {headers : this.authHeaders});
   }
 
 }

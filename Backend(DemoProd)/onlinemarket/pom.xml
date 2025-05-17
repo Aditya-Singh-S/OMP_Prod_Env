@@ -10,11 +10,8 @@
 	</parent>
 	<groupId>com.cts</groupId>
 	<artifactId>onlinemarket</artifactId>
-<<<<<<< HEAD
-	<version>0.2.4-SNAPSHOT</version>
-=======
-	<version>0.2.5-SNAPSHOT</version>
->>>>>>> 2a86ab8e31f9e6abacc86448590dad6242a8f8c0
+
+	<version>0.2.6-SNAPSHOT</version>
 	<name>onlinemarket</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
