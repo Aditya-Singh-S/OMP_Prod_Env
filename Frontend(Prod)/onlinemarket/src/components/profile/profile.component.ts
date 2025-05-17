@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { ProductSubscriptionsComponent } from '../product-subscriptions/product-subscriptions.component';
 import { ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ProductReviewComponent } from "../product-review/product-review.component";
+import { CookieServiceService } from '../../services/cookie-service.service';
 
 @Component({
   selector: 'app-profile',
@@ -39,9 +40,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
   popupMessage: string = '';
   popupType: 'success' | 'error' = 'success'; // You can extend this type
 
+  isLoggedIn: boolean = false; // To track login status
+  isLoading: boolean = true; // To handle potential delays in checking login status
+
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
+    private cookieService : CookieServiceService,
     private router: Router,
     private datePipe: DatePipe,
     private cdr: ChangeDetectorRef
@@ -62,6 +67,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.isLoggedIn = this.cookieService.isLoggedIn();
+  this.isLoading = false; // Login status checked
+
+  if (!this.isLoggedIn) {
+    this.router.navigate(['/signin']); // Redirect if not logged in
+    return; // Prevent further execution
+  }
     this.userIdSubscription = this.userService.watchUserId().subscribe(id => {
       this.userId = id;
       if (this.userId) {

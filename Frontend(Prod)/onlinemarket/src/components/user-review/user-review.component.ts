@@ -13,6 +13,7 @@ interface Review {
   userName?: string; // Add userName property
   productName: string;
   reviewCreatedOn: string;
+  reviewActiveStatus : boolean;
 }
 
 @Component({
