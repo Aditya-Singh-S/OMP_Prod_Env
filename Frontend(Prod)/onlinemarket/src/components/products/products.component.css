@@ -18,11 +18,11 @@ section{
 
 
 h2{
-    background-color: rgb(1, 1, 118);;
+    background-color: rgb(1, 1, 118);
     color: white;
     padding: 10px;
     border-radius: 5px;
-    text-align: center;
+    text-align: center; 
 }
 
 .product-container, .all-product-container{
