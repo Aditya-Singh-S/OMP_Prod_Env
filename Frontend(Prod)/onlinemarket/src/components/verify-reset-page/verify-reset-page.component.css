@@ -1,0 +1,22 @@
+.container {
+    background-color: #FFDAB9; 
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px; 
+    padding: 30px;
+  }
+  
+  .message {
+    background-color: #FFDAB9;
+    padding: 20px;
+    /* border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+    text-align: center;
+  }
+  
+  .message p {
+    color: #333;
+    font-size: 1.1em;
+  }

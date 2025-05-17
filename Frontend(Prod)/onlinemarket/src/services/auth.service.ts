@@ -92,4 +92,30 @@ export class AuthService {
 
         return this.http.post<string>(this.reset, null, { params, responseType: 'text' as 'json' });
     }
+
+    resendVerificationCode(email: string): Promise<any> {
+        // const poolData = {
+        //   UserPoolId: environment.UserPoolId,
+        //   ClientId: environment.ClientId
+        // };
+     
+        const userPool = new CognitoUserPool(poolData);
+     
+        const userData = {
+          Username: email,
+          Pool: userPool
+        };
+     
+        const cognitoUser = new CognitoUser(userData);
+     
+        return new Promise((resolve, reject) => {
+          cognitoUser.resendConfirmationCode((err, result) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          });
+        });
+      }
 }

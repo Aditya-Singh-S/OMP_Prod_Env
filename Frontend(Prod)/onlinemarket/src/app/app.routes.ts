@@ -12,6 +12,7 @@ import { ForgotPageComponent } from '../components/forgot-page/forgot-page.compo
 import { ResetComponent } from '../components/reset/reset.component';
 import { VerifyEmailComponent } from '../components/verify-email/verify-email.component';
 import { adminGuard } from '../guard/admin.guard';
+import { VerifyResetPageComponent } from '../components/verify-reset-page/verify-reset-page.component';
 
 export const routes: Routes = [
     {
@@ -63,5 +64,9 @@ export const routes: Routes = [
     {
         path : 'verify-email',
         component : VerifyEmailComponent
+    },
+    {
+        path : 'verify-reset-page',
+        component : VerifyResetPageComponent
     }
 ];
