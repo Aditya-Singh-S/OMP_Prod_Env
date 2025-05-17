@@ -2,7 +2,9 @@
   <div class="all-product-list">
     <h2>All Products</h2>
     <div class="all-product-container" id="product-list">
-      <div *ngIf="productList.length === 0 && !isFilterActive && !showInvalidSearchMessage">
+      
+      
+      <div *ngIf="productList.length === 0 && !isFilterActive && !showInvalidSearchMessage && !loadingProducts">
         <div class="no-product">No Products are found!</div>
       </div>
       <div *ngIf="isFilterActive && filteredList.length === 0 && !showInvalidSearchMessage">

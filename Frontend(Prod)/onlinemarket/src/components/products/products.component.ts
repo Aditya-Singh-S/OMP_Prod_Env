@@ -19,6 +19,7 @@ export class ProductsComponent implements OnInit, OnDestroy {
   public productList: IProductDTO[] = []; // The original full product list
   public filteredList: IProductDTO[] = []; // The list after applying filters
   public isFilterActive: boolean = false; // Flag to track if a filter is active
+  public loadingProducts: boolean = true; // Add a loading state variable
 
   private searchResultsSubscription: Subscription | undefined;
   private invalidSearchSubscription: Subscription | undefined;
@@ -63,11 +64,14 @@ export class ProductsComponent implements OnInit, OnDestroy {
   }
 
   loadProducts() {
+    this.loadingProducts = true;
     this.productService.getProductList().subscribe(response => {
       this.productList = response;
       this.filteredList = [...response]; // Initially, filtered list is the same as the product list
       this.isFilterActive = false; // No filter active on initial load
       this.showInvalidSearchMessage = false;
+      this.noResultsMessage = ''; 
+      this.loadingProducts = false; // Set loading to false after successful load
       console.log('Product List:', this.productList);
     },
     (error) => {
@@ -75,6 +79,9 @@ export class ProductsComponent implements OnInit, OnDestroy {
       this.productList = [];
       this.filteredList = [];
       this.isFilterActive = false; // Ensure isFilterActive is false on error too
+      this.showInvalidSearchMessage = false;
+      this.noResultsMessage = 'Error loading products.'; // Provide an error message
+      this.loadingProducts = false; // Set loading to false even on error
     });
   
   }
