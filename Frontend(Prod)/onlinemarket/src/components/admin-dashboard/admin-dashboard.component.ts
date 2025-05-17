@@ -45,7 +45,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   productAdded:boolean=false;
   popupMessage:string='';
   popupTitle:string='';
-
+ 
  
   // Bulk Upload
   showAddMultipleProductsPopup: boolean = false;
@@ -161,10 +161,10 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   }
  
   submitProduct() {
-    
+   
   this.imageRequiredError = !this.selectedImageFile;
   this.invalidFileTypeError=this.invalidFileTypeError;
-
+ 
   if (this.imageRequiredError || this.duplicateProductNameError || this.productDescription.length < 100 || this.invalidFileTypeError) {
    return; // prevent submission
   }
@@ -198,7 +198,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.imagePreview = null;
     this.duplicateProductNameError = false;
   }
-
+ 
   closeAddPopup(){
     this.productAdded=false;
   }
@@ -250,7 +250,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         });
     }
   }
-  
+ 
  
   openUpdateProductPopup() {
     this.showUpdatePopup = true;
@@ -258,7 +258,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.productFound = false;
     this.previewImage = null;
   }
-
+ 
   searchProduct() {
     if (this.product.name && this.product.name.trim() !== '') {
       this.productService.searchProduct(this.product.name.trim())
@@ -330,11 +330,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         this.product.imageUrl = response.imageUrl;
         this.previewImage = response.imageUrl;
       }
-
+ 
       this.productUpdated=true;
       this.popupTitle="Success"
       this.popupMessage="Product updated successfully!";
-
+ 
     }, error => {
       console.error('Error updating product:', error);
       this.productUpdated=true;
@@ -347,7 +347,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.showUpdatePopup = false;
     this.resetUpdateProductForm();
   }
-
+ 
   closeUpdatePopup(){
     this.productUpdated=false;
   }
@@ -417,9 +417,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
       alert('Error: Could not update user (ID missing).');
     }
   }
-
+ 
   //add user
-
+ 
   showAddUserPopup:boolean=false;
   userAdded:boolean=false;
   addUser={
@@ -436,18 +436,18 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   isAdmin: false
 }
   addUserForm: any;
-
+ 
   password:string='';
 registrationSuccess = false;
 registrationError = false;
 errorMessage = '';
-
-
+ 
+ 
 openAddUserPopup() {
   console.log('openAddUserPopup');
   this.showAddUserPopup = true;
 }
-
+ 
 submitUser(): void {
   console.log("inside submit user");
   const formData = new FormData();
@@ -466,7 +466,7 @@ submitUser(): void {
   if (this.addUser.imageFile) {
     formData.append('imageFile', this.addUser.imageFile);
   }
-
+ 
   this.productService.registerUser(formData) // Send FormData
     .subscribe(
       response => {
@@ -486,7 +486,7 @@ submitUser(): void {
       }
     );
 }
-
+ 
 removeSelectedFile(): void {
   this.addUser.imageFile = null;
   // Optionally reset the file input to allow selecting the same file again
@@ -494,12 +494,12 @@ removeSelectedFile(): void {
     this.addUser.imageFile=null;
   }
 }
-
+ 
 onFileChange(event: any): void {
   // if (event.target.files && event.target.files.length > 0) {
   //   this.addUser.uploadPhoto = event.target.files[0];
   // }
-
+ 
   const file = event.target.files[0];
   if (file) {
     this.addUser.imageFile = file;
@@ -513,24 +513,24 @@ closeAddUserPopup(): void {
   this.resetForm(); // Reset the form when closing
   // Optionally emit an event to notify the parent component that the popup was closed
 }
-
-
+ 
+ 
 closeUserAddedPopup(){
   this.userAdded=false;
 }
-
+ 
 removePhoto() {
-
+ 
   const photoInput = document.getElementById('imageFile') as HTMLInputElement;
-
+ 
   if (photoInput) {
-
+ 
       photoInput.value = '';
-
+ 
   }
-
+ 
 }
-
+ 
 resetForm(): void {
   this.addUser = {
     firstName: '',
@@ -547,6 +547,5 @@ resetForm(): void {
   }
  
 }
-
+ 
 }
-

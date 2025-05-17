@@ -220,11 +220,11 @@ public class UserValidationService {
         if (password == null || password.isBlank()) {
             throw new InvalidInputException("Password cannot be blank.");
         }
-        String valid_password = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+        String valid_password = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\\\":{}|<>])[a-zA-Z0-9!@#$%^&*(),.?\\\":{}|<>]{6,}$";
         if (password.contains(" ") || password.contains("/")) {
             throw new InvalidInputException("Password must not contain spaces or slashes (/).");
         }
- 
+
         if (!password.matches(valid_password)) {
             throw new InvalidInputException("Password must contain at least one numeric digit, one lowercase letter, one uppercase letter");
         }
