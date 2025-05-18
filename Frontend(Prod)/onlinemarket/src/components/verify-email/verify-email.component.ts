@@ -202,7 +202,8 @@ export class VerifyEmailComponent implements OnInit {
         this.errorMessage = 'Verification failed ';
         return;
       }
-      alert('Verification successful');
+      //alert('Verification successful');
+      this.errorMessage='Verification successful';
       this.isVerified = true;
       this.userService.verifyEmail(email).subscribe({
         next: (response) => {
