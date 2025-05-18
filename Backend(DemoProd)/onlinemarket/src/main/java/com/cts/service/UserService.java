@@ -106,7 +106,13 @@ public class UserService {
 	   User user = optionalUser.orElseThrow(() -> new RuntimeException("User with email " + id + " not found."));
        return user.getEmail();
    }
- 
+   
+   public String getUserName(Integer userId) {
+		// TODO Auto-generated method stub
+	   User user = userRepository.findById(userId)
+              .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+	   return user.getFirstName();
+   }
    
    //Retrieve user image by ID.
    public byte[] getUserImage(int userId) {

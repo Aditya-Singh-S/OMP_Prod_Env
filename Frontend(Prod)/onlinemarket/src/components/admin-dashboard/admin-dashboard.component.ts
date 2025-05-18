@@ -463,7 +463,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   
   addUserForm: any;
  
-  password:string='';
+  password:string='Abc@123';
 registrationSuccess = false;
 registrationError = false;
 errorMessage = '';

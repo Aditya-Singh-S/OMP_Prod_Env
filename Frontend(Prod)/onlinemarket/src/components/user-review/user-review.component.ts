@@ -117,7 +117,7 @@ export class UserReviewComponent implements OnInit {
 
   fetchUserName(userId: number) {
     this.http
-      .get<{ firstName: string }>(`${this.baseUrl}/myDetails?userId=${userId}`, {
+      .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`, {
         responseType: 'json',
         headers:this.userService.authHeaders
       })
@@ -142,7 +142,7 @@ export class UserReviewComponent implements OnInit {
 
   fetchUserNameForHighestRated(userId: number) {
     this.http
-      .get<{ firstName: string }>(`${this.baseUrl}/myDetails?userId=${userId}`, {
+      .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`, {
         responseType: 'json',
         headers:this.userService.authHeaders
       })
