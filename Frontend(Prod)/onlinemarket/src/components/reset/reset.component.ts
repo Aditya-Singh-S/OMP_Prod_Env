@@ -379,7 +379,7 @@ export class ResetComponent implements OnInit {
     const userPool = new CognitoUserPool(this.poolData);
 
     const userData = {
-      Username: this.email,
+      Username: this.email, 
       Pool: userPool
     };
     const cognitoUser = new CognitoUser(userData);

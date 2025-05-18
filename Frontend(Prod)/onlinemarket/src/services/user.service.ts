@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, tap, BehaviorSubject, of, catchError, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { CookieServiceService } from './cookie-service.service';
@@ -27,6 +27,12 @@ export class UserService {
   userDetails: IUserDetails | null = null;
   private _userId: number | null = null; // Private backing field for userId
 
+  token :any = localStorage.getItem('authToken');
+  // console.log("Token = ", token);
+    authHeaders = new HttpHeaders({
+    Authorization: `Basic ${this.token}`
+  });
+  
   constructor(private http: HttpClient, private cookieService: CookieServiceService, private router: Router) {
     this.loadUserIdFromLocalStorage();
     this.loadUserDetailsFromLocalStorage();
@@ -60,24 +66,24 @@ export class UserService {
 
   getUserIdByEmail(email: string): Observable<IUserIdResponse> {
     const params = new HttpParams().set('emailId', email);
-    return this.http.get<IUserIdResponse>(`${this.baseUrl}/getUserIdByEmail`, { params }).pipe(
+    return this.http.get<IUserIdResponse>(`${this.baseUrl}/getUserIdByEmail`, { params :params }).pipe(
       tap(response => this.setUserId(response)) // Set userId on successful retrieval
     );
   }
 
   getUserDetails(userId: number): Observable<IUserDetails> {
     const params = new HttpParams().set('userId', userId.toString());
-    return this.http.get<IUserDetails>(`${this.baseUrl}/myDetails`, { params });
+    return this.http.get<IUserDetails>(`${this.baseUrl}/myDetails`, { headers : this.authHeaders,params });
   }
 
   getProductSubscriptionList(userId: number): Observable<IProductDTO[]> {
     const params = new HttpParams().set('userId', userId.toString());
-    return this.http.get<IProductDTO[]>(`${this.baseUrl}/getProductSubscriptionList`, { params });
+    return this.http.get<IProductDTO[]>(`${this.baseUrl}/getProductSubscriptionList`, { headers: this.authHeaders,params : params });
   }
 
   getProductRatingList(userId: number): Observable<IRatingDTO[]> {
     const params = new HttpParams().set('userId', userId.toString());
-    return this.http.get<IRatingDTO[]>(`${this.baseUrl}/reviews/user/` + userId, { params });
+    return this.http.get<IRatingDTO[]>(`${this.baseUrl}/reviews/user/` + userId, {headers:this.authHeaders, params });
   }
 
   register(formData: FormData): Observable<any> {
@@ -95,9 +101,7 @@ export class UserService {
   
   updateUser(userId: any, formData: FormData): Observable<any> {
     return this.http.put(`${this.baseUrl}/updateUser/${userId}`, formData, {
-      headers: {
-        'Accept': 'application/json'
-      }
+      headers: this.authHeaders    
     });
   }
 
@@ -109,21 +113,21 @@ export class UserService {
       .set('review', review)
       .set('reviewActiveStatus', reviewActiveStatus.toString());
 
-    return this.http.post<any>(`${this.baseUrl}/reviews/createReview`, null, { params: params });
+      return this.http.post<any>(`${this.baseUrl}/reviews/createReview`, null, { headers : this.authHeaders,params: params });
   }
 
   addSubscription(userId: number, productId: number): Observable<any> {
     const params = new HttpParams()
       .set('userId', userId.toString())
       .set('productId', productId.toString());
-    return this.http.post<any>(`${this.baseUrl}/addSubscription`, null, { params: params });
+      return this.http.post<any>(`${this.baseUrl}/addSubscription`, {}, { headers: this.authHeaders, params: params });
   }
 
   removeSubscription(userId: number, productId: number): Observable<any> {
     const params = new HttpParams()
       .set('userId', userId.toString())
       .set('productId', productId.toString());
-    return this.http.put<any>(`${this.baseUrl}/removeSubscription`, null, { params: params });
+      return this.http.put<any>(`${this.baseUrl}/removeSubscription`, {}, { headers: this.authHeaders,params: params });
   }
 
   handleLoginSuccess(email: string): void {
@@ -203,7 +207,7 @@ export class UserService {
     if (userId !== null) params = params.set('userId', userId.toString());
     params = params.set('reviewActiveStatus', reviewActiveStatus.toString());
  
-    return this.http.put<any>(`${this.baseUrl}/reviews/updateReview`, {}, { params: params });
+    return this.http.put<any>(`${this.baseUrl}/reviews/updateReview`, {}, { headers:this.authHeaders,params: params });
   }
  
   deleteReview(ratingId: number): Observable<any> {
@@ -212,16 +216,16 @@ export class UserService {
  
   getUserProductReviews(userId: number): Observable<IReview[]> {
     // const params = new HttpParams().set('userId', userId.toString());
-    return this.http.get<IReview[]>(`${this.baseUrl}/reviews/all/user/` + userId); // Adjust the endpoint
+    return this.http.get<IReview[]>(`${this.baseUrl}/reviews/all/user/` + userId,{headers : this.authHeaders}); // Adjust the endpoint
   }
  
 updateUserSubscriptions(userId: number, productIds: number[]): Observable<any> {
     const url = `${this.baseUrl}/getProductSubscriptionList`  ; // Adjust the endpoint for updating subscriptions
-    return this.http.put(url, { productIds }); // Send the array of product IDs in the request body
+    return this.http.put(url, { productIds },{headers : this.authHeaders}); // Send the array of product IDs in the request body
   }
  
   getUserEmailById(userId: number): Observable<string | null> {
-    return this.http.get(`${this.baseUrl}/getUserEmailById?id=${userId}`, { responseType: 'text' }).pipe(
+    return this.http.get(`${this.baseUrl}/getUserEmailById?id=${userId}`, { responseType: 'text', headers: this.authHeaders },).pipe(
       catchError(error => {
         console.error('Error fetching user email:', error);
         return of(null);
@@ -237,7 +241,7 @@ updateUserSubscriptions(userId: number, productIds: number[]): Observable<any> {
             .set('email', userEmail)
             .set('isActive', isActive.toString()); // Convert boolean to string
  
-          return this.http.put(`${this.baseUrl}/admin/updateProfile`, null, { params });
+            return this.http.put(`${this.baseUrl}/admin/updateProfile`, null, {headers : this.authHeaders, params });
         } else {
           console.error('User email not found for user ID:', userId);
           return of(null); // Or return an error Observable
@@ -267,6 +271,6 @@ updateUserSubscriptions(userId: number, productIds: number[]): Observable<any> {
       .set('userId', userId ? userId.toString() : '')
       .set('productId', productId.toString())
       .set('enabled', enabled.toString());
-    return this.http.put(`${this.baseUrl}/removeSubscription`, null, { params });
-  }
+      return this.http.put(`${this.baseUrl}/removeSubscription`, null, { headers : this.authHeaders,params });
+}
 }

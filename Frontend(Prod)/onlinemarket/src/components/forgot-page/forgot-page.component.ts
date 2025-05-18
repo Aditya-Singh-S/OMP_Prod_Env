@@ -136,15 +136,15 @@ export class ForgotPageComponent implements OnInit {
         cognitoUser.forgotPassword({
           onSuccess: function(data: any) {
             console.log("Code sent successfully", data);
-            alert("Code has been sent.");
-    
+            //alert("Code has been sent.");
+            
           },
           onFailure: function(err: any) {
             console.error("Error sending code", err);
           }
         })
 
-        this.router.navigate(['/verify-email']);
+        this.router.navigate(['/verify-reset-page']);
          localStorage.setItem('forgotEmail', this.email);
          this.forgotForm.get('captchaResponse')?.setValue(null); 
 
@@ -161,6 +161,7 @@ export class ForgotPageComponent implements OnInit {
         }
         this.forgotForm.get('captchaResponse')?.setValue(null); 
       }})
+
 
     // cognitoUser.forgotPassword({
     //   onSuccess: function(data: any) {

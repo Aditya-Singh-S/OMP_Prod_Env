@@ -2,6 +2,7 @@ package com.cts.controller;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.List;
 
 import com.cts.dto.ProductUploadDTO;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.validation.annotation.Validated;
 import jakarta.validation.constraints.Positive;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -52,11 +54,28 @@ public class ProductController {
     // API call for adding new Product
     @PostMapping("/admin/addProduct")
     public ResponseEntity<Products> createNewProduct(
+    		@RequestHeader("Authorization") String authHeaders,
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("imageFile") MultipartFile file,
             @RequestParam(required = false, value = "isActive") Boolean isActive) throws IOException {
         Products newProduct = productService.addProduct(name, description, file, isActive);
+        System.out.println("Auth headers: " + authHeaders);
+        if (authHeaders != null && authHeaders.startsWith("Basic ")) {
+            String base64Credentials = authHeaders.substring("Basic ".length());
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Credentials);
+            String decodedString = new String(decodedBytes);
+ 
+            // Split username and password
+            String[] credentials = decodedString.split(":", 2);
+            String username = credentials[0];
+            String password = credentials[1];
+            	
+            System.out.println(username);
+            System.out.println(password);
+        } else {
+        	System.out.println("Invalid Authorization headers");
+        }
         return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
     
@@ -94,19 +113,28 @@ public class ProductController {
     }
 
     @GetMapping("/product/imageByName/{name}")
-    public ResponseEntity<Resource> getImageByName(@PathVariable String name) {
+    public ResponseEntity<Resource> getImageByName(
+    		@RequestHeader("Authorization") String authHeaders,
+    		@PathVariable String name) {
         byte[] imageData = productService.getProductImageByName(name);
         if (imageData != null && imageData.length > 0) {
+        	
+        	this.checkAuthorizationHeaders(authHeaders);
+        	
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_PNG)
                     .body(new ByteArrayResource(imageData));
         } else {
+        	
+        	this.checkAuthorizationHeaders(authHeaders);
+        	
             return ResponseEntity.notFound().build();
         }
     }
 
     @PutMapping("admin/updateProduct/{name}")
     public ResponseEntity<Products> updateProduct(
+    		@RequestHeader("Authorization") String authHeaders,
             @PathVariable String name,
             @RequestParam(required = false, value = "upName") String upName,
             @RequestParam(required = false, value = "description") String description,
@@ -114,22 +142,33 @@ public class ProductController {
             @RequestParam(required = false, value = "isActive") Boolean isActive)
             throws Exception {
         Products updatedProduct = productService.updateProduct(name, upName, description, file, isActive);
+        
+        this.checkAuthorizationHeaders(authHeaders);
+        
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     @PostMapping("/addSubscription")
     public ResponseEntity<Products> addSubscription(
+    		@RequestHeader("Authorization") String authHeaders,
             @RequestParam("userId") @Positive Integer userId,
             @RequestParam("productId") @Positive Integer productId) {
         Products result = productService.addSubscription(userId, productId);
+        
+        this.checkAuthorizationHeaders(authHeaders);
+        
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PutMapping("/removeSubscription")
     public ResponseEntity<Products> removeSubscription(
+    		@RequestHeader("Authorization") String authHeaders,
             @RequestParam("userId") @Positive Integer userId,
             @RequestParam("productId") @Positive Integer productId) {
         Products result = productService.removeSubscription(userId, productId);
+        
+        this.checkAuthorizationHeaders(authHeaders);
+        
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -152,25 +191,57 @@ public class ProductController {
     }
 
     @GetMapping("/viewUsersSubscribedToProduct")
-    public ResponseEntity<List<User>> viewUsersSubscribedToProduct(@RequestParam int productId) {
+    public ResponseEntity<List<User>> viewUsersSubscribedToProduct(
+    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam int productId) {
         List<User> subscribedUsers = productService.getUsersSubscribedToProduct(productId);
+        
+        this.checkAuthorizationHeaders(authHeaders);
+        
         return new ResponseEntity<>(subscribedUsers, subscribedUsers.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK);
     }
 //   @PostMapping("/admin/uploadMultipleRecords")
-    public ResponseEntity<List<Products>> uploadMultipleProducts(@RequestParam("file") MultipartFile file, @RequestParam boolean bulkProductisactive) {
+    public ResponseEntity<List<Products>> uploadMultipleProducts(
+    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam("file") MultipartFile file, @RequestParam boolean bulkProductisactive) {
         if (file.isEmpty()) {
+        	
+        	this.checkAuthorizationHeaders(authHeaders);
+        	
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
  
         try {
             List<Products> uploadedProducts = productService.addMultipleProducts(file,bulkProductisactive);
+            
+            this.checkAuthorizationHeaders(authHeaders);
+            
             return new ResponseEntity<>(uploadedProducts, HttpStatus.CREATED);
         } catch (IOException e) {
             System.err.println("Error processing Excel file: " + e.getMessage());
+            
+            this.checkAuthorizationHeaders(authHeaders);
+            
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
-
+    public void checkAuthorizationHeaders(String authHeaders) {
+    	if (authHeaders != null && authHeaders.startsWith("Basic ")) {
+            String base64Credentials = authHeaders.substring("Basic ".length());
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Credentials);
+            String decodedString = new String(decodedBytes);
+ 
+            // Split username and password
+            String[] credentials = decodedString.split(":", 2);
+            String username = credentials[0];
+            String password = credentials[1];
+            	
+            System.out.println(username);
+            System.out.println(password);
+        } else {
+        	System.out.println("Invalid Authorization headers");
+        }
+    }
 
 }

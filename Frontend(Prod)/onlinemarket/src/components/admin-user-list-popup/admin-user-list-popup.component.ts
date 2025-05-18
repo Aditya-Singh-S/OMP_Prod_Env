@@ -5,6 +5,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../services/user.service';
 
 interface UserDetail {
   firstName: string;
@@ -33,14 +34,14 @@ export class AdminUserListPopupComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   selectedStatus: string = '';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private userService : UserService) { }
 
   ngOnInit(): void {
     this.fetchAllUsers();
   }
 
   fetchAllUsers() {
-    this.http.get<UserDetail[]>('https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/admin/users').subscribe(
+    this.http.get<UserDetail[]>('https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/admin/users',{headers : this.userService.authHeaders}).subscribe(
       (data) => {
         this.allUsers = data; 
       },
@@ -56,7 +57,7 @@ export class AdminUserListPopupComponent implements OnInit {
       const isActiveValue = this.selectedStatus === 'active';
       const params = new HttpParams().set('isActive', isActiveValue.toString());
 
-      this.http.get<UserDetail[]>('https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/admin/users/filter', { params }).subscribe(
+      this.http.get<UserDetail[]>('https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/admin/users/filter', { headers : this.userService.authHeaders,params }).subscribe(
         (data) => {
           this.allUsers = data; 
         },

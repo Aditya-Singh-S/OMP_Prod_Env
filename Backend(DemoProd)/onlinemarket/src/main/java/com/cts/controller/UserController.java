@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -110,14 +112,24 @@ public class UserController {
         return userService.getAllUsers();
     }
  
-    // Get User ID by Email API
+ // Get User ID by Email API
     @GetMapping("/getUserIdByEmail")
-    public Integer getUserIdByEmail(@RequestParam String emailId) {
+    public Integer getUserIdByEmail(
+//    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam String emailId) {
+    	
+//    	this.checkAuthorizationHeaders(authHeaders);
+    	
         return userService.getUserIdByEmail(emailId);
     }
     
     @GetMapping("/getUserEmailById")
-    public String getUserEmailbyId(@RequestParam int id) {
+    public String getUserEmailbyId(
+//    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam int id) {
+    	
+//    	this.checkAuthorizationHeaders(authHeaders);
+    	
         return userService.getUserEmailById(id);
     }
  
@@ -144,17 +156,23 @@ public class UserController {
     
     // Get User Details by ID API
     @GetMapping("/myDetails")
-    public ResponseEntity<ResponseDTO> getUserDetailsById(@RequestParam(required = false) Integer userId) {
+    public ResponseEntity<ResponseDTO> getUserDetailsById(
+    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam(required = false) Integer userId) {
         if (userId == null) {
             throw new UserNotFoundException("user not found");
         }
         ResponseDTO user = userService.getUserDetailsById(userId);
+        
+        this.checkAuthorizationHeaders(authHeaders);
+        
         return ResponseEntity.ok(user);
     }
  
     // Update User API
     @PutMapping("/updateUser/{userId}")
     public ResponseEntity<User> updateUserDetails(
+    		@RequestHeader("Authorization") String authHeaders,
             @PathVariable int userId,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
@@ -175,6 +193,8 @@ public class UserController {
                 addressLine1, addressLine2, postalCode, contactNumber, dateOfBirth, isActive, password
         );
  
+        this.checkAuthorizationHeaders(authHeaders);
+        
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -233,8 +253,30 @@ public class UserController {
     
      //get subscription list
     @GetMapping("/getProductSubscriptionList")
-    public List<ProductViewDTO> getProductSubscriptionList(@RequestParam int userId){
+    public List<ProductViewDTO> getProductSubscriptionList(
+    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam int userId){
+    	this.checkAuthorizationHeaders(authHeaders);
     	return productService.getProductSubscriptionList(userId);
     }
+    
+    public void checkAuthorizationHeaders(String authHeaders) {
+    	if (authHeaders != null && authHeaders.startsWith("Basic ")) {
+            String base64Credentials = authHeaders.substring("Basic ".length());
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Credentials);
+            String decodedString = new String(decodedBytes);
+ 
+            // Split username and password
+            String[] credentials = decodedString.split(":", 2);
+            String username = credentials[0];
+            String password = credentials[1];
+            	
+            System.out.println(username);
+            System.out.println(password);
+        } else {
+        	System.out.println("Invalid Authorization headers");
+        }
+    }
+    
 }
  

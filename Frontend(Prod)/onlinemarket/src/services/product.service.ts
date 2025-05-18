@@ -28,7 +28,7 @@ interface UserDetail {
 })
 export class ProductService {
 
-  private baseUrl = 'http://localhost:9090/OMP'; // Update with your backend URL
+  private baseUrl = 'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP';
   http: HttpClient;
 
   private searchResultsSource = new Subject<any[]>();
@@ -42,6 +42,7 @@ export class ProductService {
     Authorization: `Basic ${this.token}`
   });
 
+  
   constructor(http: HttpClient) {
     this.http = http;
   }
