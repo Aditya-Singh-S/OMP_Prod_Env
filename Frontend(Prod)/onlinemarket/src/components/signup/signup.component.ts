@@ -21,11 +21,10 @@ export class SignupComponent {
   isFileSelected: boolean = false;
   potentiallyDuplicateEmails: string[] = [];
   destroy$ = new Subject<void>();
-  
-  // New properties for the popup
   showPopup: boolean = false;
   popupTitle: string = '';
   popupMessage: string = '';
+  popupType: 'success' | 'error' = 'success';
 
   constructor(private fb: FormBuilder, private userService: UserService, private authService: AuthService, private router: Router) {
     this.signUpForm = this.fb.group({
@@ -127,30 +126,20 @@ export class SignupComponent {
 
     this.authService.signUp(email, password).then(result => {
       console.log('User registered:', result);
-      //alert("Registration Successful! Check for email verification");
-      this.popupTitle = 'Registration Successful!';
-      this.popupMessage = 'Check for email verification';
-      this.showPopup = true;
+      alert("Registration Successful! Check for email verification");
 
       this.userService.register(formData).subscribe({
         next: (response) => {
           console.log('User stored in database:', response);
-          //alert('User stored in database successfully!');
+          alert('User stored in database successfully!');
         },
         error: (err) => console.error('User registration failed:', err)
       });
 
-      // Delay navigation to allow the popup to show
-      setTimeout(() => {
-        this.router.navigate(['/verify-email']);
-      }, 2000); // Adjust the delay (in milliseconds) as needed
-
+      this.router.navigate(['/verify-email']);
     }).catch(err => {
       console.error("Registration failed:", err);
-      //alert('Error: ' + err.message);
-      this.popupTitle = 'Error';
-      this.popupMessage = err.message;
-      this.showPopup = true;
+      alert('Error: ' + err.message);
     });
   }
 

@@ -9,6 +9,7 @@ import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AdminUpdateUserPopupComponent } from '../admin-update-user-popup/admin-update-user-popup.component';
+import { AuthService } from '../../services/auth.service';
  
 interface IUserDetails {
   userID: string | number;
@@ -45,7 +46,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   productAdded:boolean=false;
   popupMessage:string='';
   popupTitle:string='';
- 
+  namePattern = /^[a-zA-Z][a-zA-Z0-9\s]{0,49}$/;
+  productNameError:boolean=false;
+  descriptionError:boolean=false;
  
   // Bulk Upload
   showAddMultipleProductsPopup: boolean = false;
@@ -53,6 +56,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   bulkFile: File | null = null;
   invalidBulkFileTypeError:boolean = false;
   fileRequiredError: boolean = false;
+  showSuccessPopup: boolean = false;
+  showErrorPopup: boolean = false;
  
   // Update Product
   showUpdatePopup: boolean = false;
@@ -86,8 +91,9 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
  
   // update user popup code
   isUpdateUserPopupVisible: boolean = false;
+  
  
-  constructor(private productService: ProductService, private userService: UserService, private router: Router) { }
+  constructor(private productService: ProductService, private userService: UserService, private authService: AuthService, private router: Router) { }
  
   ngOnInit(): void {
     console.log (this.product.isActive);
@@ -132,9 +138,11 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     this.duplicateProductNameError = false;
   }
  
-  onProductNameInput(event: any) {
+  onProductNameInput(event: Event) {
+    const inputValue = (event.target as HTMLInputElement).value;
+    this.productNameError = !this.namePattern.test(inputValue);
     this.duplicateProductNameError = false;
-    this.checkDuplicateProductName(event.target.value);
+    this.checkDuplicateProductName(inputValue);
   }
  
   onFileSelected(event: any) {
@@ -217,7 +225,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   onBulkFileChange(event: any) {
     this.bulkFile = event.target.files[0];
     const allowedTypes = [
-      'application/vnd.ms-excel', // for .xls
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // for .xlsx
     ];
     if(this.bulkFile)
@@ -235,22 +242,40 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
  
   submitBulkProducts() {
     this.fileRequiredError = !this.bulkFile;
-    this.invalidBulkFileTypeError=this.invalidBulkFileTypeError;
-    if(this.fileRequiredError || this.invalidBulkFileTypeError){
+ 
+    // Keeping your validation logic unchanged
+    if (this.fileRequiredError || this.invalidBulkFileTypeError) {
       return;
     }
+ 
     if (this.bulkFile) {
-      this.productService.uploadMultipleProducts(this.bulkFile,this.bulkProductisactive)
+      this.productService.uploadMultipleProducts(this.bulkFile, this.bulkProductisactive)
         .subscribe(response => {
-          alert('Multiple products added successfully');
           this.closeAddMultipleProductsPopup();
+          this.showSuccessPopup = true; // Show success popup
         }, error => {
           console.error('Error uploading multiple products:', error);
-          alert('Error adding multiple product. Please try again.');
+          this.showErrorPopup = true; // Trigger error popup
         });
     }
   }
- 
+ closeErrorPopup() {
+    this.showErrorPopup = false;
+  }
+ closeSuccessPopup() {
+    this.showSuccessPopup = false;
+  }
+  removeBulkFile() {
+    this.bulkFile = null; // Clears the selected file
+    this.fileRequiredError = false; // Resets validation errors
+    this.invalidBulkFileTypeError = false; // Resets file type error
+   
+    // Reset the file input field itself
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = ''; // Clears the file input
+    }
+  }
  
   openUpdateProductPopup() {
     this.showUpdatePopup = true;
@@ -435,6 +460,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   imageFile: null as File | null,
   isAdmin: false
 }
+  
   addUserForm: any;
  
   password:string='';
@@ -466,25 +492,58 @@ submitUser(): void {
   if (this.addUser.imageFile) {
     formData.append('imageFile', this.addUser.imageFile);
   }
+
+  this.authService.signUp(this.addUser.email, this.password).then(result => {
+    console.log('User registered through admin:', result);
+    alert("Registration Successful! Check for email verification");
+
+    this.productService.registerUser(formData)
  
   this.productService.registerUser(formData) // Send FormData
     .subscribe(
       response => {
-        //alert('User added successfully!');
-        this.resetForm();
-        this.showAddUserPopup = false;
-        this.userAdded=true;
-        this.popupTitle="Success"
-        this.popupMessage="User added successfully!";
-      },
-      error => {
-        console.error('Error adding user:', error);
-        //alert('Error adding user. Please try again.');
-        this.userAdded=true;
-        this.popupTitle="Error"
-        this.popupMessage="Error adding user. Please try again.";
-      }
+              //alert('User added successfully!');
+              this.resetForm();
+              this.showAddUserPopup = false;
+              this.userAdded=true;
+              this.popupTitle="Success"
+              this.popupMessage="User added successfully!";
+            },
+            error => {
+              console.error('Error adding user:', error);
+              //alert('Error adding user. Please try again.');
+              this.userAdded=true;
+              this.popupTitle="Error"
+              this.popupMessage="Error adding user. Please try again.";
+            }
     );
+
+    this.router.navigate(['/verify-email']);
+
+  }).catch(err => {
+    console.error("Registration failed:",err);
+    alert('Error:'+ err.message);
+  })
+  
+
+  // this.productService.registerUser(formData) // Send FormData
+  //   .subscribe(
+  //     response => {
+  //       //alert('User added successfully!');
+  //       this.resetForm();
+  //       this.showAddUserPopup = false;
+  //       this.userAdded=true;
+  //       this.popupTitle="Success"
+  //       this.popupMessage="User added successfully!";
+  //     },
+  //     error => {
+  //       console.error('Error adding user:', error);
+  //       //alert('Error adding user. Please try again.');
+  //       this.userAdded=true;
+  //       this.popupTitle="Error"
+  //       this.popupMessage="Error adding user. Please try again.";
+  //     }
+  //   );
 }
  
 removeSelectedFile(): void {
@@ -549,3 +608,4 @@ resetForm(): void {
 }
  
 }
+ 
