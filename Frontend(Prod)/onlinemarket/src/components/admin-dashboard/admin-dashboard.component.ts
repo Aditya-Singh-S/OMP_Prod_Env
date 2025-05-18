@@ -497,7 +497,7 @@ submitUser(): void {
     console.log('User registered through admin:', result);
     alert("Registration Successful! Check for email verification");
 
-    this.productService.registerUser(formData)
+    //this.productService.registerUser(formData)
  
   this.productService.registerUser(formData) // Send FormData
     .subscribe(
