@@ -71,7 +71,7 @@ export class SigninComponent implements OnInit {
 
     this.authService.signIn(email, password).then((result: any) => {
       console.log("User signed in:", result);
-      if (!result.isActive) {
+      if (result.isActive==0) {
         this.popupTitle = "Error";
         this.popupMessage = "Your account is inactive. Please contact support.";
         this.showPopup = true;
