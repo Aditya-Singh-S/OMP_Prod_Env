@@ -91,8 +91,13 @@ export class ForgotPageComponent implements OnInit {
   captchaResponse: string | null = null;
   message: string = '';
 
+  // New properties for the popup
+  showPopup: boolean = false;
+  popupTitle: string = '';
+  popupMessage: string = '';
 
-    email: string = '';
+
+  email: string = '';
   
     userPool = new CognitoUserPool({
       UserPoolId: environment.UserPoolId,
@@ -115,7 +120,10 @@ export class ForgotPageComponent implements OnInit {
 
   onSubmit() {
     if (this.forgotForm.invalid) {
-      alert("Please fill in all required fields and verify the captcha.");
+      //alert("Please fill in all required fields and verify the captcha.");
+      this.popupTitle = "Error";
+      this.popupMessage = "Please fill in all required fields and verify the captcha.";
+      this.showPopup = true;
       return;
     }
 
@@ -153,10 +161,17 @@ export class ForgotPageComponent implements OnInit {
         console.error("Error initiating password reset:", error);
 
         if (error.status === 404) {
-          alert("User not found. Please check your email address.");
+          //alert("User not found. Please check your email address.");
+          this.popupTitle = "Error";
+          this.popupMessage = "User not found. Please check your email address.";
+          this.showPopup = true;
+          
           window.location.reload();
         } else {
-          alert("Something went wrong. Please try again later.");
+          //alert("Something went wrong. Please try again later.");
+          this.popupTitle = "Error";
+          this.popupMessage = "Something went wrong. Please try again later.";
+          this.showPopup = true;
 
         }
         this.forgotForm.get('captchaResponse')?.setValue(null); 
@@ -188,5 +203,9 @@ export class ForgotPageComponent implements OnInit {
       //   this.forgotForm.get('captchaResponse')?.setValue(null); 
       // }
     
+  }
+
+  closePopup() {
+    this.showPopup = false;
   }
 }

@@ -388,6 +388,7 @@ export class AdminUpdateUserPopupComponent implements OnInit, OnDestroy {
     // Replace this with your actual logic to fetch the image URL
     console.log("Get Image method called");
     return `https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image${productId}`;
+
   }
  
   // updateUserActiveStatus(event: any): void {
