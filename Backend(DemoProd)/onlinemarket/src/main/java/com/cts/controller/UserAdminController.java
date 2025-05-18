@@ -3,6 +3,7 @@ package com.cts.controller;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,14 +52,18 @@ public class UserAdminController {
     
     
     @GetMapping("/admin")
-    public String getUserByEmailId(@RequestParam String email){
+    public String getUserByEmailId(
+    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam String email){
     	User user = userAdminService.searchUserByEmailId(email);
+    	this.checkAuthorizationHeaders(authHeaders);
     	return user.getFirstName();
     }
     
  
     @PostMapping("/admin/register")
     public ResponseEntity<User> createUser(
+    		@RequestHeader("Authorization") String authHeaders,
         @RequestParam String firstName,
         @RequestParam String lastName,
         @RequestParam String email,
@@ -87,31 +93,47 @@ public class UserAdminController {
         createUser.setUserRoleBasedOnAdminFlag();
  
         User savedUser = userAdminService.createUser(createUser, imageFile);
+        
+        this.checkAuthorizationHeaders(authHeaders);
  
         return ResponseEntity.ok(savedUser);
     }
  
     
     @GetMapping("/admin/viewProfile")
-    public ResponseEntity<User> searchUserByEmailId(@RequestParam String email){
+    public ResponseEntity<User> searchUserByEmailId(
+    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam String email){
     	User user = userAdminService.searchUserByEmailId(email);
+    	
+    	this.checkAuthorizationHeaders(authHeaders);
+    	
     	return ResponseEntity.ok(user);
     }
     
     
     @PutMapping("/admin/updateProfile")
     public ResponseEntity<User> updateUser(
+    		@RequestHeader("Authorization") String authHeaders,
             @RequestParam String email,
             @RequestParam(required = false) Boolean isActive
     ) throws IOException, ParseException {
         User updatedEntity = userAdminService.updateUserByEmail(isActive, email);
+        
+        this.checkAuthorizationHeaders(authHeaders);
+        
         return ResponseEntity.ok(updatedEntity);
     }
     
 	@GetMapping("/admin/viewProductSubscription")
-	public ResponseEntity<?> getSubscriptionsByEmail(@RequestParam String email) {
+	public ResponseEntity<?> getSubscriptionsByEmail(
+			@RequestHeader("Authorization") String authHeaders,
+			@RequestParam String email) {
 	    try {
 	        List<ProductSubscription> subscriptions = userAdminService.getSubscriptionsByEmail(email);
+	        
+	        this.checkAuthorizationHeaders(authHeaders);
+	        
 	        return ResponseEntity.ok(subscriptions);
 	    } catch (UserNotFoundException e) {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -119,31 +141,47 @@ public class UserAdminController {
 	}
 	
 	@GetMapping("/admin/viewProductReviews")
-	public ResponseEntity<?> getReviewsByEmail(@RequestParam String email) {
+	public ResponseEntity<?> getReviewsByEmail(
+			@RequestHeader("Authorization") String authHeaders,
+			@RequestParam String email) {
 	    try {
 	        List<ReviewsAndRatings> reviews = userAdminService.getReviewsByEmail(email);
+	        
+	        this.checkAuthorizationHeaders(authHeaders);
+	        
 	        return ResponseEntity.ok(reviews);
 	    } catch (UserNotFoundException e) {
+	    	
+	    	this.checkAuthorizationHeaders(authHeaders);
+	    	
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 	    }
 	}
 	
 	@PutMapping("/admin/updateSubscriptionByEmail")
 	public ResponseEntity<ProductSubscription> updateSubscription(
+			@RequestHeader("Authorization") String authHeaders,
 	    @RequestParam String email,
 	    @RequestParam int subscriptionId,
 	    @RequestParam boolean optInStatus
 	) {
 	    try {
 	        ProductSubscription updatedSubscription = userAdminService.updateSubscriptionByEmail(email, subscriptionId, optInStatus);
+	        
+	        this.checkAuthorizationHeaders(authHeaders);
+	        
 	        return ResponseEntity.ok(updatedSubscription);
 	    } catch (RuntimeException e) {
+	    	
+	    	 this.checkAuthorizationHeaders(authHeaders);
+	    	 
 	        return ResponseEntity.badRequest().body(null);
 	    }
 	}
 	
     @PutMapping("/admin/updateReviewByEmail")
     public ResponseEntity<ReviewsAndRatings> updateReviewByEmail(
+    		@RequestHeader("Authorization") String authHeaders,
         @RequestParam String email,
         @RequestParam Long ratingId,
         @RequestParam(required = false) Double rating,
@@ -152,15 +190,27 @@ public class UserAdminController {
     ) {
         try {
             ReviewsAndRatings updatedReview = userAdminService.updateReviewByUserEmail(email, ratingId, rating, review, reviewActiveStatus);
+            
+            this.checkAuthorizationHeaders(authHeaders);
+            
             return ResponseEntity.ok(updatedReview);
         } catch (RuntimeException e) {
+        	
+        	this.checkAuthorizationHeaders(authHeaders);
+        	
             return ResponseEntity.badRequest().body(null);
         }
     }
     
     @GetMapping("/admin/exportUsers")
-    public ResponseEntity<byte[]> exportUsersToExcel() throws IOException {
+    public ResponseEntity<byte[]> exportUsersToExcel(
+    		@RequestHeader("Authorization") String authHeaders
+    		) throws IOException {
+    	
         byte[] excelFile = userAdminService.generateExcelFileWithAllUsers();
+    	
+    	  this.checkAuthorizationHeaders(authHeaders);
+    	  
         return ResponseEntity.ok()
             .header("Content-Disposition", "attachment; filename=users.xlsx")
             .body(excelFile);
@@ -168,7 +218,9 @@ public class UserAdminController {
     
     //geting al user
     @GetMapping("/admin/users")
-    public ResponseEntity<List<UserDetailDTO>> getAllUsersForAdmin() {
+    public ResponseEntity<List<UserDetailDTO>> getAllUsersForAdmin(
+    		@RequestHeader("Authorization") String authHeaders
+    		) {
         List<User> users = userAdminService.getAllUsers();
         List<UserDetailDTO> userDTOs = users.stream()
                 .map(user -> new UserDetailDTO(
@@ -186,6 +238,8 @@ public class UserAdminController {
                         user.getUserRole().name()
                 ))
                 .collect(Collectors.toList());
+        
+        this.checkAuthorizationHeaders(authHeaders);
  
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
@@ -193,7 +247,9 @@ public class UserAdminController {
     
     //geting  al user with filter
     @GetMapping("/admin/users/filter")
-    public ResponseEntity<List<UserDetailDTO>> getUsersByActiveStatus(@RequestParam("isActive") boolean isActive) {
+    public ResponseEntity<List<UserDetailDTO>> getUsersByActiveStatus(
+    		@RequestHeader("Authorization") String authHeaders,
+    		@RequestParam("isActive") boolean isActive) {
         List<User> users = userAdminService.getUsersByIsActive(isActive);
         List<UserDetailDTO> userDTOs = users.stream()
                 .map(user -> new UserDetailDTO(
@@ -211,12 +267,28 @@ public class UserAdminController {
                         user.getUserRole().name()
                 ))
                 .collect(Collectors.toList());
+        
+        this.checkAuthorizationHeaders(authHeaders);
  
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
     
-    
-    
-	
+    public void checkAuthorizationHeaders(String authHeaders) {
+    	if (authHeaders != null && authHeaders.startsWith("Basic ")) {
+            String base64Credentials = authHeaders.substring("Basic ".length());
+            byte[] decodedBytes = Base64.getDecoder().decode(base64Credentials);
+            String decodedString = new String(decodedBytes);
  
+            // Split username and password
+            String[] credentials = decodedString.split(":", 2);
+            String username = credentials[0];
+            String password = credentials[1];
+            	
+            System.out.println(username);
+            System.out.println(password);
+        } else {
+        	System.out.println("Invalid Authorization headers");
+        }
+    
+    }
 }

@@ -168,7 +168,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
   }
 
   fetchUserName(userId: number) {
-    this.userNameSubscription = this.http.get<{ firstName: string }>(`https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/myDetails?userId=${userId}`, { responseType: 'json' }).subscribe(
+    this.userNameSubscription = this.http.get<{ firstName: string }>(`https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/myDetails?userId=${userId}`,{ headers:this.userService.authHeaders,responseType: 'json' }).subscribe(
       response => {
         this.userName = response?.firstName || 'Unknown User';
         console.log('Fetched username:', this.userName);
@@ -304,7 +304,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error updating subscription:', error);
-        alert(`Error: ${this.isSubscribed ? 'Subscribing' : 'Unsubscribing'} failed.`);
+        // alert(`Error: ${this.isSubscribed ? 'Subscribing' : 'Unsubscribing'} failed.`);
         // Revert the checkbox state on error and reset flags
         this.isSubscribed = this.initialSubscriptionStatus !== null ? this.initialSubscriptionStatus : this.isSubscribed;
         this.isSubscribing = false;

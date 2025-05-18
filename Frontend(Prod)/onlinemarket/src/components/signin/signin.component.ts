@@ -10,6 +10,7 @@ import { CookieServiceService } from '../../services/cookie-service.service';
 import { UserService } from '../../services/user.service';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-signin',
@@ -70,11 +71,29 @@ export class SigninComponent implements OnInit {
 
     this.authService.signIn(email, password).then((result: any) => {
       console.log("User signed in:", result);
+      if (result.isActive==0) {
+        this.popupTitle = "Error";
+        this.popupMessage = "Your account is inactive. Please contact support.";
+        this.showPopup = true;
+        return;
+      }
       //alert("Login successful!");
 
       this.userEmailId = email;
       this.loginSuccess.emit(); // Emit event on successful login
       this.userService.handleLoginSuccess(this.userEmailId);
+
+      const encoded = btoa(`${email}:${password}`);
+
+      localStorage.setItem('authToken',encoded);
+      console.log("Encoded = ", encoded);
+      // const token = localStorage.getItem('authToken');
+
+      // const headers = new HttpHeaders({
+      //   Authorization: `Basic ${token}`
+      // });
+
+
 
       this.router.navigate(['/home'])
     }).catch((err: { message: string; }) => {

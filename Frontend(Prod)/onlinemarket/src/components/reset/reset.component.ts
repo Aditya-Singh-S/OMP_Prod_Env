@@ -312,7 +312,6 @@ import { RecaptchaModule } from 'ng-recaptcha-2';
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { environment } from '../../environment/environment';
 
-
 @Component({
   selector: 'app-reset',
   standalone: true,
@@ -325,14 +324,22 @@ export class ResetComponent implements OnInit {
   resetForm!: FormGroup;
   email: string | null = localStorage.getItem('forgotEmail');
   code: string = '';
+  showSuccessPopup: boolean = false;
+  showErrorPopup: boolean = false;
+  popupTitle: string = '';
+  popupMessage: string = '';
 
   poolData = {
-
     UserPoolId: environment.UserPoolId,
-      ClientId: environment.ClientId
+    ClientId: environment.ClientId
   };
 
-  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private authService: AuthService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private fb: FormBuilder,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -360,17 +367,23 @@ export class ResetComponent implements OnInit {
 
   resetPassword(): void {
     if (this.resetForm.invalid) {
-      alert("Please fill in all required fields and ensure passwords match.");
+      this.showErrorPopup = true;
+      this.popupTitle = "Error";
+      this.popupMessage = "Please fill in all required fields and ensure passwords match.";
       return;
     }
 
     if (!this.resetForm.value.captchaResponse) {
-      alert("Please verify that you are not a robot.");
+      this.showErrorPopup = true;
+      this.popupTitle = "Error";
+      this.popupMessage = "Please verify that you are not a robot.";
       return;
     }
 
     if (!this.email) {
-      alert("Email not found");
+      this.showErrorPopup = true;
+      this.popupTitle = "Error";
+      this.popupMessage = "Email not found";
       return;
     }
 
@@ -386,23 +399,41 @@ export class ResetComponent implements OnInit {
 
     cognitoUser.confirmPassword(this.code, newPassword, {
       onSuccess: () => {
-        alert('Password reset successful');
+        this.showSuccessPopup = true;
+        this.popupTitle = "Success";
+        this.popupMessage = 'Password reset successful';
 
         this.authService.resetPassword(this.email!, newPassword, newPassword).subscribe({
           next: (response) => {
             console.log('Password changed in database:', response);
-            alert('Password changed in database successful! Please check your db.');
+            this.showSuccessPopup = true;
+            this.popupTitle = "Success";
+            this.popupMessage = 'Password changed in database successful! Please check your db.';
           },
-          error: (err) => console.error('Password changed in database failed:', err)
+          error: (err) => {
+            console.error('Password changed in database failed:', err);
+            this.showErrorPopup = true;
+            this.popupTitle = "Error";
+            this.popupMessage = "Error: " + err.message;
+          }
         });
 
         localStorage.removeItem('forgotEmail');
-        this.router.navigate(['/signin']);
+        setTimeout(() => {
+          this.router.navigate(['/signin']);
+        }, 3000); // Short delay before navigating
       },
       onFailure: (err) => {
         console.error('Reset failed', err);
-        alert("Error: " + err.message);
+        this.showErrorPopup = true;
+        this.popupTitle = "Error";
+        this.popupMessage = "Error: " + err.message;
       }
     });
+  }
+
+  closePopup() {
+    this.showSuccessPopup = false;
+    this.showErrorPopup = false;
   }
 }
