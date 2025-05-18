@@ -403,7 +403,7 @@ export class ResetComponent implements OnInit {
         this.popupTitle = "Success";
         this.popupMessage = 'Password reset successful';
 
-        this.authService.resetPassword(this.email!, newPassword, newPassword).subscribe({
+        this.authService.resetPassword(this.email!, newPassword, confirmPassword).subscribe({
           next: (response) => {
             console.log('Password changed in database:', response);
             this.showSuccessPopup = true;
