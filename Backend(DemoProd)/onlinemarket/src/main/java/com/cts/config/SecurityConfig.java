@@ -81,7 +81,7 @@ public class SecurityConfig {
                                         		,"OMP/searchProductByNameAndSubsCount"
                                         		,"/OMP/reviews/getSpecificProductReviews"
                                         		,"/OMP/reviews/highestRatedReview"
-                                        		
+                                        		,"/OMP/myName"
                                         		,"OMP/getUserIdByEmail"
                                         		).permitAll()
                                         

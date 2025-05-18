@@ -26,9 +26,9 @@ public interface ReviewAndRatingRepository extends JpaRepository<ReviewsAndRatin
 	void deactivateExistingReview(@Param("userId") int userId,
 	                              @Param("productId") int productId);
 	
-	@Query(value = "SELECT product_id, MAX(rating) as max_rating FROM reviews_and_ratings " +
-            "WHERE review_active_status = 1 " +
-            "GROUP BY product_id " +
+	@Query(value = "SELECT productid, MAX(rating) as max_rating FROM reviewsandratings " +
+            "WHERE isactive = 1 " +
+            "GROUP BY productid " +
             "ORDER BY max_rating DESC " +
             "LIMIT 2", nativeQuery = true)
 	List<Object[]> findTopRatedProducts();
