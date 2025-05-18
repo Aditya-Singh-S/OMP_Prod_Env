@@ -304,7 +304,7 @@ export class ProductDetailsComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error updating subscription:', error);
-        alert(`Error: ${this.isSubscribed ? 'Subscribing' : 'Unsubscribing'} failed.`);
+        // alert(`Error: ${this.isSubscribed ? 'Subscribing' : 'Unsubscribing'} failed.`);
         // Revert the checkbox state on error and reset flags
         this.isSubscribed = this.initialSubscriptionStatus !== null ? this.initialSubscriptionStatus : this.isSubscribed;
         this.isSubscribing = false;
