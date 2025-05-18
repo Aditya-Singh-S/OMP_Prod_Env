@@ -305,7 +305,10 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductViewDTO> getProductSubscriptionList(int userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-        return productViewRepo.getSubscribedListByUser(userId);
+        return productViewRepo.getSubscribedListByUser(userId)
+        		.stream()
+                .filter(ProductViewDTO::isIsactive) // Filter out products where isactive is false
+                .collect(Collectors.toList());
     }
 
     @Override
