@@ -39,8 +39,8 @@ public class SearchServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        product1 = new ProductViewDTO(1, "Laptop", "High-performance laptop", "laptop.jpg", 4.5, 100);
-        product2 = new ProductViewDTO(2, "Mouse", "Wireless mouse", "mouse.jpg", 4.0, 50);
+        product1 = new ProductViewDTO(1, "Laptop", "High-performance laptop", "laptop.jpg", true,4.5, 100);
+        product2 = new ProductViewDTO(2, "Mouse", "Wireless mouse", "mouse.jpg", true,4.0, 50);
     }
 
     @Test
