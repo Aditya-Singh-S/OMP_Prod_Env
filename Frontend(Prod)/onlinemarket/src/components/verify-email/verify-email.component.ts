@@ -137,9 +137,17 @@ import { AuthService } from '../../services/auth.service';
 })
 export class VerifyEmailComponent implements OnInit {
 
+
+  showPopup: boolean = false;
+  popupTitle: string = '';
+  popupMessage: string = '';
+
+  isVerifiedPopup: boolean = false;
+  isVerified: boolean = false;
+
   code: string ='';
   eMail: string = '';
-  isVerified: boolean = false;
+
   errorMessage: string = '';
   infoMessage: string = '';
   displayEmail: string = '';
@@ -199,12 +207,19 @@ export class VerifyEmailComponent implements OnInit {
       if (err) {
         //alert('Verification Failed: ' + err.message);
         //this.errorMessage = 'Verification failed ' + err.message;
-        this.errorMessage = 'Verification failed ';
+        this.showPopup = true;
+        this.popupTitle="Verification failed!";
+        this.popupMessage="Due to some unexpected error.";
         return;
       }
       //alert('Verification successful');
-      this.errorMessage='Verification successful';
+      //this.errorMessage='Verification successful';
       this.isVerified = true;
+      this.isVerifiedPopup = true;
+      //this.showPopup = true;
+        this.popupTitle="Success!";
+        this.popupMessage="Verification Successful!.";
+        this.infoMessage = '';
       this.userService.verifyEmail(email).subscribe({
         next: (response) => {
           console.log('Changed value in database:', response);
@@ -251,5 +266,14 @@ export class VerifyEmailComponent implements OnInit {
     // } else {
     //   this.errorMessage = 'Please enter a valid email address.';
     // }
+  }
+
+  closePopup() {
+    this.showPopup = false;
+  }
+
+  closeVerifyPopup() {
+    this.isVerifiedPopup = false;
+    //this.router.navigate(['/signin']);
   }
 }
