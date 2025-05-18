@@ -156,7 +156,7 @@ public class ProductController {
         List<User> subscribedUsers = productService.getUsersSubscribedToProduct(productId);
         return new ResponseEntity<>(subscribedUsers, subscribedUsers.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK);
     }
-//   @PostMapping("/admin/uploadMultipleRecords")
+   @PostMapping("/admin/uploadMultipleRecords")
     public ResponseEntity<List<Products>> uploadMultipleProducts(@RequestParam("file") MultipartFile file, @RequestParam boolean bulkProductisactive) {
         if (file.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
