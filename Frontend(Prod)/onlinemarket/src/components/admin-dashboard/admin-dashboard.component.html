@@ -31,19 +31,23 @@
     <h3>Add Product</h3>
     <form (ngSubmit)="submitProduct()">
       <input
-        type="text"
-        placeholder="Product Name"
-        [(ngModel)]="productName"
-        name="productName"
-        required
-        (input)="onProductNameInput($event)"
-        #name="ngModel"/>
-        <div *ngIf="name.invalid && name.touched" class="text-danger">
-          <div *ngIf="name.errors?.['required']">Product name is required.</div>
-        </div>
-      <div *ngIf="duplicateProductNameError" class="text-danger">
-        Product name already exists. Please use a different name.
+      type="text"
+      placeholder="Product Name"
+      [(ngModel)]="productName"
+      name="productName"
+      #name="ngModel"
+      required
+      [pattern]="namePattern"
+      (input)="onProductNameInput($event)" />
+    <div *ngIf="name.invalid && name.touched" class="text-danger">
+      <div *ngIf="name.errors?.['required']">Product name is required.</div>
+      <div *ngIf="name.errors?.['pattern']">
+        Product name must start with a letter, be up to 50 characters long, and can include numbers and spaces.
       </div>
+    </div>
+          <div *ngIf="duplicateProductNameError" class="text-danger">
+            Product name already exists. Please use a different name.
+          </div>
  
       <input
        type="text"
@@ -103,12 +107,16 @@
   <div class="popup">
     <h3>Add Multiple Products</h3>
     <form (ngSubmit)="submitBulkProducts()">
-      <input type="file" accept=".xlsx, .xls" (change)="onBulkFileChange($event)" required />
+      <div class="file-upload-container">
+        <input type="file" accept=".xlsx, .xls" (change)="onBulkFileChange($event)" required />
+        <span class="remove-file" *ngIf="bulkFile" (click)="removeBulkFile()">&#x2715;</span>
+      </div>
+      <div class="text-danger">* Please add excel of valid format(unique name, description, images)</div>
       <div *ngIf="invalidBulkFileTypeError" class="text-danger">
-        Invalid file type. Only XLS, XLSX files are allowed.
+        * Invalid file type. Only XLSX files are allowed.
       </div>
       <div *ngIf="fileRequiredError" class="text-danger">
-        File is required. Please upload a File.
+        * File is required. Please upload a File.
       </div>  
       <label>
         Active Status:
@@ -120,6 +128,16 @@
       </div>
     </form>
   </div>
+</div>
+<div class="success-message" *ngIf="showSuccessPopup">
+  <span class="close-icon" (click)="closeSuccessPopup()">×</span>
+  <h3>Success</h3>
+  Multiple products added successfully!
+</div>
+<div class="error-message" *ngIf="showErrorPopup">
+  <span class="close-icon" (click)="closeErrorPopup()">×</span>
+  <h3>Error</h3>
+  Failed to add multiple products. Please check the file format and try again.
 </div>
  
 <div class="popup-overlay" *ngIf="showUpdatePopup">
@@ -390,3 +408,4 @@
         </div>
   </div>
   </div>
+ 
