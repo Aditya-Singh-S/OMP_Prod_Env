@@ -200,7 +200,8 @@ public class ProductController {
         
         return new ResponseEntity<>(subscribedUsers, subscribedUsers.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK);
     }
-//   @PostMapping("/admin/uploadMultipleRecords")
+    
+   @PostMapping("/admin/uploadMultipleRecords")
     public ResponseEntity<List<Products>> uploadMultipleProducts(
     		@RequestHeader("Authorization") String authHeaders,
     		@RequestParam("file") MultipartFile file, @RequestParam boolean bulkProductisactive) {
