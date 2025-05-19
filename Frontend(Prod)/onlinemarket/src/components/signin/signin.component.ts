@@ -49,7 +49,7 @@ export class SigninComponent implements OnInit {
 
   signIn() {
     if (this.signInForm.invalid) {
-      alert("Please fill in all required fields.");
+      //alert("Please fill in all required fields.");
       return;
     }
 
