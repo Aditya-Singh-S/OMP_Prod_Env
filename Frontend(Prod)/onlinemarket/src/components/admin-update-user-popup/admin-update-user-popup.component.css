@@ -508,5 +508,6 @@ input:checked + .slider:before {
     padding: 8px 16px;
     border-radius: 5px;
     border: none;
+
     cursor: pointer;
   }
