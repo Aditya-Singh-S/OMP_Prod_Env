@@ -1,14 +1,14 @@
 <div class="product-review-container">
   <h3>Users Reviews</h3>
-  <div *ngIf="highestRatedReview" class="review-card">
+  <div *ngIf="highestRatedReview && !loadingHighestRated" class="review-card">
     <p><strong>{{ highestRatedReview.userName }} – {{ highestRatedReview.rating }} Stars</strong></p>
     <p><em>{{ highestRatedReview.review }}</em></p>
 
   </div>
-  <div *ngIf="!highestRatedReview">
+  <div *ngIf="!highestRatedReview && !loadingHighestRated">
     <p>No reviews available for this product.</p>
   </div>
-  <button *ngIf="highestRatedReview" class="more-reviews-btn" (click)="openPopup()">Click For More</button>
+  <button *ngIf="highestRatedReview && !loadingHighestRated" class="more-reviews-btn" (click)="openPopup()">Click For More</button>
 
   <div class="popup-overlay" *ngIf="showPopup">
     <div class="popup">
