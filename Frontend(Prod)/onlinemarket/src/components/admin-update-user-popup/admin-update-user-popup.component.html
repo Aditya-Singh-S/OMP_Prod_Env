@@ -73,7 +73,7 @@
                     <div *ngIf="subscriptions && subscriptions.length > 0; else noSubscriptions">
                         <ul class="subscription-list">
                             <li *ngFor="let subscription of subscriptions" class="subscription-item">
-                                <img [src]="'http://localhost:9090/OMP/product/image/'+subscription.productid" alt="{{ subscription.name }}" class="product-image">
+                                <img [src]="'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image/'+subscription.productid" alt="{{ subscription.name }}" class="product-image">
                                 <div class="product-info">
                                     <p>{{ subscription.name }}</p>
                                     <p>Subscribers: {{ subscription.subscription_count }}</p>
@@ -107,38 +107,41 @@
                     </div>
                     <!-- <button class="submit-changes-button" (click)="submitSubscriptionChanges()">Submit Changes</button> -->
                 </div>
- 
-            <div *ngIf="showReviewsSection" class="reviews-section">
-                <h3>Product Reviews</h3>
- 
-                <div *ngFor="let review of userReviews" class="review-container">
- 
-                    <div class="product-info-header">
-                        <img [src]="'http://localhost:9090/OMP/product/image/'+review.productid" alt="{{ review.productName }}" class="product-image-small">
-                        <div class="product-details-small">
-                            <div class="product-name-small">{{ review.productName }}</div>
+                
+                <div *ngIf="showReviewsSection" class="reviews-section">
+                    <h3>Product Reviews</h3>
+               
+                    <div *ngFor="let review of userReviews | filterActiveReviews" class="review-container">
+               
+                        <div class="product-info-header">
+                            <img [src]="'https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/product/image/'+review.productid" alt="{{ review.productName }}" class="product-image-small">
+                            <div class="product-details-small">
+                                <div class="product-name-small">{{ review.productName }}</div>
                             </div>
-                    </div>
- 
- 
-                    <div class="user-review-box">
-                        <div class="review-header">
-                            <div class="review-rating">{{ review.rating }} Stars</div>
+                        </div>
+               
+               
+                        <div class="user-review-box">
+                            <div class="review-header">
+                                <div class="review-rating">{{ review.rating }} Stars</div>
                             </div>
-                        <div class="review-text">
-                            {{ review.review }}
-                        </div>
-                        <div class="review-status">
-                            Status: <span [style.color]="review.reviewActiveStatus ? 'green' : 'red'">
-                                {{ review.reviewActiveStatus ? 'Active' : 'Inactive' }}
-                            </span>
-                            <button (click)="toggleReviewStatus(review)" class="status-toggle-button">
-                                {{ review.reviewActiveStatus ? 'Mark Inactive' : 'Mark Active' }}
-                            </button>
+                            <div class="review-text">
+                                {{ review.review }}
+                            </div>
+                            <div class="review-status">
+                                Status: <span [style.color]="review.reviewActiveStatus ? 'green' : 'red'">
+                                    {{ review.reviewActiveStatus ? 'Active' : 'Inactive' }}
+                                </span>
+                                <button (click)="toggleReviewStatus(review)" class="status-toggle-button">
+                                    {{ review.reviewActiveStatus ? 'Mark Inactive' : 'Mark Active' }}
+                                </button>
+                            </div>
                         </div>
                     </div>
+               
+                    <!-- <button class="section-submit-button" (click)="submitReviewChanges()">Save Review Changes</button> -->
                 </div>
- 
+            
                 <button class="section-submit-button" (click)="submitReviewChanges()">Save Review Changes</button>
             </div>
  
@@ -147,7 +150,7 @@
  
         <button class="close-button" (click)="closePopup()">&times;</button>
     </div>
-</div>
+
 
 
  
