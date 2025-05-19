@@ -151,6 +151,13 @@
         <button class="close-button" (click)="closePopup()">&times;</button>
     </div>
 
+    <!-- Success Popup for Review Update -->
+<div class="success-message" *ngIf="showReviewUpdateSuccessPopup">
+    <span class="close-icon" (click)="closeReviewUpdateSuccessPopup()">×</span>
+    <h3>Success</h3>
+    Active status of the review has been updated successfully!
+  </div>
+
 
 
  
