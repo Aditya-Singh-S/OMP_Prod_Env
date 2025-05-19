@@ -74,7 +74,8 @@ export class AdminUpdateUserPopupComponent implements OnInit, OnDestroy {
   userNotFoundMessage: string | null = null;
   showProfileSection: boolean = false;
   showSubscriptionsSection: boolean = false;
-  //showReviewsSection: boolean = false;
+
+  showReviewUpdateSuccessPopup=false;
  
   areReviewsVisible: boolean = false;
  
@@ -388,15 +389,22 @@ export class AdminUpdateUserPopupComponent implements OnInit, OnDestroy {
           console.log('Review status updated:', response);
           // Update the local array to reflect the change immediately
           review.reviewActiveStatus = newStatus;
+ 
+          // Show success popup after successful status update
+          this.showReviewUpdateSuccessPopup = true;
         }),
         catchError(error => {
           console.error('Error updating review status:', error);
-          // Optionally show an error message
           return of(null);
         })
       )
       .subscribe();
-  }
+}
+ 
+// Method to close the success popup
+closeReviewUpdateSuccessPopup() {
+    this.showReviewUpdateSuccessPopup = false;
+}
   getProductImage(productId: number): string {
     // Replace this with your actual logic to fetch the image URL
     console.log("Get Image method called");
