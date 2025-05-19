@@ -173,9 +173,15 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   this.imageRequiredError = !this.selectedImageFile;
   this.invalidFileTypeError=this.invalidFileTypeError;
  
-  if (this.imageRequiredError || this.duplicateProductNameError || this.productDescription.length < 100 || this.invalidFileTypeError) {
-   return; // prevent submission
+  this.productNameError = false;
+  this.descriptionError = false;
+ 
+  if (!this.productName || !this.productName.trim()) {
+    this.productNameError = true;
   }
+ 
+  if (!this.productDescription || this.productDescription.length < 100) {
+    this.descriptionError = true;
     if (this.selectedImageFile && !this.duplicateProductNameError) {
       this.productService.addProduct(this.productName, this.productDescription, this.selectedImageFile, this.isActive)
         .subscribe(response => {
@@ -197,6 +203,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         });
     }
   }
+}
  
   resetAddProductForm() {
     this.productName = '';
@@ -292,7 +299,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
             this.product = response[0];
             this.product.upName = response[0].name;
             this.product.upDescription = response[0].description;
-            this.product.isActive = response[0].isActive;
+            this.product.isActive = response[0].isactive;
             this.productService.getProductImageByName(this.product.name)
               .subscribe(imageBlob => {
                 const reader = new FileReader();

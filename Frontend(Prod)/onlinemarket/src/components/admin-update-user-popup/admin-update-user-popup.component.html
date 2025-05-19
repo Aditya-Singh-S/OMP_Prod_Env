@@ -19,7 +19,7 @@
                 <input
                 type="checkbox"
                 id="isActive"
-                [(ngModel)]="foundUser.isActive"
+                [(ngModel)]="foundUser.active"
                 (ngModelChange)="updateUserActiveStatusNgModel()"
                 />                
             </div>
@@ -148,4 +148,6 @@
         <button class="close-button" (click)="closePopup()">&times;</button>
     </div>
 </div>
+
+
  
