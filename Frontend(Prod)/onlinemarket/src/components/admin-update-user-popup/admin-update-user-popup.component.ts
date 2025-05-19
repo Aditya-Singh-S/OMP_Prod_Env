@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -43,11 +43,24 @@ interface ISubscription {
 interface SubscriptionViewModel extends IProductDTO {
   isSelectedToRemove: boolean;
 }
+
+@Pipe({
+  name: 'filterActiveReviews'
+})
+
+export class FilterActiveReviewsPipe implements PipeTransform {
+  transform(reviews: IReview[]): IReview[] {
+    if (!reviews || reviews.length === 0) {
+      return [];
+    }
+    return reviews.filter(review => review.reviewActiveStatus === true);
+  }
+}
  
 @Component({
   selector: 'app-admin-update-user-popup',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, FilterActiveReviewsPipe],
   templateUrl: './admin-update-user-popup.component.html',
   styleUrls: ['./admin-update-user-popup.component.css']
 })
