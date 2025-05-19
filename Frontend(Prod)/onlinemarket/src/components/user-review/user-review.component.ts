@@ -117,10 +117,7 @@ export class UserReviewComponent implements OnInit {
 
   fetchUserName(userId: number) {
     this.http
-      .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`, {
-        responseType: 'json',
-        headers:this.userService.authHeaders
-      })
+      .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`)
       .subscribe(
         (response) => {
           this.reviews.forEach((review) => {
@@ -142,10 +139,7 @@ export class UserReviewComponent implements OnInit {
 
   fetchUserNameForHighestRated(userId: number) {
     this.http
-      .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`, {
-        responseType: 'json',
-        headers:this.userService.authHeaders
-      })
+      .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`)
       .subscribe(
         (response) => {
           if (this.highestRatedReview && this.highestRatedReview.userId === userId) {
