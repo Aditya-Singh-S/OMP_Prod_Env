@@ -185,6 +185,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
  
   if (!this.productDescription || this.productDescription.length < 100) {
     this.descriptionError = true;
+  }
     if (this.selectedImageFile && !this.duplicateProductNameError) {
       this.productService.addProduct(this.productName, this.productDescription, this.selectedImageFile, this.isActive)
         .subscribe(response => {
@@ -205,7 +206,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           }
         });
     }
-  }
 }
  
   resetAddProductForm() {
