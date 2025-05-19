@@ -149,5 +149,16 @@
     </div>
 </div>
 
+<div *ngIf="showAlertPopup" class="alert-popup">
+    <div class="alert-popup-content">
+          <div class="alert-popup-header">
+          <h2>{{ popupTitle }}</h2>
+          <span class="alert-close-button" (click)="closeAlertPopup()">&times;</span>
+          </div>
+          <div class="alert-popup-body">
+          <p>{{ popupMessage }}</p>
+          </div>
+    </div>
+    </div>
 
  
