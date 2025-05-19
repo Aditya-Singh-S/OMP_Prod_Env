@@ -33,13 +33,13 @@ export class SignupComponent {
       lastName: ['', [Validators.required, Validators.pattern(/^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$/)]],
       nickName: ['', [Validators.required, Validators.pattern(/^(?=.*[a-zA-Z])[a-zA-Z0-9._]{3,15}$/)]],
       email: ['', [Validators.required, Validators.pattern(/^[a-zA-Z.0-9]+@[a-zA-Z0-9]+\.(com|net|org)$/)]],
-      contactNo: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
+      contactNumber: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
       password: ['', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/)]],
       confirmPassword: ['', [Validators.required]],
       addressLine1: ['', [Validators.required, Validators.minLength(10)]],
       addressLine2: ['', [Validators.required, Validators.minLength(10)]],
       postalCode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
-      dob: ['', [Validators.required, this.minimumAgeValidator(18)]],
+      dateOfBirth: ['', [Validators.required, this.minimumAgeValidator(18)]],
     }, { validator: this.passwordMatchValidator });
   }
 
@@ -59,11 +59,11 @@ export class SignupComponent {
   minimumAgeValidator(minAge: number) {
     return (control: any) => {
       if (!control.value) return null;
-      const dob = new Date(control.value);
+      const dateOfBirth = new Date(control.value);
       const today = new Date();
-      const age = today.getFullYear() - dob.getFullYear();
-      const hasHadBirthday = today.getMonth() > dob.getMonth() ||
-        (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
+      const age = today.getFullYear() - dateOfBirth.getFullYear();
+      const hasHadBirthday = today.getMonth() > dateOfBirth.getMonth() ||
+        (today.getMonth() === dateOfBirth.getMonth() && today.getDate() >= dateOfBirth.getDate());
       return age > minAge || (age === minAge && hasHadBirthday) ? null : { minAge: true };
     };
   }

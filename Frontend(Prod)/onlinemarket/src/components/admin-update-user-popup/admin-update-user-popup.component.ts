@@ -17,7 +17,7 @@ interface IUserIdResponse {
 interface IUserDetails {
   userID: string | number;
   email: string;
-  isActive: boolean;
+  active: boolean;
   firstName?: string;
   lastName?: string;
   dateOfBirth?: string;
@@ -158,7 +158,7 @@ export class AdminUpdateUserPopupComponent implements OnInit, OnDestroy {
  
   updateUserActiveStatusNgModel(): void {
     if (this.currentUserId && this.foundUser) {
-      this.userService.updateUserActiveStatus(this.currentUserId, this.foundUser.isActive).subscribe({
+      this.userService.updateUserActiveStatus(this.currentUserId, this.foundUser.active).subscribe({
         next: (response) => {
           console.log('User active status updated in backend:', response);
           // The local foundUser.isActive is already updated by ngModel
@@ -409,13 +409,13 @@ export class AdminUpdateUserPopupComponent implements OnInit, OnDestroy {
   // }
  
   updateUserActiveStatus(event: any): void {
-    const isActive = event.target.checked;
+    const active = event.target.checked;
     // console.log('hi' + isActive);
     if (this.currentUserId && this.foundUser) {
-      this.userService.updateUserActiveStatus(this.currentUserId, isActive).subscribe({
+      this.userService.updateUserActiveStatus(this.currentUserId, active).subscribe({
         next: (response) => {
           console.log('User active status updated in backend:', response);
-          this.foundUser!.isActive = isActive; // Update the local foundUser object
+          this.foundUser!.active = active; // Update the local foundUser object
           // Optionally, show a success message
         },
         error: (error) => {
