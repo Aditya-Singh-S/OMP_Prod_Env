@@ -21,6 +21,7 @@ interface ReviewViewModel extends IRatingDTO{
     imageUrl?: string;
     description?: string;
     subscribersCount?: number; 
+    markedForDeletion?: boolean;
 
 }
 
@@ -101,39 +102,50 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
     inactivateReview(review: ReviewViewModel): void {
         review.isActive = false;
     }
-    markForDeletion(review: ReviewViewModel): void {
-        review.isActive = false; 
-    }
-
-    deleteReview(reviewToDelete: ReviewViewModel): void {
-        if (confirm(`Are you sure you want to remove your review for ${reviewToDelete.productName}?`)) {
-            this.userService.updateReview(
-                reviewToDelete.ratingId,
-                null,
-                false
-            ).subscribe({
-                next: (response) => {
-                    console.log('Review marked for removal successfully:', response);
-                    this.updateSuccessMessage = `Review for ${reviewToDelete.productName} removed.`;
-                    this.loadUserReviews();
-                    this.reviewDeleted.emit(reviewToDelete.ratingId); 
-                    setTimeout(() => this.updateSuccessMessage = null, 3000);
-                },
-                error: (error) => {
-                    console.error('Error marking review for removal:', error);
-                    this.errorMessage = `Error removing review for ${reviewToDelete.productName}.`;
-                    setTimeout(() => this.errorMessage = null, 3000);
-                }
-            });
-        }
-    }
-
-    submitReviews(): void {
-        const activeReviews = this.reviews.filter(review => review.isActive);
-        console.log('Active reviews to submit:', activeReviews);
-        this.updateSuccessMessage = 'Reviews Updated Successfully';
+    
+    markForDeletion(reviewToDelete: ReviewViewModel): void {
+        this.reviews = this.reviews.map(review => {
+          if (review.ratingId === reviewToDelete.ratingId) {
+            return { ...review, markedForDeletion: true }; 
+          }
+          return review;
+        });
+        this.updateSuccessMessage = `Review for ${reviewToDelete.productName} will be removed on submit.`;
         setTimeout(() => this.updateSuccessMessage = null, 3000);
-    }
+      }
+
+      deleteReview(reviewToDelete: ReviewViewModel): void {
+        this.markForDeletion(reviewToDelete);
+      }
+
+      submitReviews(): void {
+        const reviewsToDelete = this.reviews.filter(review => review.markedForDeletion);
+        console.log('Reviews to delete on submit:', reviewsToDelete);
+    
+        if (reviewsToDelete.length > 0) {
+          forkJoin(
+            reviewsToDelete.map(review =>
+              this.userService.updateReview(review.ratingId, null, false)
+            )
+          ).subscribe({
+            next: (responses) => {
+              console.log('All reviews marked for removal:', responses);
+              this.updateSuccessMessage = `${reviewsToDelete.length} Reviews Removed Successfully`;
+              this.loadUserReviews(); // Refresh the list after successful deletion
+              reviewsToDelete.forEach(review => this.reviewDeleted.emit(review.ratingId));
+              setTimeout(() => this.updateSuccessMessage = null, 3000);
+            },
+            error: (error) => {
+              console.error('Error deleting reviews:', error);
+              this.errorMessage = `Error removing reviews.`;
+              setTimeout(() => this.errorMessage = null, 3000);
+            }
+          });
+        } else {
+          this.updateSuccessMessage = 'No reviews to delete.';
+          setTimeout(() => this.updateSuccessMessage = null, 3000);
+        }
+      }
 
     openReviewPopup(): void {
         this.showReviewPopup = true;
@@ -147,4 +159,6 @@ export class ProductReviewComponent implements OnInit, OnDestroy {
         this.showReviewPopup = false;
         this.updateSuccessMessage = null;
     }
+
+    
 }
