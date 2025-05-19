@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { UserService } from '../../services/user.service'; // Import UserService
+import { catchError, filter, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 
 interface Review {
   userId: number;
@@ -31,6 +32,8 @@ export class UserReviewComponent implements OnInit {
   highestRatedReview: Review | null = null;
   showPopup = false;
   productId: number = 0;
+  loadingReviews = true; // Add a loading flag
+  loadingHighestRated = true; // Add a loading flag
 
   constructor(
     private http: HttpClient,
@@ -40,120 +43,174 @@ export class UserReviewComponent implements OnInit {
 
   ngOnInit() {
     this.productId = +this.route.snapshot.paramMap.get('id')!;
-    this.fetchReviews();
-    this.fetchHighestRatedReview();
+    // this.fetchReviews();
+    // this.fetchHighestRatedReview();
+    this.fetchReviewsWithUserNames(); // Call the new method
+    this.fetchHighestRatedReviewWithUserName(); // Call the new method
   }
 
-  fetchReviews() {
-    this.http
-      .get<Review[]>(
-        `${this.baseUrl}/reviews/getSpecificProductReviews?productId=${this.productId}`,
-        { responseType: 'json' }
-      )
-      .subscribe(
-        (data) => {
-          this.reviews = data.filter(review => review.reviewActiveStatus); // Corrected property name
-          this.reviews.forEach((review) => {
-            this.fetchUserName(review.userId);
-          });
-        },
-        (error: HttpErrorResponse) => {
-          if (error.error instanceof ErrorEvent) {
-            console.error('Client-side error:', error.error.message);
-          } else {
-            console.error(`Server-side error: ${error.status} - ${error.message}`);
-          }
-        }
-      );
-  }
+  // fetchReviews() {
+  //   this.http
+  //     .get<Review[]>(
+  //       `${this.baseUrl}/reviews/getSpecificProductReviews?productId=${this.productId}`,
+  //       { responseType: 'json' }
+  //     )
+  //     .subscribe(
+  //       (data) => {
+  //         this.reviews = data.filter(review => review.reviewActiveStatus); // Corrected property name
+  //         this.reviews.forEach((review) => {
+  //           this.fetchUserName(review.userId);
+  //         });
+  //       },
+  //       (error: HttpErrorResponse) => {
+  //         if (error.error instanceof ErrorEvent) {
+  //           console.error('Client-side error:', error.error.message);
+  //         } else {
+  //           console.error(`Server-side error: ${error.status} - ${error.message}`);
+  //         }
+  //       }
+  //     );
+  // }
  
 
-  fetchHighestRatedReview() {
-    this.http
-      .get<Review>(
-        `${this.baseUrl}/reviews/highestRatedReview?productId=${this.productId}`,
-        { responseType: 'json' }
-      )
-      .subscribe(
-        (review) => {
-          if (review && review.reviewActiveStatus) { // Corrected property name
-            this.highestRatedReview = review;
-            this.fetchUserNameForHighestRated(review.userId);
-          } else {
-            this.highestRatedReview = null;
-          }
-        },
-        (error: HttpErrorResponse) => {
-          if (error.error instanceof ErrorEvent) {
-            console.error('Client-side error:', error.error.message);
-          } else {
-            console.error(`Server-side error: ${error.status} - ${error.message}`);
-          }
-        }
-      );
-  }
-
-  // fetchUserName(userId: number) {
+  // fetchHighestRatedReview() {
   //   this.http
-  //     .get<{ firstName: string }>(`${this.baseUrl}/myDetails?userId=${userId}`, {
-  //       responseType: 'json',
-  //     })
+  //     .get<Review>(
+  //       `${this.baseUrl}/reviews/highestRatedReview?productId=${this.productId}`,
+  //       { responseType: 'json' }
+  //     )
   //     .subscribe(
-  //       (response) => {
-  //         const review = this.reviews.find((r) => r.userId === userId);
-  //         if (review) {
-  //           review.userName = response?.firstName || 'Unknown User';
+  //       (review) => {
+  //         if (review && review.reviewActiveStatus) { // Corrected property name
+  //           this.highestRatedReview = review;
+  //           this.fetchUserNameForHighestRated(review.userId);
+  //         } else {
+  //           this.highestRatedReview = null;
   //         }
   //       },
-  //       (error) => {
-  //         console.error(`Error fetching user name for userId ${userId}:`, error);
-  //         const review = this.reviews.find((r) => r.userId === userId);
-  //         if (review) {
-  //           review.userName = 'Unknown User';
+  //       (error: HttpErrorResponse) => {
+  //         if (error.error instanceof ErrorEvent) {
+  //           console.error('Client-side error:', error.error.message);
+  //         } else {
+  //           console.error(`Server-side error: ${error.status} - ${error.message}`);
   //         }
   //       }
   //     );
   // }
 
-  fetchUserName(userId: number) {
+  fetchReviewsWithUserNames() {
+    this.loadingReviews = true;
     this.http
-      .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`)
+      .get<Review[]>(
+        `${this.baseUrl}/reviews/getSpecificProductReviews?productId=${this.productId}`,
+        { responseType: 'json' }
+      )
+      .pipe(
+        // Filter active reviews
+        map(data => data.filter(review => review.reviewActiveStatus)),
+        // Fetch user names for all reviews
+        switchMap(activeReviews =>
+          forkJoin(
+            activeReviews.map(review =>
+              this.fetchUserNamePromise(review.userId).pipe(
+                map(userName => ({ ...review, userName }))
+              )
+            )
+          )
+        )
+      )
       .subscribe(
-        (response) => {
-          this.reviews.forEach((review) => {
-            if (review.userId === userId) {
-              review.userName = response?.firstName || 'Unknown User';
-            }
-          });
+        (reviewsWithNames) => {
+          this.reviews = reviewsWithNames;
+          this.loadingReviews = false;
+          console.log("Fetched reviews with names:", this.reviews);
         },
-        (error) => {
-          console.error(`Error fetching user name for userId ${userId}:`, error);
-          this.reviews.forEach((review) => {
-            if (review.userId === userId) {
-              review.userName = 'Unknown User';
-            }
-          });
+        (error: HttpErrorResponse) => {
+          console.error('Error fetching reviews:', error);
+          this.loadingReviews = false;
         }
       );
   }
 
-  fetchUserNameForHighestRated(userId: number) {
+  fetchHighestRatedReviewWithUserName() {
+    this.loadingHighestRated = true;
     this.http
-      .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`)
+      .get<Review>(
+        `${this.baseUrl}/reviews/highestRatedReview?productId=${this.productId}`,
+        { responseType: 'json' }
+      )
+      .pipe(
+        filter(review => !!review && review.reviewActiveStatus), // Ensure review exists and is active
+        switchMap(activeReview =>
+          this.fetchUserNamePromise(activeReview.userId).pipe(
+            map(userName => ({ ...activeReview, userName }))
+          )
+        ),
+        catchError(() => of(null)) // Handle cases where no active review is found
+      )
       .subscribe(
-        (response) => {
-          if (this.highestRatedReview && this.highestRatedReview.userId === userId) {
-            this.highestRatedReview.userName = response?.firstName || 'Unknown User';
-          }
+        (highestRatedReviewWithName) => {
+          this.highestRatedReview = highestRatedReviewWithName || null;
+          this.loadingHighestRated = false;
+          console.log("Highest rated review with name:", this.highestRatedReview);
         },
-        (error) => {
-          console.error(`Error fetching user name for userId ${userId}:`, error);
-          if (this.highestRatedReview && this.highestRatedReview.userId === userId) {
-            this.highestRatedReview.userName = 'Unknown User';
-          }
+        (error: HttpErrorResponse) => {
+          console.error('Error fetching highest rated review:', error);
+          this.loadingHighestRated = false;
         }
       );
   }
+
+  fetchUserNamePromise(userId: number): Observable<string> {
+    return this.http.get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`).pipe(
+      map(response => response?.firstName || 'Unknown User'),
+      catchError(error => {
+        console.error(`Error fetching user name for userId ${userId}:`, error);
+        return of('Unknown User');
+      })
+    );
+  }
+
+
+  // fetchUserName(userId: number) {
+  //   this.http
+  //     .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`)
+  //     .subscribe(
+  //       (response) => {
+  //         this.reviews.forEach((review) => {
+  //           if (review.userId === userId) {
+  //             review.userName = response?.firstName || 'Unknown User';
+  //           }
+  //         });
+  //       },
+  //       (error) => {
+  //         console.error(`Error fetching user name for userId ${userId}:`, error);
+  //         this.reviews.forEach((review) => {
+  //           if (review.userId === userId) {
+  //             review.userName = 'Unknown User';
+  //           }
+  //         });
+  //       }
+  //     );
+  // }
+
+  // fetchUserNameForHighestRated(userId: number) {
+  //   this.http
+  //     .get<{ firstName: string }>(`${this.baseUrl}/myName?userId=${userId}`)
+  //     .subscribe(
+  //       (response) => {
+  //         if (this.highestRatedReview && this.highestRatedReview.userId === userId) {
+  //           this.highestRatedReview.userName = response?.firstName || 'Unknown User';
+  //         }
+  //       },
+  //       (error) => {
+  //         console.error(`Error fetching user name for userId ${userId}:`, error);
+  //         if (this.highestRatedReview && this.highestRatedReview.userId === userId) {
+  //           this.highestRatedReview.userName = 'Unknown User';
+  //         }
+  //       }
+  //     );
+  // }
 
   openPopup() {
     this.showPopup = true;
