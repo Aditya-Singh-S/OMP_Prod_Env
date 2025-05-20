@@ -235,7 +235,8 @@ public class UserAdminController {
                         user.getAddressLine2(),
                         user.getPostalCode(),
                         user.isActive(),
-                        user.getUserRole().name()
+                        user.getUserRole().name(),
+                        user.isEmailVerification()
                 ))
                 .collect(Collectors.toList());
         
@@ -243,13 +244,15 @@ public class UserAdminController {
  
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
+    
  
     
-    //geting  al user with filter
+  //getting all user with filter
     @GetMapping("/admin/users/filter")
-    public ResponseEntity<List<UserDetailDTO>> getUsersByActiveStatus(
+    public ResponseEntity<List<UserDetailDTO>> getUsersByFilter(
     		@RequestHeader("Authorization") String authHeaders,
-    		@RequestParam("isActive") boolean isActive) {
+    		@RequestParam(value = "isActive", required = false) Boolean isActive,
+            @RequestParam(value = "emailVerification", required = false) Boolean isEmailVerified) {
         List<User> users = userAdminService.getUsersByIsActive(isActive);
         List<UserDetailDTO> userDTOs = users.stream()
                 .map(user -> new UserDetailDTO(
@@ -264,12 +267,71 @@ public class UserAdminController {
                         user.getAddressLine2(),
                         user.getPostalCode(),
                         user.isActive(),
-                        user.getUserRole().name()
+                        user.getUserRole().name(),
+                        user.isEmailVerification()
                 ))
                 .collect(Collectors.toList());
         
         this.checkAuthorizationHeaders(authHeaders);
  
+        return new ResponseEntity<>(userDTOs, HttpStatus.OK);
+    }
+    
+    @GetMapping("/admin/users/active")
+    public ResponseEntity<List<UserDetailDTO>> getUsersByActiveStatus(
+            @RequestHeader("Authorization") String authHeaders,
+            @RequestParam("isActive") boolean isActive) {
+        List<User> users = userAdminService.getUsersByIsActive(isActive);
+
+        List<UserDetailDTO> userDTOs = users.stream()
+                .map(user -> new UserDetailDTO(
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getEmail(),
+                        user.getDateOfBirth(),
+                        user.getContactNumber(),
+                        Date.from(user.getAddedOn().atZone(java.time.ZoneId.systemDefault()).toInstant()),
+                        Date.from(user.getUpdatedOn().atZone(java.time.ZoneId.systemDefault()).toInstant()),
+                        user.getAddressLine1(),
+                        user.getAddressLine2(),
+                        user.getPostalCode(),
+                        user.isActive(),
+                        user.getUserRole().name(),
+                        user.isEmailVerification() // Assuming your User entity has this field
+                ))
+                .collect(Collectors.toList());
+
+        this.checkAuthorizationHeaders(authHeaders);
+
+        return new ResponseEntity<>(userDTOs, HttpStatus.OK);
+    }
+    
+    @GetMapping("/admin/users/verified")
+    public ResponseEntity<List<UserDetailDTO>> getUsersByActiveStatusbyemail(
+            @RequestHeader("Authorization") String authHeaders,
+            @RequestParam("emailVerification") boolean emailVerification) {
+        List<User> users = userAdminService.getUsersByIsActivebyemail(emailVerification);
+
+        List<UserDetailDTO> userDTOs = users.stream()
+                .map(user -> new UserDetailDTO(
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getEmail(),
+                        user.getDateOfBirth(),
+                        user.getContactNumber(),
+                        Date.from(user.getAddedOn().atZone(java.time.ZoneId.systemDefault()).toInstant()),
+                        Date.from(user.getUpdatedOn().atZone(java.time.ZoneId.systemDefault()).toInstant()),
+                        user.getAddressLine1(),
+                        user.getAddressLine2(),
+                        user.getPostalCode(),
+                        user.isActive(),
+                        user.getUserRole().name(),
+                        user.isEmailVerification() // Assuming your User entity has this field
+                ))
+                .collect(Collectors.toList());
+
+        this.checkAuthorizationHeaders(authHeaders);
+
         return new ResponseEntity<>(userDTOs, HttpStatus.OK);
     }
     

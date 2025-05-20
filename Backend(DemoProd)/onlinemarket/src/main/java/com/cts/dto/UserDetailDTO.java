@@ -23,4 +23,5 @@ public class UserDetailDTO {
     private String postalCode;
     private boolean isActive; 
     private String userRole;
+    private boolean isEmailVerification;
 }
