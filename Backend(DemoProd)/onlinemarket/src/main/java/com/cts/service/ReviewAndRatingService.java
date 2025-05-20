@@ -123,8 +123,9 @@ public List<ReviewAndRatingDTO> getReviewsByProductId(int productid) {
 		}
 		Products product = productRepository.findById(productid)
                 .orElseThrow(() -> new InvalidProductException("Product not found with ID: " + productid));
-
-		List<ReviewsAndRatings> reviews = reviewRepository.findByProductsProductidOrderByRatingDesc(productid);
+		
+		List<ReviewsAndRatings> reviews = reviewRepository.findByProductsProductidAndReviewActiveStatusOrderByRatingDesc(productid, true);
+		//List<ReviewsAndRatings> reviews = reviewRepository.findByProductsProductidOrderByRatingDesc(productid);
 		return reviews.stream().map(ReviewAndRatingDTO::new).collect(Collectors.toList());
 
 	}
@@ -139,8 +140,12 @@ public List<ReviewAndRatingDTO> getReviewsByProductId(int productid) {
     }
 
 	public ReviewsAndRatings getHighestRatedReview(int productId) {
-		List<ReviewsAndRatings> reviews = reviewRepository.findTopByProductidOrderByRatingDescAndReviewCreatedOnDesc(productId);
-		return reviews.isEmpty() ? null : reviews.get(0);
+
+	    List<ReviewsAndRatings> reviews = reviewRepository.findTopByProductidAndReviewActiveStatusOrderByRatingDescAndReviewCreatedOnDesc(productId);
+	    return reviews.isEmpty() ? null : reviews.get(0);
+	    //List<ReviewsAndRatings> reviews = reviewRepository.findTopByProductidOrderByRatingDescAndReviewCreatedOnDesc(productId);
+	    //return reviews.isEmpty() ? null : reviews.get(0);
+	    //return reviews.stream().filter(ReviewsAndRatings::isReviewActiveStatus).findFirst().orElse(null);
 	}
  
     
