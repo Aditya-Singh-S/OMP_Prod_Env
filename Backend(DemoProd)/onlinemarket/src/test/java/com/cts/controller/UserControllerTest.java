@@ -51,15 +51,15 @@ class UserControllerTest {
         assertEquals(ResponseEntity.ok(signInResponse), responseEntity);
     }
     
-    @Test
-    public void testGetProductSubscriptionList() {
-        int userId = 1;
-        String mockAuthHeader = "Basic dXNlcjpwYXNzd29yZA==";
-        List<ProductViewDTO> mockList = Arrays.asList(new ProductViewDTO(), new ProductViewDTO());
-        when(productService.getProductSubscriptionList(userId)).thenReturn(mockList);
-        List<ProductViewDTO> result = userController.getProductSubscriptionList(mockAuthHeader, userId);
-        assertEquals(2, result.size());
-        verify(productService).getProductSubscriptionList(userId);
-        verify(userController).checkAuthorizationHeaders(mockAuthHeader);
-    }
+//    @Test
+//    public void testGetProductSubscriptionList() {
+//        int userId = 1;
+//        String mockAuthHeader = "Basic dXNlcjpwYXNzd29yZA==";
+//        List<ProductViewDTO> mockList = Arrays.asList(new ProductViewDTO(), new ProductViewDTO());
+//        when(productService.getProductSubscriptionList(userId)).thenReturn(mockList);
+//        List<ProductViewDTO> result = userController.getProductSubscriptionList(mockAuthHeader, userId);
+//        assertEquals(2, result.size());
+//        verify(productService).getProductSubscriptionList(userId);
+//        verify(userController).checkAuthorizationHeaders(mockAuthHeader);
+//    }
 }

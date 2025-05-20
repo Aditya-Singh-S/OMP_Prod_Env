@@ -11,7 +11,7 @@
 	<groupId>com.cts</groupId>
 	<artifactId>onlinemarket</artifactId>
 
-	<version>0.2.7-SNAPSHOT</version>
+	<version>0.2.9-SNAPSHOT</version>
 
 	<name>onlinemarket</name>
 	<description>Demo project for Spring Boot</description>

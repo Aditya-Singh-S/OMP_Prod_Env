@@ -22,48 +22,55 @@
 </div> -->
 
 <div class="container">
-    <div *ngIf="infoMessage" class="info-msg">
-      <p>{{infoMessage}}</p>
-      <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()">
-        <input type="email" formControlName="email" [placeholder]="displayEmail" required>
-        <div *ngIf="verifyForm.get('email')?.invalid && (verifyForm.get('email')?.dirty || verifyForm.get('email')?.touched)" class="error-msg">
-          <p *ngIf="verifyForm.get('email')?.errors?.['required']">Email is required.</p>
-          <p *ngIf="verifyForm.get('email')?.errors?.['email']">Please enter a valid email address.</p>
-        </div>
-        <button type="submit" id="submit" [disabled]="verifyForm.invalid">Submit</button>
-        <button type="button" id="resend" (click)="resendVerificationEmail()">Resend</button>
-      </form>
+  <div *ngIf="infoMessage" class="info-msg">
+    <p>{{infoMessage}}</p>
+    <form [formGroup]="verifyForm" (ngSubmit)="onSubmit()">
+      <div class="verify">
+      <input id="email" type="email" formControlName="email" [placeholder]="displayEmail" required>
+      <div *ngIf="verifyForm.get('email')?.invalid && (verifyForm.get('email')?.dirty || verifyForm.get('email')?.touched)" class="error-msg">
+        <p *ngIf="verifyForm.get('email')?.errors?.['required']">Email is required.</p>
+        <p *ngIf="verifyForm.get('email')?.errors?.['email']">Please enter a valid email address.</p>
+      </div>
+      <!-- <p>{{ verifyForm.get('email')?.value }}</p>  -->
+      
+      <div class="buttons">
+      <button type="submit" id="submit" [disabled]="verifyForm.invalid">Submit</button>
+      <button type="button" id="resend" (click)="resendVerificationEmail()">Resend</button>
     </div>
-  
-    <div *ngIf="showPopup" class="popup">
-        <div class="popup-content">
-              <div class="popup-header">
-              <h2>{{ popupTitle }}</h2>
-              <span class="close-button" (click)="closePopup()">&times;</span>
-              </div>
-              <div class="popup-body">
-              <p>{{ popupMessage }}</p>
-              </div>
-        </div>
-        </div>
-  
-        <div *ngIf="isVerifiedPopup" class="popup">
-          <div class="popup-content">
-                <div class="popup-header">
-                <h2>{{ popupTitle }}</h2>
-                <span class="close-button" (click)="closeVerifyPopup()">&times;</span>
-                </div>
-                <div class="popup-body">
-                <p>{{ popupMessage }}</p>
-                </div>
-          </div>
-          </div>
-  
-      <div *ngIf="isVerified" class="success-msg">
-        <p>Verification Successful! You can now sign in.</p>
-        <button id="signin" (click)="goToSignIn()">SignIn</button>
-      </div>
-      <div *ngIf="errorMessage" class="error-msg">
-        <p>{{errorMessage}}</p>
-      </div>
   </div>
+    </form>
+  </div>
+
+
+  <div *ngIf="showPopup" class="popup">
+    <div class="popup-content">
+          <div class="popup-header">
+          <h2>{{ popupTitle }}</h2>
+          <span class="close-button" (click)="closePopup()">&times;</span>
+          </div>
+          <div class="popup-body">
+          <p>{{ popupMessage }}</p>
+          </div>
+    </div>
+    </div>
+
+    <div *ngIf="isVerifiedPopup" class="popup">
+      <div class="popup-content">
+            <div class="popup-header">
+            <h2>{{ popupTitle }}</h2>
+            <span class="close-button" (click)="closeVerifyPopup()">&times;</span>
+            </div>
+            <div class="popup-body">
+            <p>{{ popupMessage }}</p>
+            </div>
+      </div>
+      </div>
+
+  <div *ngIf="isVerified" class="success-msg">
+    <p>Verified! You can sign in now.</p>
+    <button id="signinbtn" (click)="goToSignIn()">SignIn</button>
+  </div>
+  <div *ngIf="errorMessage" class="error-msg">
+    <p>{{errorMessage}}</p>
+  </div>
+</div>

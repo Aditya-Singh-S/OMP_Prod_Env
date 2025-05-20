@@ -35,8 +35,14 @@ public interface ReviewAndRatingRepository extends JpaRepository<ReviewsAndRatin
 	List<ReviewsAndRatings> findByUser(User user);
 	List<ReviewsAndRatings> findByProductsProductidOrderByRatingDesc(int productid);
 	
+	@Query("SELECT r FROM ReviewsAndRatings r WHERE r.products.productid = :productId AND r.reviewActiveStatus = TRUE ORDER BY r.rating DESC, r.reviewCreatedOn DESC")
+	List<ReviewsAndRatings> findTopByProductidAndReviewActiveStatusOrderByRatingDescAndReviewCreatedOnDesc(@Param("productId") int productId);
+	
+	List<ReviewsAndRatings> findByProductsProductidAndReviewActiveStatusOrderByRatingDesc(int productid, boolean reviewActiveStatus);
 
-
+//	@Query(value="SELECT r FROM ReviewsAndRatings r WHERE r.products.productid = :productId ORDER BY r.rating DESC, r.reviewCreatedOn DESC")
+//	List<ReviewsAndRatings> findTopByProductidOrderByRatingDescAndReviewCreatedOnDesc(int productId);
+	
 	@Query(value="SELECT r FROM ReviewsAndRatings r WHERE r.products.productid = :productId ORDER BY r.rating DESC, r.reviewCreatedOn DESC")
-	List<ReviewsAndRatings> findTopByProductidOrderByRatingDescAndReviewCreatedOnDesc(int productId);
+    List<ReviewsAndRatings> findTopByProductidOrderByRatingDescAndReviewCreatedOnDesc(int productId);
 }

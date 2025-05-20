@@ -166,7 +166,7 @@ export class ForgotPageComponent implements OnInit {
           this.popupMessage = "User not found. Please check your email address.";
           this.showPopup = true;
           
-          window.location.reload();
+          //window.location.reload();
         } else {
           //alert("Something went wrong. Please try again later.");
           this.popupTitle = "Error";

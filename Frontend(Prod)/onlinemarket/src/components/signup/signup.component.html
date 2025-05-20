@@ -27,19 +27,19 @@
       </div>
 
             <!-- Date of Birth -->
-      <label for="dob">Date of Birth:</label>
-      <input id="dob" type="date" formControlName="dob" class="form-control" />
-      <div *ngIf="signUpForm.get('dob')?.errors && signUpForm.get('dob')?.touched" class="text-danger">
-      <div *ngIf="signUpForm.get('dob')?.errors?.['required']">* Date of Birth is required.</div>
-      <div *ngIf="signUpForm.get('dob')?.errors?.['minAge']">* Minimum age is 18 years.</div>
+      <label for="dateOfBirth">Date of Birth:</label>
+      <input id="dateOfBirth" type="date" formControlName="dateOfBirth" class="form-control" />
+      <div *ngIf="signUpForm.get('dateOfBirth')?.errors && signUpForm.get('dateOfBirth')?.touched" class="text-danger">
+      <div *ngIf="signUpForm.get('dateOfBirth')?.errors?.['required']">* Date of Birth is required.</div>
+      <div *ngIf="signUpForm.get('dateOfBirth')?.errors?.['minAge']">* Minimum age is 18 years.</div>
       </div>
 
             <!-- Phone -->
-      <label for="contactNo">Phone:</label>
-      <input id="contactNo" type="text" formControlName="contactNo" class="form-control" />
-      <div *ngIf="signUpForm.get('contactNo')?.errors && signUpForm.get('contactNo')?.touched" class="text-danger">
-      <div *ngIf="signUpForm.get('contactNo')?.errors?.['required']">* Phone number is required.</div>
-      <div *ngIf="signUpForm.get('contactNo')?.errors?.['pattern']">* Enter a valid phone number.</div>
+      <label for="contactNumber">Phone:</label>
+      <input id="contactNumber" type="text" formControlName="contactNumber" class="form-control" />
+      <div *ngIf="signUpForm.get('contactNumber')?.errors && signUpForm.get('contactNumber')?.touched" class="text-danger">
+      <div *ngIf="signUpForm.get('contactNumber')?.errors?.['required']">* Phone number is required.</div>
+      <div *ngIf="signUpForm.get('contactNumber')?.errors?.['pattern']">* Enter a valid phone number.</div>
       </div>
       </div>
 
@@ -74,7 +74,7 @@
 
 
       <div class="photo-field">
-            <input id="photo" type="file" (change)="onFileChange($event)" class="form-control" />
+            <input id="photo" type="file" (change)="onFileChange($event)" class="form-control" accept=".jpeg,.jpg,.png"/>
             <span class="remove-photo" (click)="removePhoto()">&#x2715;</span>
           </div>
           <div *ngIf="photoError" class="text-danger">
@@ -116,16 +116,16 @@
 
       </div>
       </div>
+      <div *ngIf="showPopup" class="popup">
+            <div class="popup-content">
+                  <div class="popup-header">
+                  <h2>{{ popupTitle }}</h2>
+                  <span class="close-button" (click)="closePopup()">&times;</span>
+                  </div>
+                  <div class="popup-body">
+                  <p>{{ popupMessage }}</p>
+                  </div>
+            </div>
+            </div>
       </form> 
  
-      <div *ngIf="showPopup" class="popup-overlay">
-            <div class="popup-contents">
-              <div class="popup-header">
-                <h2>{{ popupTitle }}</h2>
-                <span class="close-button" (click)="closePopup()">&times;</span>
-              </div>
-              <div class="popup-body">
-                <p>{{ popupMessage }}</p>
-              </div>
-            </div>
-          </div>
