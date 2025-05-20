@@ -31,6 +31,11 @@ export class SubscriberListComponent implements OnInit {
   @Input() product_Id: number | undefined;
   @Output() close = new EventEmitter<void>();
   subscriberDetails: SubscriberDetail[] = [];
+
+  // New properties for the popup
+  showPopup: boolean = false;
+  popupTitle: string = '';
+  popupMessage: string = '';
  
   
   constructor(private productService: ProductService) { }
@@ -95,7 +100,11 @@ export class SubscriberListComponent implements OnInit {
       const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       this.saveAsExcelFile(excelBuffer, `product_${this.product_Id}_subscribers`);
     } else {
-      alert('No subscriber data to download.');
+      //alert('No subscriber data to download.');
+      this.popupTitle = 'Error';
+      this.popupMessage = 'No subscriber data to download.';
+      this.showPopup = true;
+
     }
   }
  

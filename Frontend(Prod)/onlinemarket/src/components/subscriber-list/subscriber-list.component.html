@@ -53,4 +53,15 @@
  
     </div>
 </div>
+<div *ngIf="showPopup" class="alertPopup">
+    <div class="popup-contents">
+          <div class="popup-head">
+          <h2>{{ popupTitle }}</h2>
+          <span class="close-button" (click)="closePopup()">&times;</span>
+          </div>
+          <div class="popup-body">
+          <p>{{ popupMessage }}</p>
+          </div>
+    </div>
+    </div>
  
