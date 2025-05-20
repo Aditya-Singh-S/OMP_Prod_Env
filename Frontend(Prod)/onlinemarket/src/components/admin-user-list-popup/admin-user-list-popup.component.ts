@@ -34,6 +34,11 @@ export class AdminUserListPopupComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   selectedStatus: string = '';
 
+   // New properties for the popup
+   showPopup: boolean = false;
+   popupTitle: string = '';
+   popupMessage: string = '';
+
   constructor(private http: HttpClient,private userService : UserService) { }
 
   ngOnInit(): void {
@@ -93,7 +98,10 @@ export class AdminUserListPopupComponent implements OnInit {
       const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       this.saveAsExcelFile(excelBuffer, 'user_details');
     } else {
-      alert('No user data to export.');
+      //alert('No user data to export.');
+      this.popupTitle = 'Error';
+      this.popupMessage = 'No user data to export.';
+      this.showPopup = true;
     }
   }
 
