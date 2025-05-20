@@ -19,10 +19,12 @@
                     <option value="">All Users</option>
                     <option value="active">Active Users</option>
                     <option value="inactive">In Active Users</option>
+                    <option value="verified">Email Verified Users</option>
+                    <option value="not_verified">Email Not Verified Users</option>
                 </select>
             </div>
             <div class="search">
-                <button class="searchbutton" (click)="filterUsersByActiveStatus()">Search</button>
+                <button class="searchbutton" (click)="filterUsers()">Search</button>
             </div>
         </div>
 
@@ -41,7 +43,10 @@
                             <th>Address 1</th>
                             <th>Address 2</th>
                             <th>Postal Code</th>
-                            <th>Role</th> </tr>
+                            <th>Role</th> 
+                            <th>Active</th>
+                            <th>Email Verified</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let user of allUsers">
@@ -55,7 +60,10 @@
                             <td>{{ user.addressLine1 }}</td>
                             <td>{{ user.addressLine2 }}</td>
                             <td>{{ user.postalCode }}</td>
-                            <td>{{ user.userRole }}</td> </tr>
+                            <td>{{ user.userRole }}</td> 
+                            <td>{{ user.active ? 'Yes' : 'No' }}</td>
+                            <td>{{ user.emailVerification ? 'Yes' : 'No' }}</td>
+                        </tr>  
                     </tbody>
                 </table>
             </div>
