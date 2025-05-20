@@ -237,7 +237,7 @@ export class UserReviewComponent implements OnInit {
       const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
       this.saveAsExcelFile(excelBuffer, `product_${this.productId}_reviews`);
     } else {
-      alert('No reviews available for this product to export.');
+      // alert('No reviews available for this product to export.');
     }
   }
 

@@ -450,16 +450,16 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
         next: (response) => {
           console.log('User updated successfully:', response);
           this.isUpdateUserPopupVisible = false;
-          alert('User updated successfully!');
+          // alert('User updated successfully!');
         },
         error: (error) => {
           console.error('Error updating user:', error);
-          alert('Error updating user.');
+          // alert('Error updating user.');
         }
       });
     } else {
       console.error('User ID is missing in the user data.');
-      alert('Error: Could not update user (ID missing).');
+      // alert('Error: Could not update user (ID missing).');
     }
   }
  
@@ -515,7 +515,10 @@ submitUser(): void {
 
   this.authService.signUp(this.addUser.email, this.password).then(result => {
     console.log('User registered through admin:', result);
-    alert("Registration Successful! Check for email verification");
+    // alert("Registration Successful! Check for email verification");
+    this.AlertPopupTitle = 'Registration Successful!';
+      this.AlertPopupMessage = 'Check for email verification';
+      this.showAlertPopup = true;
 
     //this.productService.registerUser(formData)
  
@@ -542,7 +545,10 @@ submitUser(): void {
 
   }).catch(err => {
     console.error("Registration failed:",err);
-    alert('Error:'+ err.message);
+    // alert('Error:'+ err.message);
+    this.popupTitle = 'Error';
+      this.popupMessage = 'Registration Failed';
+      this.showAlertPopup = true;
   })
   
 
