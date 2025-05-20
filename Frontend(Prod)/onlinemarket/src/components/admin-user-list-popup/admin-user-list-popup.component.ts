@@ -6,6 +6,7 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../services/user.service';
+import { Observable, tap } from 'rxjs';
 
 interface UserDetail {
   firstName: string;
@@ -18,8 +19,10 @@ interface UserDetail {
   addressLine1: string;
   addressLine2: string;
   postalCode: number;
-  isActive: boolean;
+  active: boolean;
   userRole: string; 
+  emailVerification?: boolean; 
+
 }
 
 @Component({
@@ -75,6 +78,48 @@ export class AdminUserListPopupComponent implements OnInit {
     }
   }
 
+  filterUsers() {
+    if (this.selectedStatus === 'active') {
+        this.getUsersByActiveStatus(true).subscribe(users => {
+            this.allUsers = users;
+        });
+    } else if (this.selectedStatus === 'inactive') {
+        this.getUsersByActiveStatus(false).subscribe(users => {
+            this.allUsers = users;
+        });
+    } else if (this.selectedStatus === 'verified') {
+        this.getVerifiedUsers().subscribe(users => {
+            this.allUsers = users;
+        });
+    } else if (this.selectedStatus === 'not_verified') {
+        this.getNotVerifiedUsers().subscribe(users => {
+            this.allUsers = users;
+        });
+    } else {
+        this.fetchAllUsers();
+    }
+}
+
+getUsersByActiveStatus(isActive: boolean): Observable<UserDetail[]> {
+    const params = new HttpParams().set('isActive', isActive.toString());
+    return this.http.get<UserDetail[]>(`https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/admin/users/active`, { headers : this.userService.authHeaders,params });
+}
+
+getVerifiedUsers(): Observable<UserDetail[]> {
+    const params = new HttpParams().set('emailVerification', 'true');
+    return this.http.get<UserDetail[]>(`https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/admin/users/verified`, {headers : this.userService.authHeaders,params }).pipe(
+      tap(data => console.log('Verified users data:', data)) 
+    );
+}
+
+getNotVerifiedUsers(): Observable<UserDetail[]> {
+    const params = new HttpParams().set('emailVerification', 'false');
+    return this.http.get<UserDetail[]>(`https://n1sqae1lk8.execute-api.us-east-1.amazonaws.com/tempProd/OMP/admin/users/verified`, {headers : this.userService.authHeaders,params }).pipe(
+      tap(data => console.log('Not verified users data:', data)) 
+    );
+}
+
+
   exportToExcel() {
     if (this.allUsers && this.allUsers.length > 0) {
       const formattedUsers = this.allUsers.map(user => ({
@@ -88,7 +133,8 @@ export class AdminUserListPopupComponent implements OnInit {
         'Address Line 1': user.addressLine1,
         'Address Line 2': user.addressLine2,
         'Postal Code': user.postalCode,
-        'Active': user.isActive ? 'Yes' : 'No',
+        'Active': user.active ? 'Yes' : 'No',
+        'Email Verified': user.emailVerification ? 'Yes' : 'No',
         'Role': user.userRole 
       }));
 
