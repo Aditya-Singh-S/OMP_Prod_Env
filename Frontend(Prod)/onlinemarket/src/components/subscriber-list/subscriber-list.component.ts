@@ -116,5 +116,9 @@ export class SubscriberListComponent implements OnInit {
   closePopup() {
     this.close.emit();
   }
+
+  closePop(){
+    this.showPopup=false;
+  }
 }
  
