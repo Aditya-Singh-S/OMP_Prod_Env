@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -101,11 +102,12 @@ public class UserAdminService {
 		if (imageFile != null && !imageFile.isEmpty()) {
 			user.setPhoto(imageUrl);
 		}
-		if (userAdminDTO.isAdmin() == true) {
-			user.setPassword(util.hashPassword(user.getPassword()));
-		} else {
-			user.setPassword(null);
-		}
+		// if (userAdminDTO.isAdmin() == true) {
+		// 	user.setPassword(util.hashPassword(user.getPassword()));
+		// } else {
+		// 	user.setPassword(null);
+		// }
+		user.setPassword(util.hashPassword(user.getPassword()));
 		userValidationService.validateAdminAddUser(user);
 		User savedUser = userRepository.save(user);
 		snsService.userEmailVerify(user.getEmail());
@@ -241,4 +243,23 @@ public class UserAdminService {
 	public List<User> getUsersByIsActive(boolean isActive) {
 		return userRepository.findByIsActive(isActive);
 	}
+	
+	public List<User> getUsersByIsActivebyemail(boolean emailVerification) {
+		return userRepository.findByEmailVerification(emailVerification);
+	}
+	
+	
+	
+	   public List<User> getUsersByFilter(Boolean isActive, Boolean isEmailVerified) {
+	       Specification<User> spec = Specification.where(null);
+
+	       if (isActive != null) {
+	           spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isActive"), isActive));
+	       }
+	       if (isEmailVerified != null) {
+	           spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("emailVerification"), isEmailVerified));
+	       }
+
+	       return userRepository.findAll(spec);
+	   }
 }
