@@ -87,11 +87,11 @@ public class User {
  
     @Builder.Default
     @Column(name="emailverification")
-    private boolean emailVerification=true;
+    private boolean emailVerification=false;
  
     @Column(name="isactive")
     @Builder.Default
-    private boolean isActive=true;
+    private boolean isActive=false;
  
 //   @Column(nullable = false)
     @Builder.Default
