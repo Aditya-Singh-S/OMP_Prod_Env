@@ -113,4 +113,8 @@ export class AdminUserListPopupComponent implements OnInit {
   closePopup() {
     this.close.emit();
   }
+
+  closePop(){
+    this.showPopup=false;
+  }
 }
