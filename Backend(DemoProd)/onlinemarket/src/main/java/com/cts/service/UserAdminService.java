@@ -102,11 +102,12 @@ public class UserAdminService {
 		if (imageFile != null && !imageFile.isEmpty()) {
 			user.setPhoto(imageUrl);
 		}
-		if (userAdminDTO.isAdmin() == true) {
-			user.setPassword(util.hashPassword(user.getPassword()));
-		} else {
-			user.setPassword(null);
-		}
+		// if (userAdminDTO.isAdmin() == true) {
+		// 	user.setPassword(util.hashPassword(user.getPassword()));
+		// } else {
+		// 	user.setPassword(null);
+		// }
+		user.setPassword(util.hashPassword(user.getPassword()));
 		userValidationService.validateAdminAddUser(user);
 		User savedUser = userRepository.save(user);
 		snsService.userEmailVerify(user.getEmail());

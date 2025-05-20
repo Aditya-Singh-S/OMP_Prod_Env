@@ -25,7 +25,7 @@ public class UserAdminDTO {
     @NotBlank(message = "Email is required")
     private String email;
 
-    private String password="Abc@123"; 
+    private String password="Abc@12345"; 
 
     @NotBlank(message = "Photo is required")
     private String photo;
